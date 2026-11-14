@@ -1,0 +1,211 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/MeleeChaser.cs" id="1_chaser"]
+[ext_resource type="Resource" path="res://resources/enemies/Cassowary.tres" id="2_stats"]
+[ext_resource type="Script" path="res://scripts/Combat/HealthComponent.cs" id="3_health"]
+[ext_resource type="Script" path="res://scripts/Combat/HitReaction.cs" id="4_hit"]
+[ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
+[ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.45
+height = 1.5
+
+[sub_resource type="SphereShape3D" id="WeakShape"]
+radius = 0.16
+
+[sub_resource type="StandardMaterial3D" id="M_Feather"]
+albedo_color = Color(0.08, 0.08, 0.09, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Neck"]
+albedo_color = Color(0.15, 0.4, 0.8, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Wattle"]
+albedo_color = Color(0.85, 0.12, 0.1, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Casque"]
+albedo_color = Color(0.45, 0.35, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Leg"]
+albedo_color = Color(0.35, 0.33, 0.25, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Eye"]
+shading_mode = 0
+albedo_color = Color(0.7, 1, 0.3, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(0.7, 1, 0.3, 1)
+emission_energy_multiplier = 3
+
+[sub_resource type="SphereMesh" id="Mesh0"]
+radius = 0.46
+height = 0.92
+radial_segments = 12
+rings = 6
+material = SubResource("M_Feather")
+
+[sub_resource type="CylinderMesh" id="Mesh1"]
+top_radius = 0.07
+bottom_radius = 0.1
+height = 0.55
+radial_segments = 10
+rings = 1
+material = SubResource("M_Neck")
+
+[sub_resource type="SphereMesh" id="Mesh2"]
+radius = 0.05
+height = 0.1
+radial_segments = 12
+rings = 6
+material = SubResource("M_Wattle")
+
+[sub_resource type="SphereMesh" id="Mesh3"]
+radius = 0.12
+height = 0.24
+radial_segments = 12
+rings = 6
+material = SubResource("M_Neck")
+
+[sub_resource type="BoxMesh" id="Mesh4"]
+size = Vector3(0.06, 0.2, 0.18)
+material = SubResource("M_Casque")
+
+[sub_resource type="BoxMesh" id="Mesh5"]
+size = Vector3(0.07, 0.06, 0.16)
+material = SubResource("M_Casque")
+
+[sub_resource type="SphereMesh" id="Mesh6"]
+radius = 0.03
+height = 0.06
+radial_segments = 12
+rings = 6
+material = SubResource("M_Eye")
+
+[sub_resource type="CylinderMesh" id="Mesh7"]
+top_radius = 0.06
+bottom_radius = 0.06
+height = 0.75
+radial_segments = 10
+rings = 1
+material = SubResource("M_Leg")
+
+[sub_resource type="BoxMesh" id="Mesh8"]
+size = Vector3(0.16, 0.05, 0.26)
+material = SubResource("M_Leg")
+
+[sub_resource type="BoxMesh" id="Mesh9"]
+size = Vector3(0.03, 0.04, 0.2)
+material = SubResource("M_Casque")
+
+[node name="Cassowary" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_chaser")
+Stats = ExtResource("2_stats")
+DeathCue = 5
+EffectHeight = 1.1
+DeathSparkAmount = 36
+AttackCue = 4
+WindupTime = 0.5
+RecoverTime = 0.5
+BobHeight = 0.04
+BobFrequency = 0.7
+StrikerPath = NodePath("Visual/Striker")
+StrikerPullback = Vector3(0, 0.2, 0.25)
+StrikerThrust = Vector3(0, 0.35, -0.6)
+
+[node name="BodyShape" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.75, 0)
+shape = SubResource("BodyShape")
+
+[node name="HeadWeakSpot" type="CollisionShape3D" parent="."]
+shape = SubResource("WeakShape")
+script = ExtResource("6_weak")
+FollowPath = NodePath("../Visual/Head")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Striker" type="Node3D" parent="Visual"]
+position = Vector3(0.17, 0.38, 0.12)
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.1, 0.12)
+scale = Vector3(1, 0.85, 1.3)
+mesh = SubResource("Mesh0")
+
+[node name="Neck" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.48, -0.25)
+rotation = Vector3(-0.1745, 0, 0)
+mesh = SubResource("Mesh1")
+
+[node name="WattleL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.04, 1.42, -0.33)
+scale = Vector3(1, 2, 1)
+mesh = SubResource("Mesh2")
+
+[node name="WattleR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.04, 1.42, -0.33)
+scale = Vector3(1, 2, 1)
+mesh = SubResource("Mesh2")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.76, -0.3)
+mesh = SubResource("Mesh3")
+
+[node name="Casque" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.9, -0.28)
+mesh = SubResource("Mesh4")
+
+[node name="Beak" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.73, -0.45)
+mesh = SubResource("Mesh5")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.08, 1.79, -0.38)
+cast_shadow = 0
+mesh = SubResource("Mesh6")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.08, 1.79, -0.38)
+cast_shadow = 0
+mesh = SubResource("Mesh6")
+
+[node name="LegL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.17, 0.38, 0.12)
+mesh = SubResource("Mesh7")
+
+[node name="FootL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.17, 0.03, 0.04)
+mesh = SubResource("Mesh8")
+
+[node name="LegR" type="MeshInstance3D" parent="Visual/Striker"]
+position = Vector3(0, 0, 0)
+mesh = SubResource("Mesh7")
+
+[node name="FootR" type="MeshInstance3D" parent="Visual/Striker"]
+position = Vector3(0, -0.35, -0.08)
+mesh = SubResource("Mesh8")
+
+[node name="Claw" type="MeshInstance3D" parent="Visual/Striker"]
+position = Vector3(0, -0.34, -0.26)
+mesh = SubResource("Mesh9")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+
+[node name="HitReaction" type="Node" parent="."]
+script = ExtResource("4_hit")
+
+[node name="MeleeAttack" type="Node" parent="."]
+script = ExtResource("5_melee")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.6
+height = 1.9
+radius = 0.5

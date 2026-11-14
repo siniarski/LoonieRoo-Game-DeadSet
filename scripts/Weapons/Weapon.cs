@@ -16,7 +16,7 @@ public abstract partial class Weapon : Node3D
 	[Signal] public delegate void ReloadFinishedEventHandler();
 	[Signal] public delegate void DryFiredEventHandler();
 	/// <summary>One of this weapon's shots damaged something.</summary>
-	[Signal] public delegate void HitLandedEventHandler(bool killed);
+	[Signal] public delegate void HitLandedEventHandler(bool killed, bool weakSpot);
 
 	[Export] public WeaponStats Stats { get; set; }
 
@@ -71,7 +71,7 @@ public abstract partial class Weapon : Node3D
 	}
 
 	/// <summary>Called by this weapon's projectiles when they damage something.</summary>
-	public void ReportHit(bool killed) => EmitSignal(SignalName.HitLanded, killed);
+	public void ReportHit(bool killed, bool weakSpot = false) => EmitSignal(SignalName.HitLanded, killed, weakSpot);
 
 	/// <summary>Perform one shot. Ammo and timing are already handled.</summary>
 	protected abstract void FireShot();

@@ -1,15 +1,19 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/Player/PlayerController.cs" id="1_ctrl"]
 [ext_resource type="Script" path="res://scripts/Player/CameraRecoil.cs" id="2_recoil"]
 [ext_resource type="Script" path="res://scripts/Player/PlayerWeaponInput.cs" id="3_weaponinput"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/NailGun.tscn" id="4_nailgun"]
+[ext_resource type="Script" path="res://scripts/Combat/HealthComponent.cs" id="5_health"]
+[ext_resource type="Script" path="res://scripts/Player/PlayerDamageFeedback.cs" id="6_feedback"]
+[ext_resource type="Script" path="res://scripts/Debug/PlayerTestRespawn.cs" id="7_respawn"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
 height = 1.8
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
 script = ExtResource("1_ctrl")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -29,3 +33,13 @@ script = ExtResource("2_recoil")
 
 [node name="WeaponInput" type="Node" parent="."]
 script = ExtResource("3_weaponinput")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+MaxHealth = 100.0
+
+[node name="DamageFeedback" type="Node" parent="."]
+script = ExtResource("6_feedback")
+
+[node name="TestRespawn" type="Node" parent="."]
+script = ExtResource("7_respawn")

@@ -1,0 +1,191 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/MeleeChaser.cs" id="1_chaser"]
+[ext_resource type="Resource" path="res://resources/enemies/CaneToad.tres" id="2_stats"]
+[ext_resource type="Script" path="res://scripts/Combat/HealthComponent.cs" id="3_health"]
+[ext_resource type="Script" path="res://scripts/Combat/HitReaction.cs" id="4_hit"]
+[ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
+[ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.3
+height = 0.6
+
+[sub_resource type="SphereShape3D" id="WeakShape"]
+radius = 0.14
+
+[sub_resource type="StandardMaterial3D" id="M_Skin"]
+albedo_color = Color(0.45, 0.4, 0.22, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="M_Wart"]
+albedo_color = Color(0.35, 0.95, 0.3, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(0.35, 0.95, 0.3, 1)
+emission_energy_multiplier = 2
+
+[sub_resource type="StandardMaterial3D" id="M_Eye"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.1, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(1, 0.75, 0.1, 1)
+emission_energy_multiplier = 2
+
+[sub_resource type="StandardMaterial3D" id="M_Belly"]
+albedo_color = Color(0.75, 0.7, 0.5, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="Mesh0"]
+radius = 0.28
+height = 0.56
+radial_segments = 12
+rings = 6
+material = SubResource("M_Skin")
+
+[sub_resource type="SphereMesh" id="Mesh1"]
+radius = 0.25
+height = 0.5
+radial_segments = 12
+rings = 6
+material = SubResource("M_Belly")
+
+[sub_resource type="SphereMesh" id="Mesh2"]
+radius = 0.17
+height = 0.34
+radial_segments = 12
+rings = 6
+material = SubResource("M_Skin")
+
+[sub_resource type="SphereMesh" id="Mesh3"]
+radius = 0.045
+height = 0.09
+radial_segments = 12
+rings = 6
+material = SubResource("M_Wart")
+
+[sub_resource type="SphereMesh" id="Mesh4"]
+radius = 0.06
+height = 0.12
+radial_segments = 12
+rings = 6
+material = SubResource("M_Wart")
+
+[sub_resource type="SphereMesh" id="Mesh5"]
+radius = 0.1
+height = 0.2
+radial_segments = 12
+rings = 6
+material = SubResource("M_Skin")
+
+[sub_resource type="SphereMesh" id="Mesh6"]
+radius = 0.04
+height = 0.08
+radial_segments = 12
+rings = 6
+material = SubResource("M_Eye")
+
+[node name="CaneToad" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_chaser")
+Stats = ExtResource("2_stats")
+DeathCue = 7
+EffectHeight = 0.2
+AttackCue = 7
+WindupTime = 0.2
+RecoverTime = 0.1
+LungeSpeed = 4.5
+LungeUpSpeed = 3.0
+Hops = true
+BobHeight = 0.15
+BobFrequency = 0.7
+StrikerPath = NodePath("")
+
+[node name="BodyShape" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.3, 0)
+shape = SubResource("BodyShape")
+
+[node name="HeadWeakSpot" type="CollisionShape3D" parent="."]
+shape = SubResource("WeakShape")
+script = ExtResource("6_weak")
+FollowPath = NodePath("../Visual/Head")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.22, 0.05)
+scale = Vector3(1.15, 0.7, 1.1)
+mesh = SubResource("Mesh0")
+
+[node name="Belly" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.15, 0.02)
+scale = Vector3(1.1, 0.5, 1.05)
+mesh = SubResource("Mesh1")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.27, -0.22)
+scale = Vector3(1.2, 0.7, 1)
+mesh = SubResource("Mesh2")
+
+[node name="Wart0" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.15, 0.38, 0)
+mesh = SubResource("Mesh3")
+
+[node name="Wart1" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.12, 0.38, 0.15)
+mesh = SubResource("Mesh3")
+
+[node name="Wart2" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.05, 0.38, -0.08)
+mesh = SubResource("Mesh3")
+
+[node name="Wart3" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.08, 0.38, 0.2)
+mesh = SubResource("Mesh3")
+
+[node name="GlandL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, 0.33, -0.12)
+scale = Vector3(1, 0.6, 1.6)
+mesh = SubResource("Mesh4")
+
+[node name="GlandR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, 0.33, -0.12)
+scale = Vector3(1, 0.6, 1.6)
+mesh = SubResource("Mesh4")
+
+[node name="LegL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.25, 0.1, 0.15)
+scale = Vector3(0.8, 0.7, 1.6)
+mesh = SubResource("Mesh5")
+
+[node name="LegR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.25, 0.1, 0.15)
+scale = Vector3(0.8, 0.7, 1.6)
+mesh = SubResource("Mesh5")
+
+[node name="EyeLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.1, 0.37, -0.28)
+cast_shadow = 0
+mesh = SubResource("Mesh6")
+
+[node name="EyeRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.1, 0.37, -0.28)
+cast_shadow = 0
+mesh = SubResource("Mesh6")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+
+[node name="HitReaction" type="Node" parent="."]
+script = ExtResource("4_hit")
+
+[node name="MeleeAttack" type="Node" parent="."]
+script = ExtResource("5_melee")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.6
+height = 0.5
+radius = 0.3

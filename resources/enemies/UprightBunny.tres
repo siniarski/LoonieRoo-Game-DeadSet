@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Glow Bunny (upright)"
+MaxHealth = 40
+MoveSpeed = 7.5
+Acceleration = 30
+RepathInterval = 0.2
+SeparationRadius = 0.8
+SeparationStrength = 4
+AttackDamage = 5
+AttackRange = 1.2
+AttackCooldown = 0.9

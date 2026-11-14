@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Drop Bear"
+MaxHealth = 80
+MoveSpeed = 6
+Acceleration = 30
+RepathInterval = 0.2
+SeparationRadius = 1
+SeparationStrength = 4
+AttackDamage = 10
+AttackRange = 1.2
+AttackCooldown = 1.2

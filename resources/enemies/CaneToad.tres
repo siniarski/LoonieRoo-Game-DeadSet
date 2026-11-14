@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Cane Toad"
+MaxHealth = 25
+MoveSpeed = 4.5
+Acceleration = 25
+RepathInterval = 0.2
+SeparationRadius = 0.7
+SeparationStrength = 4
+AttackDamage = 4
+AttackRange = 1
+AttackCooldown = 1

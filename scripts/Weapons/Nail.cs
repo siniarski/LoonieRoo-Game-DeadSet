@@ -31,9 +31,10 @@ public partial class Nail : Node3D
 	[Export] public float VisualConvergeTime { get; set; } = 0.06f;
 	/// <summary>How deep a stuck nail sits in the surface, in metres.</summary>
 	[Export] public float EmbedDepth { get; set; } = 0.1f;
-	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 1;
+	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 5;  // world + enemies
 	[Export] public Color WallSparkColor { get; set; } = new(1f, 0.7f, 0.3f);
 	[Export] public Color FleshSparkColor { get; set; } = new(1f, 1f, 0.85f);
+	[Export] public Color WeakSpotSparkColor { get; set; } = new(1f, 0.85f, 0.2f);
 
 	private Node3D _mesh;
 	private Vector3 _velocity;
@@ -92,7 +93,7 @@ public partial class Nail : Node3D
 
 		if (hit.Count > 0)
 		{
-			OnImpact((Vector3)hit["position"], (Vector3)hit["normal"], hit["collider"].As<Node>());
+			OnImpact((Vector3)hit["position"], (Vector3)hit["normal"], hit["collider"].As<Node>(), (int)hit["shape"]);
 			return;
 		}
 
@@ -110,20 +111,23 @@ public partial class Nail : Node3D
 		_mesh.GlobalPosition = GlobalPosition + _visualOffset * remaining;
 	}
 
-	private void OnImpact(Vector3 point, Vector3 normal, Node collider)
+	private void OnImpact(Vector3 point, Vector3 normal, Node collider, int shapeIndex)
 	{
 		Node effectsParent = GetParent();
 		HealthComponent health = HealthComponent.FindOn(collider);
 
 		if (health != null)
 		{
+			WeakSpot weakSpot = WeakSpot.FromHit(collider, shapeIndex);
 			if (!health.IsDead)
 			{
-				bool killed = health.ApplyDamage(_damage);
+				float damage = _damage * (weakSpot?.DamageMultiplier ?? 1f);
+				bool killed = health.ApplyDamage(damage);
 				if (IsInstanceValid(_source))
-					_source.ReportHit(killed);
+					_source.ReportHit(killed, weakSpot != null);
 			}
-			ImpactEffects.SpawnSparks(effectsParent, point, normal, FleshSparkColor, 12);
+			ImpactEffects.SpawnSparks(effectsParent, point, normal,
+				weakSpot != null ? WeakSpotSparkColor : FleshSparkColor, weakSpot != null ? 22 : 12);
 			QueueFree();
 			return;
 		}

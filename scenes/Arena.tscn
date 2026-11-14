@@ -1,4 +1,6 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scripts/World/NavigationBaker.cs" id="1_navbaker"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.42, 0.3, 0.26, 1)
@@ -18,6 +20,9 @@ tonemap_mode = 2
 fog_enabled = true
 fog_light_color = Color(0.8, 0.55, 0.38, 1)
 fog_density = 0.006
+glow_enabled = true
+glow_intensity = 0.7
+glow_hdr_threshold = 1.0
 
 [sub_resource type="FastNoiseLite" id="DirtNoise"]
 frequency = 0.035
@@ -75,6 +80,12 @@ emission_enabled = true
 emission = Color(0.9, 0.15, 0.1, 1)
 emission_energy_multiplier = 0.6
 
+[sub_resource type="NavigationMesh" id="NavMesh"]
+geometry_parsed_geometry_type = 1
+agent_radius = 0.5
+agent_height = 1.25
+agent_max_climb = 0.25
+
 [node name="Arena" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -86,85 +97,89 @@ light_color = Color(1, 0.88, 0.72, 1)
 light_energy = 1.2
 shadow_enabled = true
 
-[node name="Geometry" type="Node3D" parent="."]
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavMesh")
+script = ExtResource("1_navbaker")
 
-[node name="Floor" type="CSGBox3D" parent="Geometry"]
+[node name="Geometry" type="Node3D" parent="Navigation"]
+
+[node name="Floor" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(0, -0.5, 0)
 use_collision = true
 size = Vector3(42, 1, 42)
 material = SubResource("FloorMat")
 
-[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
+[node name="WallNorth" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(0, 2, -20.5)
 use_collision = true
 size = Vector3(42, 4, 1)
 material = SubResource("WallMat")
 
-[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+[node name="WallSouth" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(0, 2, 20.5)
 use_collision = true
 size = Vector3(42, 4, 1)
 material = SubResource("WallMat")
 
-[node name="WallWest" type="CSGBox3D" parent="Geometry"]
+[node name="WallWest" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(-20.5, 2, 0)
 use_collision = true
 size = Vector3(1, 4, 40)
 material = SubResource("WallMat")
 
-[node name="WallEast" type="CSGBox3D" parent="Geometry"]
+[node name="WallEast" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(20.5, 2, 0)
 use_collision = true
 size = Vector3(1, 4, 40)
 material = SubResource("WallMat")
 
-[node name="Cover" type="Node3D" parent="."]
+[node name="Cover" type="Node3D" parent="Navigation"]
 
-[node name="ShippingContainerRust" type="CSGBox3D" parent="Cover"]
+[node name="ShippingContainerRust" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(-11, 1.3, 9)
 use_collision = true
 size = Vector3(6, 2.6, 2.4)
 material = SubResource("ContainerRustMat")
 
-[node name="ShippingContainerTeal" type="CSGBox3D" parent="Cover"]
+[node name="ShippingContainerTeal" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(13, 1.3, -10)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
-[node name="CrateLow" type="CSGBox3D" parent="Cover"]
+[node name="CrateLow" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(-5, 0.5, -4)
 use_collision = true
 size = Vector3(2, 1, 2)
 material = SubResource("TimberMat")
 
-[node name="CrateTall" type="CSGBox3D" parent="Cover"]
+[node name="CrateTall" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(-7, 1, -4)
 use_collision = true
 size = Vector3(2, 2, 2)
 material = SubResource("TimberMat")
 
-[node name="BesserBlockWall" type="CSGBox3D" parent="Cover"]
+[node name="BesserBlockWall" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(4, 0.65, 5)
 use_collision = true
 size = Vector3(8, 1.3, 0.8)
 material = SubResource("ConcreteMat")
 
-[node name="PalletStack" type="CSGBox3D" parent="Cover"]
+[node name="PalletStack" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(2, 0.3, -12)
 rotation = Vector3(0, 0.4, 0)
 use_collision = true
 size = Vector3(1.6, 0.6, 1.6)
 material = SubResource("TimberMat")
 
-[node name="WreckedUte" type="CSGBox3D" parent="Cover"]
+[node name="WreckedUte" type="CSGBox3D" parent="Navigation/Cover"]
 position = Vector3(-13, 0.7, -12)
 rotation = Vector3(0, 0.55, 0)
 use_collision = true
 size = Vector3(4.2, 1.4, 2)
 material = SubResource("ConcreteMat")
 
-[node name="WaterTank" type="CSGCylinder3D" parent="Cover"]
+[node name="WaterTank" type="CSGCylinder3D" parent="Navigation/Cover"]
 position = Vector3(10, 1.5, 10)
 use_collision = true
 radius = 1.5

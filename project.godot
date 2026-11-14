@@ -21,6 +21,10 @@ config/icon="res://icon.svg"
 window/size/viewport_width=1600
 window/size/viewport_height=900
 
+[autoload]
+
+GameEvents="*res://scripts/Core/GameEvents.cs"
+
 [dotnet]
 
 project/assembly_name="Deadset"
@@ -81,3 +85,9 @@ release_mouse={
 [rendering]
 
 anti_aliasing/quality/msaa_3d=2
+
+[layer_names]
+
+3d_physics/layer_1="World"
+3d_physics/layer_2="Player"
+3d_physics/layer_3="Enemies"

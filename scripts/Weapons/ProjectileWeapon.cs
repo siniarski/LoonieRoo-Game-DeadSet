@@ -115,10 +115,12 @@ public partial class ProjectileWeapon : Weapon
 		return forward.Rotated(axis, angle);
 	}
 
-	private void OnHitLanded(bool killed)
+	private void OnHitLanded(bool killed, bool weakSpot)
 	{
 		_hitSfx.Stream = killed ? PlaceholderSfx.KillTick : PlaceholderSfx.HitTick;
 		_hitSfx.Play();
+		if (weakSpot)
+			PlaceholderSfx.PlayAt(this, PlaceholderSfx.HeadshotTink, GlobalPosition, -4f, 0.04f);
 	}
 
 	private void PlayHandling(AudioStream stream)

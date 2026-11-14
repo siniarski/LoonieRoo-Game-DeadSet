@@ -1,9 +1,19 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/Arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/UI/Hud.tscn" id="3_hud"]
-[ext_resource type="PackedScene" path="res://scenes/debug/TargetDummy.tscn" id="4_dummy"]
+[ext_resource type="Script" path="res://scripts/Debug/TestSpawner.cs" id="4_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Emu.tscn" id="e0"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/UprightBunny.tscn" id="e1"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Feral.tscn" id="e2"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/GlowBunny.tscn" id="e3"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Kangaroo.tscn" id="e4"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Cassowary.tscn" id="e5"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Dingo.tscn" id="e6"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/CaneToad.tscn" id="e7"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/DropBear.tscn" id="e8"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Magpie.tscn" id="e9"]
 
 [node name="Main" type="Node3D"]
 
@@ -14,13 +24,7 @@ position = Vector3(-3, 0.1, 10)
 
 [node name="Hud" parent="." instance=ExtResource("3_hud")]
 
-[node name="TestTargets" type="Node3D" parent="."]
-
-[node name="DummyClose" parent="TestTargets" instance=ExtResource("4_dummy")]
-position = Vector3(-4.5, 0, 3)
-
-[node name="DummyMid" parent="TestTargets" instance=ExtResource("4_dummy")]
-position = Vector3(0, 0, -6)
-
-[node name="DummyFar" parent="TestTargets" instance=ExtResource("4_dummy")]
-position = Vector3(3.5, 0, -16)
+[node name="TestSpawner" type="Node" parent="."]
+script = ExtResource("4_spawner")
+EnemyScenes = Array[PackedScene]([ExtResource("e0"), ExtResource("e1"), ExtResource("e2"), ExtResource("e3"), ExtResource("e4"), ExtResource("e5"), ExtResource("e6"), ExtResource("e7"), ExtResource("e8"), ExtResource("e9")])
+PackSizes = Array[int]([8, 8, 6, 8, 2, 1, 4, 6, 2, 3])

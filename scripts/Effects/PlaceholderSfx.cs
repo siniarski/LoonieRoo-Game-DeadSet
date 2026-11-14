@@ -3,6 +3,8 @@ using Godot;
 
 namespace Deadset.Effects;
 
+public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak }
+
 /// <summary>
 /// Placeholder sound effects synthesised in code, so the prototype needs no audio imports.
 /// Swap these for real recordings later; callers only see AudioStream.
@@ -20,6 +22,48 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _reloadStart;
 	private static AudioStreamWav _reloadEnd;
 	private static AudioStreamWav _dryFire;
+	private static AudioStreamWav _bunnySqueak;
+	private static AudioStreamWav _bunnyNip;
+	private static AudioStreamWav _playerHurt;
+	private static AudioStreamWav _headshotTink;
+	private static AudioStreamWav _peck;
+	private static AudioStreamWav _thump;
+	private static AudioStreamWav _squawk;
+	private static AudioStreamWav _grunt;
+	private static AudioStreamWav _croak;
+
+	/// <summary>Short rising chirp when a Glow Bunny pops.</summary>
+	public static AudioStreamWav BunnySqueak => _bunnySqueak ??= Build(0.14f, t => Sweep(t, 900f, 2200f, 20f) * MathF.Exp(-t * 22f) * 0.5f);
+	/// <summary>Little snap of teeth.</summary>
+	public static AudioStreamWav BunnyNip => _bunnyNip ??= Build(0.06f, t => (Noise() * 0.5f + Sine(1500f, t) * 0.4f) * MathF.Exp(-t * 90f));
+	/// <summary>Dull body thud when the player takes damage.</summary>
+	public static AudioStreamWav PlayerHurt => _playerHurt ??= Build(0.22f, PlayerHurtSample());
+
+	/// <summary>Bright metallic tink layered on a weak-spot (head) hit.</summary>
+	public static AudioStreamWav HeadshotTink => _headshotTink ??= Build(0.2f, t => (Sine(3100f, t) * 0.5f + Sine(4650f, t) * 0.3f) * MathF.Exp(-t * 18f));
+	/// <summary>Hard woody knock of a beak.</summary>
+	public static AudioStreamWav Peck => _peck ??= Build(0.07f, t => (Sine(900f, t) * 0.6f + Noise() * 0.4f) * MathF.Exp(-t * 70f));
+	/// <summary>Heavy kick or slam.</summary>
+	public static AudioStreamWav Thump => _thump ??= Build(0.16f, t => Sweep(t, 180f, 60f, 25f) * MathF.Exp(-t * 20f) + Noise() * MathF.Exp(-t * 60f) * 0.4f);
+	/// <summary>Harsh falling bird cry.</summary>
+	public static AudioStreamWav Squawk => _squawk ??= Build(0.22f, t => (Sweep(t, 1300f, 500f, 10f) * 0.6f + Noise() * 0.35f) * MathF.Exp(-t * 11f));
+	/// <summary>Low animal grunt.</summary>
+	public static AudioStreamWav Grunt => _grunt ??= Build(0.25f, t => (Sweep(t, 220f, 90f, 9f) * 0.8f + Noise() * 0.2f) * MathF.Exp(-t * 9f));
+	/// <summary>Wet toad croak.</summary>
+	public static AudioStreamWav Croak => _croak ??= Build(0.2f, t => Sine(130f, t) * (0.5f + 0.5f * Sine(28f, t)) * MathF.Exp(-t * 10f));
+
+	/// <summary>Placeholder sound for each enemy cue, picked in the enemy scene's inspector.</summary>
+	public static AudioStream ForCue(EnemyCue cue) => cue switch
+	{
+		EnemyCue.Squeak => BunnySqueak,
+		EnemyCue.Nip => BunnyNip,
+		EnemyCue.Peck => Peck,
+		EnemyCue.Thump => Thump,
+		EnemyCue.Squawk => Squawk,
+		EnemyCue.Grunt => Grunt,
+		EnemyCue.Croak => Croak,
+		_ => null,
+	};
 
 	/// <summary>Pneumatic "thunk-pssh".</summary>
 	public static AudioStreamWav NailShot => _nailShot ??= Build(0.18f, NailShotSample());
@@ -79,6 +123,16 @@ public static class PlaceholderSfx
 		{
 			lowPassed += (Noise() - lowPassed) * 0.4f;
 			return lowPassed * MathF.Exp(-t * 80f) * 0.9f + Sine(520f, t) * MathF.Exp(-t * 70f) * 0.5f;
+		};
+	}
+
+	private static Func<float, float> PlayerHurtSample()
+	{
+		float lowPassed = 0f;
+		return t =>
+		{
+			lowPassed += (Noise() - lowPassed) * 0.08f;
+			return Sweep(t, 140f, 70f, 15f) * MathF.Exp(-t * 14f) * 0.9f + lowPassed * MathF.Exp(-t * 25f) * 1.5f;
 		};
 	}
 

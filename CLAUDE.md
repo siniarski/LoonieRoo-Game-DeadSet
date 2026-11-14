@@ -21,12 +21,17 @@ The previous project failed because too many systems buried the fun. **Keep this
 2. **Player (The Tradie):** first-person movement (walk, sprint, jump), mouse look, health.
 3. **Weapon (Nail Gun):** projectile weapon with fire rate, magazine and reload. It must feel punchy: recoil, muzzle flash, hit feedback, sound placeholders.
 4. **Enemies:**
-   - **Glow Bunnies (swarm):** small, fast, weak, come in large groups, chase and nip.
+   - **Emus (swarm):** fast, fragile, come in flocks, chase and peck. Mutated glowing heads sit at about eye height.
    - **Wombats (charger):** tanky; wind up, then charge in a straight line that the player can sidestep.
 5. **Waves:** a wave director spawns escalating waves, then a short break between them.
 6. **Trader break:** during the break, the player spends cash earned from kills on ammo and armour, then **picks 1 of 3 random upgrades**.
 7. **Upgrades (start with about 6):** player-level, not tied to a weapon. Examples: Smoko Shield (damage resistance at low health), Hot Chips & Gravy (heal on wave end), Quick Loader (faster reload), Bouncing Shot (nails ricochet once), Oi! Watch It! (dash), Sprint boost.
 8. **UI:** health, ammo, wave number, cash, a simple upgrade picker, and a game-over screen with restart.
+
+## Design rules
+
+- **Common enemies only need horizontal aim.** Swarm and fodder enemies keep their heads at about player eye height (1.4–1.7 m; the camera is at 1.6 m), so the crosshair can rest at head height like Killing Floor. Low, tall or flying enemies are rare specials that deliberately break the rhythm.
+- **Heads are the skill target.** Head hits deal extra damage (one nail kills an emu; two to the body).
 
 ## Architecture rules
 
@@ -58,7 +63,7 @@ Each milestone should end in something playable. Stop after each one so I can te
 
 1. Project setup, arena, first-person movement and mouse look.
 2. Nail gun with feedback and a target dummy.
-3. Glow Bunnies chasing the player, plus health and damage on both sides.
+3. Swarm enemies (now Emus) chasing the player, plus health and damage on both sides.
 4. Wave director with escalating waves and a break between them.
 5. Wombats with the charge behaviour.
 6. Cash, trader break and the 1-of-3 upgrade picker.
