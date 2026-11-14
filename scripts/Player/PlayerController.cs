@@ -18,6 +18,9 @@ public partial class PlayerController : CharacterBody3D
 	/// <summary>Steering in the air (m/s²). Lower = more committed jumps.</summary>
 	[Export] public float AirAcceleration { get; set; } = 14f;
 
+	/// <summary>Move speed multiplier while aiming down sights. Sprint is blocked while aiming.</summary>
+	[Export(PropertyHint.Range, "0.1,1")] public float AimMoveSpeedMultiplier { get; set; } = 0.6f;
+
 	[ExportGroup("Jump")]
 	/// <summary>Peak jump height in metres. 1.25 clears a 1 m crate.</summary>
 	[Export] public float JumpHeight { get; set; } = 1.25f;
@@ -32,15 +35,24 @@ public partial class PlayerController : CharacterBody3D
 	/// <summary>Radians of rotation per pixel of mouse movement.</summary>
 	[Export] public float MouseSensitivity { get; set; } = 0.0022f;
 	[Export(PropertyHint.Range, "45,90")] public float MaxPitchDegrees { get; set; } = 88f;
+	/// <summary>Scale mouse sensitivity with zoom so aiming feels the same on screen.</summary>
+	[Export] public bool ScaleSensitivityWithFov { get; set; } = true;
 
 	[ExportGroup("Camera")]
 	[Export(PropertyHint.Range, "50,120")] public float BaseFov { get; set; } = 80f;
 	[Export(PropertyHint.Range, "50,130")] public float SprintFov { get; set; } = 88f;
 	/// <summary>How quickly the FOV eases toward its target. Higher = snappier.</summary>
 	[Export] public float FovLerpSpeed { get; set; } = 8f;
+	/// <summary>FOV ease speed when zooming in or out of the sights. Higher = snappier.</summary>
+	[Export] public float AimFovLerpSpeed { get; set; } = 18f;
 
 	/// <summary>True while sprint is held and the player is moving forward.</summary>
 	public bool IsSprinting { get; private set; }
+
+	/// <summary>Set by whatever handles weapons. The player only applies the movement and camera side.</summary>
+	public bool IsAiming { get; set; }
+	/// <summary>FOV to zoom to while aiming. Set alongside IsAiming.</summary>
+	public float AimFov { get; set; } = 60f;
 
 	private Node3D _head;
 	private Camera3D _camera;
@@ -79,10 +91,14 @@ public partial class PlayerController : CharacterBody3D
 
 		if (@event is InputEventMouseMotion motion)
 		{
-			RotateY(-motion.Relative.X * MouseSensitivity);
+			float sensitivity = MouseSensitivity;
+			if (ScaleSensitivityWithFov)
+				sensitivity *= _camera.Fov / BaseFov;
+
+			RotateY(-motion.Relative.X * sensitivity);
 			float maxPitch = Mathf.DegToRad(MaxPitchDegrees);
 			Vector3 headRot = _head.Rotation;
-			headRot.X = Mathf.Clamp(headRot.X - motion.Relative.Y * MouseSensitivity, -maxPitch, maxPitch);
+			headRot.X = Mathf.Clamp(headRot.X - motion.Relative.Y * sensitivity, -maxPitch, maxPitch);
 			_head.Rotation = headRot;
 		}
 	}
@@ -118,8 +134,10 @@ public partial class PlayerController : CharacterBody3D
 		wishDir = wishDir.LengthSquared() > 0f ? wishDir.Normalized() : Vector3.Zero;
 
 		// Sprint only when pushing forward, so backpedalling stays slow.
-		IsSprinting = Input.IsActionPressed("sprint") && input.Y < -0.1f;
+		IsSprinting = Input.IsActionPressed("sprint") && input.Y < -0.1f && !IsAiming;
 		float targetSpeed = IsSprinting ? SprintSpeed : WalkSpeed;
+		if (IsAiming)
+			targetSpeed *= AimMoveSpeedMultiplier;
 
 		Vector3 horizontal = new(velocity.X, 0f, velocity.Z);
 		bool hasInput = wishDir != Vector3.Zero;
@@ -147,7 +165,13 @@ public partial class PlayerController : CharacterBody3D
 		float horizontalSpeed = new Vector2(Velocity.X, Velocity.Z).Length();
 		bool fastEnough = horizontalSpeed > WalkSpeed + 0.5f;
 		float targetFov = IsSprinting && fastEnough ? SprintFov : BaseFov;
-		float weight = 1f - Mathf.Exp(-FovLerpSpeed * (float)delta);
+		float speed = FovLerpSpeed;
+		bool zooming = IsAiming || _camera.Fov < BaseFov - 0.5f;
+		if (IsAiming)
+			targetFov = AimFov;
+		if (zooming)
+			speed = AimFovLerpSpeed;
+		float weight = 1f - Mathf.Exp(-speed * (float)delta);
 		_camera.Fov = Mathf.Lerp(_camera.Fov, targetFov, weight);
 	}
 }

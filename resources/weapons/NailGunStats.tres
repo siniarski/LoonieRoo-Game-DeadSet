@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Nail Gun"
+Automatic = true
+FireRate = 7.0
+Damage = 25.0
+SpreadDegrees = 0.6
+MagazineSize = 24
+StartingReserve = 120
+MaxReserve = 240
+ReloadTime = 1.4
+ProjectileSpeed = 160.0
+MaxRange = 150.0
+AdsFov = 60.0
+AdsTime = 0.15
+AdsSpreadDegrees = 0.1
+AdsRecoilMultiplier = 0.6
+RecoilPitchDegrees = 1.4
+RecoilYawJitterDegrees = 0.5
+ModelKickDistance = 0.05
+ModelKickDegrees = 6.0

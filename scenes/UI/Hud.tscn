@@ -1,0 +1,97 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/UI/Hud.cs" id="1_hud"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Crosshair" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+mouse_filter = 2
+
+[node name="Top" type="ColorRect" parent="Crosshair"]
+layout_mode = 0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
+
+[node name="Bottom" type="ColorRect" parent="Crosshair"]
+layout_mode = 0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
+
+[node name="Left" type="ColorRect" parent="Crosshair"]
+layout_mode = 0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
+
+[node name="Right" type="ColorRect" parent="Crosshair"]
+layout_mode = 0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.9)
+
+[node name="Hitmarker" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+mouse_filter = 2
+
+[node name="Line0" type="ColorRect" parent="Hitmarker"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Line1" type="ColorRect" parent="Hitmarker"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Line2" type="ColorRect" parent="Hitmarker"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Line3" type="ColorRect" parent="Hitmarker"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Ammo" type="Label" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -100.0
+offset_right = -40.0
+offset_bottom = -36.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 44
+text = "24 / 120"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Reload" type="Label" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 40.0
+offset_right = 200.0
+offset_bottom = 72.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "RELOADING"
+horizontal_alignment = 1

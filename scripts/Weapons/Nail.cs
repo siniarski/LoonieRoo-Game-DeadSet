@@ -1,0 +1,139 @@
+using Deadset.Combat;
+using Deadset.Effects;
+using Godot;
+using Godot.Collections;
+
+namespace Deadset.Weapons;
+
+/// <summary>
+/// A fast, visible projectile. Hit-tests its whole path every physics step so it can't
+/// tunnel through thin targets. Damages anything with a HealthComponent, otherwise
+/// sticks into the surface for a few seconds.
+/// </summary>
+public partial class Nail : Node3D
+{
+	public struct LaunchParams
+	{
+		/// <summary>Where hit-testing starts (the camera), so close-range shots land where you aim.</summary>
+		public Vector3 Origin;
+		public Vector3 Direction;
+		public float Speed;
+		public float Damage;
+		public float MaxRange;
+		/// <summary>Where the nail is drawn from (the muzzle). It converges onto the true path.</summary>
+		public Vector3 VisualStart;
+		public Weapon Source;
+		public Rid Exclude;
+	}
+
+	[Export] public float StuckLifetime { get; set; } = 4f;
+	/// <summary>Seconds for the drawn nail to slide from the muzzle onto the aim line.</summary>
+	[Export] public float VisualConvergeTime { get; set; } = 0.06f;
+	/// <summary>How deep a stuck nail sits in the surface, in metres.</summary>
+	[Export] public float EmbedDepth { get; set; } = 0.1f;
+	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 1;
+	[Export] public Color WallSparkColor { get; set; } = new(1f, 0.7f, 0.3f);
+	[Export] public Color FleshSparkColor { get; set; } = new(1f, 1f, 0.85f);
+
+	private Node3D _mesh;
+	private Vector3 _velocity;
+	private Vector3 _direction;
+	private float _damage;
+	private float _remainingRange;
+	private Weapon _source;
+	private Array<Rid> _exclude;
+	private Vector3 _visualOffset;
+	private float _age;
+	private bool _stuck;
+	private float _stuckTimer;
+
+	public override void _Ready()
+	{
+		_mesh = GetNode<Node3D>("Mesh");
+	}
+
+	public void Launch(LaunchParams p)
+	{
+		_direction = p.Direction.Normalized();
+		_velocity = _direction * p.Speed;
+		_damage = p.Damage;
+		_remainingRange = p.MaxRange;
+		_source = p.Source;
+		_exclude = new Array<Rid>();
+		if (p.Exclude.IsValid)
+			_exclude.Add(p.Exclude);
+
+		GlobalPosition = p.Origin;
+		Vector3 up = Mathf.Abs(_direction.Y) > 0.99f ? Vector3.Right : Vector3.Up;
+		LookAt(p.Origin + _direction, up);
+
+		_visualOffset = p.VisualStart - p.Origin;
+		_mesh.GlobalPosition = p.VisualStart;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		float dt = (float)delta;
+
+		if (_stuck)
+		{
+			_stuckTimer -= dt;
+			if (_stuckTimer <= 0f)
+				QueueFree();
+			return;
+		}
+
+		Vector3 from = GlobalPosition;
+		Vector3 step = _velocity * dt;
+		_remainingRange -= step.Length();
+
+		var query = PhysicsRayQueryParameters3D.Create(from, from + step, CollisionMask, _exclude);
+		Dictionary hit = GetWorld3D().DirectSpaceState.IntersectRay(query);
+
+		if (hit.Count > 0)
+		{
+			OnImpact((Vector3)hit["position"], (Vector3)hit["normal"], hit["collider"].As<Node>());
+			return;
+		}
+
+		GlobalPosition = from + step;
+		UpdateVisualOffset(dt);
+
+		if (_remainingRange <= 0f)
+			QueueFree();
+	}
+
+	private void UpdateVisualOffset(float dt)
+	{
+		_age += dt;
+		float remaining = 1f - Mathf.Clamp(_age / VisualConvergeTime, 0f, 1f);
+		_mesh.GlobalPosition = GlobalPosition + _visualOffset * remaining;
+	}
+
+	private void OnImpact(Vector3 point, Vector3 normal, Node collider)
+	{
+		Node effectsParent = GetParent();
+		HealthComponent health = HealthComponent.FindOn(collider);
+
+		if (health != null)
+		{
+			if (!health.IsDead)
+			{
+				bool killed = health.ApplyDamage(_damage);
+				if (IsInstanceValid(_source))
+					_source.ReportHit(killed);
+			}
+			ImpactEffects.SpawnSparks(effectsParent, point, normal, FleshSparkColor, 12);
+			QueueFree();
+			return;
+		}
+
+		// Hit the world: stick in, leaving the back half of the nail poking out.
+		_stuck = true;
+		_stuckTimer = StuckLifetime;
+		GlobalPosition = point + _direction * EmbedDepth;
+		_mesh.Position = Vector3.Zero;
+		ImpactEffects.SpawnSparks(effectsParent, point, normal, WallSparkColor, 8);
+		PlaceholderSfx.PlayAt(effectsParent, PlaceholderSfx.NailImpact, point, -10f);
+	}
+}

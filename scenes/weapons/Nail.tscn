@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/Nail.cs" id="1_nail"]
+
+[sub_resource type="StandardMaterial3D" id="NailMat"]
+albedo_color = Color(0.85, 0.82, 0.75, 1)
+metallic = 0.8
+roughness = 0.35
+emission_enabled = true
+emission = Color(1, 0.75, 0.45, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="NailMesh"]
+material = SubResource("NailMat")
+size = Vector3(0.02, 0.02, 0.28)
+
+[node name="Nail" type="Node3D"]
+script = ExtResource("1_nail")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("NailMesh")

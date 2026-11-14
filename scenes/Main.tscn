@@ -1,11 +1,26 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/Arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/UI/Hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://scenes/debug/TargetDummy.tscn" id="4_dummy"]
 
 [node name="Main" type="Node3D"]
 
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector3(0, 0.1, 8)
+position = Vector3(-3, 0.1, 10)
+
+[node name="Hud" parent="." instance=ExtResource("3_hud")]
+
+[node name="TestTargets" type="Node3D" parent="."]
+
+[node name="DummyClose" parent="TestTargets" instance=ExtResource("4_dummy")]
+position = Vector3(-4.5, 0, 3)
+
+[node name="DummyMid" parent="TestTargets" instance=ExtResource("4_dummy")]
+position = Vector3(0, 0, -6)
+
+[node name="DummyFar" parent="TestTargets" instance=ExtResource("4_dummy")]
+position = Vector3(3.5, 0, -16)

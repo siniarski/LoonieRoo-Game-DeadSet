@@ -1,6 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/Player/PlayerController.cs" id="1_ctrl"]
+[ext_resource type="Script" path="res://scripts/Player/CameraRecoil.cs" id="2_recoil"]
+[ext_resource type="Script" path="res://scripts/Player/PlayerWeaponInput.cs" id="3_weaponinput"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/NailGun.tscn" id="4_nailgun"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -20,3 +23,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 current = true
 fov = 80.0
 near = 0.05
+script = ExtResource("2_recoil")
+
+[node name="NailGun" parent="Head/Camera3D" instance=ExtResource("4_nailgun")]
+
+[node name="WeaponInput" type="Node" parent="."]
+script = ExtResource("3_weaponinput")
