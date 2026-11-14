@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a1c18"/>
+      <stop offset="0.7" stop-color="#e0864a"/>
+    </linearGradient>
+  </defs>
+  <!-- Dusk sky over red dirt -->
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="url(#sky)"/>
+  <circle cx="64" cy="84" r="32" fill="#ffc861"/>
+  <path d="M4 86 H124 V102 A22 22 0 0 1 102 124 H26 A22 22 0 0 1 4 102 Z" fill="#9c3a1c"/>
+  <!-- Glowing eyes in the dark (Glow Bunnies) -->
+  <circle cx="86" cy="30" r="5" fill="#7dff6b"/>
+  <circle cx="100" cy="30" r="5" fill="#7dff6b"/>
+  <!-- The nail -->
+  <g transform="rotate(35 64 64)" stroke="#161616" stroke-width="4" stroke-linejoin="round">
+    <rect x="16" y="50" width="12" height="28" rx="3" fill="#c9ced4"/>
+    <rect x="28" y="58" width="62" height="12" fill="#e4e8ec"/>
+    <path d="M90 58 L112 64 L90 70 Z" fill="#e4e8ec"/>
+  </g>
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="none" stroke="#161616" stroke-width="5"/>
+</svg>
