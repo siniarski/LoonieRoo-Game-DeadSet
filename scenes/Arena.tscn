@@ -1,0 +1,207 @@
+[gd_scene load_steps=14 format=3]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.42, 0.3, 0.26, 1)
+sky_horizon_color = Color(0.86, 0.58, 0.38, 1)
+ground_bottom_color = Color(0.25, 0.17, 0.12, 1)
+ground_horizon_color = Color(0.86, 0.58, 0.38, 1)
+sun_angle_max = 20.0
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.8, 0.55, 0.38, 1)
+fog_density = 0.006
+
+[sub_resource type="FastNoiseLite" id="DirtNoise"]
+frequency = 0.035
+
+[sub_resource type="Gradient" id="DirtRamp"]
+colors = PackedColorArray(0.7, 0.7, 0.7, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="DirtTex"]
+width = 256
+height = 256
+seamless = true
+color_ramp = SubResource("DirtRamp")
+noise = SubResource("DirtNoise")
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.62, 0.34, 0.2, 1)
+albedo_texture = SubResource("DirtTex")
+roughness = 1.0
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.46, 0.48, 0.5, 1)
+albedo_texture = SubResource("DirtTex")
+roughness = 0.8
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="TimberMat"]
+albedo_color = Color(0.66, 0.48, 0.27, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="ContainerRustMat"]
+albedo_color = Color(0.6, 0.22, 0.14, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="ContainerTealMat"]
+albedo_color = Color(0.22, 0.45, 0.45, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="ConcreteMat"]
+albedo_color = Color(0.68, 0.66, 0.6, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="TankMat"]
+albedo_color = Color(0.35, 0.45, 0.28, 1)
+metallic = 0.3
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="SpawnPadMat"]
+albedo_color = Color(0.9, 0.15, 0.1, 1)
+emission_enabled = true
+emission = Color(0.9, 0.15, 0.1, 1)
+emission_energy_multiplier = 0.6
+
+[node name="Arena" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, 0.6, 0)
+light_color = Color(1, 0.88, 0.72, 1)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Geometry"]
+position = Vector3(0, -0.5, 0)
+use_collision = true
+size = Vector3(42, 1, 42)
+material = SubResource("FloorMat")
+
+[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
+position = Vector3(0, 2, -20.5)
+use_collision = true
+size = Vector3(42, 4, 1)
+material = SubResource("WallMat")
+
+[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+position = Vector3(0, 2, 20.5)
+use_collision = true
+size = Vector3(42, 4, 1)
+material = SubResource("WallMat")
+
+[node name="WallWest" type="CSGBox3D" parent="Geometry"]
+position = Vector3(-20.5, 2, 0)
+use_collision = true
+size = Vector3(1, 4, 40)
+material = SubResource("WallMat")
+
+[node name="WallEast" type="CSGBox3D" parent="Geometry"]
+position = Vector3(20.5, 2, 0)
+use_collision = true
+size = Vector3(1, 4, 40)
+material = SubResource("WallMat")
+
+[node name="Cover" type="Node3D" parent="."]
+
+[node name="ShippingContainerRust" type="CSGBox3D" parent="Cover"]
+position = Vector3(-11, 1.3, 9)
+use_collision = true
+size = Vector3(6, 2.6, 2.4)
+material = SubResource("ContainerRustMat")
+
+[node name="ShippingContainerTeal" type="CSGBox3D" parent="Cover"]
+position = Vector3(13, 1.3, -10)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerTealMat")
+
+[node name="CrateLow" type="CSGBox3D" parent="Cover"]
+position = Vector3(-5, 0.5, -4)
+use_collision = true
+size = Vector3(2, 1, 2)
+material = SubResource("TimberMat")
+
+[node name="CrateTall" type="CSGBox3D" parent="Cover"]
+position = Vector3(-7, 1, -4)
+use_collision = true
+size = Vector3(2, 2, 2)
+material = SubResource("TimberMat")
+
+[node name="BesserBlockWall" type="CSGBox3D" parent="Cover"]
+position = Vector3(4, 0.65, 5)
+use_collision = true
+size = Vector3(8, 1.3, 0.8)
+material = SubResource("ConcreteMat")
+
+[node name="PalletStack" type="CSGBox3D" parent="Cover"]
+position = Vector3(2, 0.3, -12)
+rotation = Vector3(0, 0.4, 0)
+use_collision = true
+size = Vector3(1.6, 0.6, 1.6)
+material = SubResource("TimberMat")
+
+[node name="WreckedUte" type="CSGBox3D" parent="Cover"]
+position = Vector3(-13, 0.7, -12)
+rotation = Vector3(0, 0.55, 0)
+use_collision = true
+size = Vector3(4.2, 1.4, 2)
+material = SubResource("ConcreteMat")
+
+[node name="WaterTank" type="CSGCylinder3D" parent="Cover"]
+position = Vector3(10, 1.5, 10)
+use_collision = true
+radius = 1.5
+height = 3.0
+sides = 16
+material = SubResource("TankMat")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="SpawnNorth" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(0, 0, -18.5)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnNorth"]
+position = Vector3(0, 0.02, 0)
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="SpawnSouth" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(0, 0, 18.5)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
+position = Vector3(0, 0.02, 0)
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="SpawnWest" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(-18.5, 0, 0)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
+position = Vector3(0, 0.02, 0)
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="SpawnEast" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(18.5, 0, 0)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnEast"]
+position = Vector3(0, 0.02, 0)
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
