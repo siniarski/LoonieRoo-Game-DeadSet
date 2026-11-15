@@ -230,6 +230,8 @@ public partial class SimPlayer : Node
 				Shop();
 		}
 
+		CheckStall(dt);
+
 		Vector3 me = _player.GlobalPosition;
 		_nearby.Clear();
 		Node3D nearest = null;
@@ -261,6 +263,8 @@ public partial class SimPlayer : Node
 	}
 
 	private readonly List<Vector3> _nearby = new();
+	private float _sinceKill;
+	private int _lastKills;
 	private Vector3 _lastMove;
 	private float _moveTimer;
 
@@ -305,6 +309,31 @@ public partial class SimPlayer : Node
 			_lastMove = best;
 		}
 		ApplyMove(_lastMove);
+	}
+
+	/// <summary>
+	/// A wave that can't end is a game-breaking bug: if nothing has died for 45 s mid-wave,
+	/// print where every live enemy is and quit.
+	/// </summary>
+	private void CheckStall(float dt)
+	{
+		var director = GetTree().GetFirstNodeInGroup("wave_director") as Waves.WaveDirector;
+		int kills = _stats?.Kills ?? 0;
+		if (director == null || director.CurrentPhase != Waves.WaveDirector.Phase.Wave || kills != _lastKills)
+		{
+			_sinceKill = 0f;
+			_lastKills = kills;
+			return;
+		}
+		_sinceKill += dt;
+		if (_sinceKill < 45f)
+			return;
+		var where = new StringBuilder();
+		foreach (Node node in GetTree().GetNodesInGroup("enemies"))
+			if (node is Enemy enemy)
+				where.Append($"{enemy.Name}@({enemy.GlobalPosition.X:0.0},{enemy.GlobalPosition.Y:0.0},{enemy.GlobalPosition.Z:0.0}) ");
+		GD.Print($"SIM STALL wave {_wave}: no kills for 45 s, {director.EnemiesRemaining} remaining; player at {_player.GlobalPosition}; alive: {where}");
+		Finish("stalled");
 	}
 
 	/// <summary>The first bot's movement: back straight away from the crowd.</summary>
