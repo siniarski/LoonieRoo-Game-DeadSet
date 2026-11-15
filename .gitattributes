@@ -1,2 +1,1 @@
-# Normalize line endings for all text files (matches Godot's default)
-* text=auto eol=lf
+*.cmd text eol=crlf

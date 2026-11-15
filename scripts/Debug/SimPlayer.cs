@@ -28,6 +28,8 @@ public partial class SimPlayer : Node
 {
 	public string Loadout { get; set; } = "nail";
 	public int MaxWaves { get; set; } = 10;
+	/// <summary>False = the first, simpler bot (backs away, fires the rivet gun at anything).</summary>
+	public bool Smart { get; set; } = true;
 
 	[Export] public float AimError { get; set; } = 0.22f;
 	[Export] public float ReactionTime { get; set; } = 0.35f;
@@ -77,7 +79,7 @@ public partial class SimPlayer : Node
 		_arsenal.WeaponAdded += BindShots;
 		foreach (Weapon weapon in _arsenal.Weapons)
 			BindShots(weapon);
-		GD.Print($"SIM start loadout={Loadout} aimError={AimError} reaction={ReactionTime}");
+		GD.Print($"SIM start loadout={Loadout} {(Smart ? "smart" : "simple")} aimError={AimError} reaction={ReactionTime}");
 	}
 
 	public override void _ExitTree()
@@ -229,15 +231,15 @@ public partial class SimPlayer : Node
 		}
 
 		Vector3 me = _player.GlobalPosition;
+		_nearby.Clear();
 		Node3D nearest = null;
 		float nearestDistance = float.MaxValue;
 		int close = 0;
-		Vector3 push = Vector3.Zero;
 		foreach (Node node in GetTree().GetNodesInGroup("enemies"))
 		{
 			if (node is not Node3D enemy || enemy.IsQueuedForDeletion())
 				continue;
-			Vector3 offset = me - enemy.GlobalPosition;
+			Vector3 offset = enemy.GlobalPosition - me;
 			offset.Y = 0f;
 			float distance = offset.Length();
 			if (distance < nearestDistance)
@@ -247,26 +249,81 @@ public partial class SimPlayer : Node
 			}
 			if (distance < 3f)
 				close++;
-			if (distance < ThreatRadius && distance > 0.01f)
-				push += offset / (distance * distance);
+			if (distance < ThreatRadius)
+				_nearby.Add(enemy.GlobalPosition);
 		}
 
-		Move(me, push);
+		if (Smart)
+			MoveSmart(me, dt);
+		else
+			MoveSimple(me);
 		Fight(nearest, nearestDistance, close, dt);
 	}
 
-	/// <summary>Backs away from the crowd, steering round anything that isn't open ground.</summary>
-	private void Move(Vector3 me, Vector3 push)
+	private readonly List<Vector3> _nearby = new();
+	private Vector3 _lastMove;
+	private float _moveTimer;
+
+	/// <summary>
+	/// Picks, a few times a second, the open direction that keeps the most room from the crowd,
+	/// prefers carrying on the way it was going (so it circles rather than dithering), and stays
+	/// off the walls. Roughly how a player kites a flock round the yard.
+	/// </summary>
+	private void MoveSmart(Vector3 me, float dt)
 	{
+		_moveTimer -= dt;
+		if (_moveTimer <= 0f)
+		{
+			_moveTimer = 0.2f;
+			Vector3 best = Vector3.Zero;
+			float bestScore = float.MinValue;
+			for (int i = 0; i < 16; i++)
+			{
+				Vector3 dir = Vector3.Forward.Rotated(Vector3.Up, i * Mathf.Tau / 16f);
+				if (!NavGrid.IsOpenGround(me + dir * 1.2f) || !NavGrid.IsOpenGround(me + dir * 2.5f))
+					continue;
+				Vector3 probe = me + dir * 3f;
+				float room = 12f;
+				foreach (Vector3 enemy in _nearby)
+					room = Mathf.Min(room, new Vector2(enemy.X - probe.X, enemy.Z - probe.Z).Length());
+				float open = 0f;
+				for (int k = 1; k <= 4; k++)
+					if (NavGrid.IsOpenGround(me + dir * (2.5f + k * 1.5f)))
+						open += 0.5f;
+				float centre = -new Vector2(probe.X, probe.Z).Length() * 0.08f;
+				float carry = dir.Dot(_lastMove) * 1.5f;
+				float score = room * 1.4f + open + centre + carry;
+				if (score > bestScore)
+				{
+					bestScore = score;
+					best = dir;
+				}
+			}
+			// Nobody close: hold still and shoot (moving costs accuracy for a person too).
+			if (_nearby.Count == 0)
+				best = Vector3.Zero;
+			_lastMove = best;
+		}
+		ApplyMove(_lastMove);
+	}
+
+	/// <summary>The first bot's movement: back straight away from the crowd.</summary>
+	private void MoveSimple(Vector3 me)
+	{
+		Vector3 push = Vector3.Zero;
+		foreach (Vector3 enemy in _nearby)
+		{
+			Vector3 offset = me - enemy;
+			offset.Y = 0f;
+			float d = Mathf.Max(offset.Length(), 0.01f);
+			push += offset / (d * d);
+		}
 		Vector3 wish = push.LengthSquared() > 0.0001f ? push.Normalized() : Vector3.Zero;
-		// Drift back towards the middle when near the walls, so it doesn't get pinned.
 		Vector3 toCentre = new Vector3(-me.X, 0f, -me.Z);
 		if (toCentre.Length() > 20f)
 			wish = (wish + toCentre.Normalized() * 0.6f).Normalized();
-
 		if (wish != Vector3.Zero && !NavGrid.IsOpenGround(me + wish * 2f))
 		{
-			// Try the nearest open direction instead.
 			Vector3 best = Vector3.Zero;
 			float bestDot = -2f;
 			for (int i = 0; i < 16; i++)
@@ -283,13 +340,15 @@ public partial class SimPlayer : Node
 			}
 			wish = best;
 		}
+		ApplyMove(wish);
+	}
 
+	private void ApplyMove(Vector3 wish)
+	{
 		// World direction -> the player's local move input.
 		Basis basis = _player.GlobalBasis;
-		float right = wish.Dot(basis.X);
-		float back = wish.Dot(basis.Z);
-		SetAxis("move_right", "move_left", right);
-		SetAxis("move_back", "move_forward", back);
+		SetAxis("move_right", "move_left", wish.Dot(basis.X));
+		SetAxis("move_back", "move_forward", wish.Dot(basis.Z));
 		Input.ActionRelease("sprint");
 	}
 
@@ -312,23 +371,36 @@ public partial class SimPlayer : Node
 		}
 	}
 
+	/// <summary>True for the big ones a rivet is worth spending on.</summary>
+	private static bool IsHeavy(Node3D enemy) =>
+		enemy is Enemy { Stats: not null } e && e.Stats.MaxHealth >= 150f;
+
+	/// <summary>How many other enemies sit close to the line from the camera through this one.</summary>
+	private int LinedUpBehind(Node3D target)
+	{
+		Vector3 from = _camera.GlobalPosition;
+		Vector3 dir = target.GlobalPosition - from;
+		dir.Y = 0f;
+		float length = dir.Length();
+		if (length < 0.1f)
+			return 0;
+		dir /= length;
+		int count = 0;
+		foreach (Node node in GetTree().GetNodesInGroup("enemies"))
+		{
+			if (node is not Node3D other || other == target || other.IsQueuedForDeletion())
+				continue;
+			Vector3 o = other.GlobalPosition - from;
+			o.Y = 0f;
+			float along = o.Dot(dir);
+			if (along > length && along < length + 12f && (o - dir * along).Length() < 0.7f)
+				count++;
+		}
+		return count;
+	}
+
 	private void Fight(Node3D nearest, float distance, int close, float dt)
 	{
-		// Weapon choice: brushcutter when crowded, rivet gun when it has rivets, else nails.
-		Weapon want = null;
-		foreach (Weapon weapon in _arsenal.Weapons)
-		{
-			bool melee = weapon is MeleeConeWeapon;
-			if (melee && close >= 2 && weapon.AmmoInMagazine + weapon.ReserveAmmo > 0)
-				want = weapon;
-			else if (!melee && want == null && weapon.Stats.DisplayName.Contains("Rivet") && weapon.AmmoInMagazine + weapon.ReserveAmmo > 0)
-				want = weapon;
-		}
-		want ??= _arsenal.Weapons[0];
-		if (_arsenal.EquippedWeapon != want)
-			_arsenal.Equip(want);
-		Weapon gun = _arsenal.EquippedWeapon;
-
 		_retargetTimer -= dt;
 		if (_retargetTimer <= 0f || !IsInstanceValid(_target) || _target.IsQueuedForDeletion())
 		{
@@ -336,9 +408,38 @@ public partial class SimPlayer : Node
 			_target = nearest;
 			_aimOffset = new Vector3((float)GD.RandRange(-1, 1), (float)GD.RandRange(-1, 1), (float)GD.RandRange(-1, 1)) * AimError;
 		}
+
+		// Weapon choice.
+		Weapon want = _arsenal.Weapons[0];
+		foreach (Weapon weapon in _arsenal.Weapons)
+		{
+			bool hasAmmo = weapon.AmmoInMagazine + weapon.ReserveAmmo > 0;
+			if (!hasAmmo)
+				continue;
+			if (weapon is MeleeConeWeapon)
+			{
+				if (close >= 2)
+				{
+					want = weapon;
+					break;
+				}
+			}
+			else if (weapon != _arsenal.Weapons[0] && IsInstanceValid(_target)
+				&& (!Smart || IsHeavy(_target) || LinedUpBehind(_target) >= 2))
+			{
+				want = weapon;
+			}
+		}
+		if (_arsenal.EquippedWeapon != want)
+			_arsenal.Equip(want);
+		Weapon gun = _arsenal.EquippedWeapon;
+
 		if (!IsInstanceValid(_target) || distance > 40f)
 		{
 			gun.SetTriggerHeld(false);
+			// A lull: top up the magazine.
+			if (Smart && gun.Stats.UsesAmmo && gun.AmmoInMagazine < gun.MagazineSize / 2)
+				gun.RequestReload();
 			return;
 		}
 
@@ -350,6 +451,8 @@ public partial class SimPlayer : Node
 		bool inReach = gun is not MeleeConeWeapon || distance < gun.Stats.MaxRange * gun.ReachMultiplier + 0.5f;
 		gun.SetTriggerHeld(inReach);
 		if (gun.Stats.UsesAmmo && gun.AmmoInMagazine == 0)
+			gun.RequestReload();
+		else if (Smart && gun.Stats.UsesAmmo && distance > 9f && gun.AmmoInMagazine < gun.MagazineSize / 4)
 			gun.RequestReload();
 	}
 }

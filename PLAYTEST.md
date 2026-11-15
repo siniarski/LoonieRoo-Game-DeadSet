@@ -28,6 +28,12 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 
 ## Unplayed
 
+### Drop Bear climbers (2026-11-16) — test-only, not in waves
+- What changed: Drop Bears ignore paths and come straight at you, climbing up and over containers, the shed and walls; from the top they crouch and growl (0.45 s), then pounce on you for 15 damage, then sit dazed for 0.9 s.
+- Fun bet: cover stops being a wall at your back; you have to watch the rooftops too.
+- Try it: `play.cmd --nowaves --at=shed --spawn=dropbear:2` (add `--god` to just watch)
+- Judge: is the crouch-and-growl enough warning to turn and shoot it mid-air? Should it join the waves as a rare special?
+
 ### Brushcutter trimmer line (2026-11-16)
 - What changed: the brushcutter now runs on line: 36 per load, each enemy hit uses 1 (whiffs are free), reload is a 0.9 s bump feed. Also costs $300, 16 damage, 3 enemies per swing (was $150, 22, 4). New mods: Tough Line (chance a hit uses no line) and Razor Wire (+12% damage).
 - Fun bet: still the panic button at arm's reach, but you can't just hold it down all wave; feeding line mid-crowd is a tense moment.
