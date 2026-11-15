@@ -5,8 +5,8 @@ using Godot.Collections;
 namespace Deadset.ArtPreviews;
 
 /// <summary>
-/// The real game with switchable art directions: 1-7 pick a direction, 0 returns to the current look.
-/// Minus and equals step the dusk shift of a style that has one (E3).
+/// The real game with switchable art directions: 1-9 pick a direction, 0 returns to the current look.
+/// Minus and equals step the dusk shift of a style that has one (E3, F1, F2).
 /// Nothing in the game scenes is changed; StyleApplier restyles the running tree.
 /// F2 / F3 / F4 spawn an emu pack, a wombat and kangaroos, to look at them without waiting for a wave.
 /// Optional test run: godot --path . res://art_previews/StylePreview.tscn -- style=2 shot=C:/out.png delay=10
@@ -87,6 +87,8 @@ public partial class StylePreview : Node
 			case Key.Key5: Select(5); break;
 			case Key.Key6: Select(6); break;
 			case Key.Key7: Select(7); break;
+			case Key.Key8: Select(8); break;
+			case Key.Key9: Select(9); break;
 			case Key.Minus: _dusk = Mathf.Max(_dusk - 0.1f, 0f); Select(_selected); break;
 			case Key.Equal: _dusk = Mathf.Min(_dusk + 0.1f, 1f); Select(_selected); break;
 			case Key.F2: _spawner.SpawnPack(0); break;    // emus
@@ -106,7 +108,7 @@ public partial class StylePreview : Node
 		string name = style == null ? "0  Current look" : style.DisplayName;
 		if (style?.DuskTarget != null)
 			name += $"   dusk {_dusk:0.0}  [-] [=]";
-		_label.Text = $"{name}\n[1-7] art directions   [0] current look   [F2/F3/F4] spawn emus / wombat / kangaroos";
+		_label.Text = $"{name}\n[1-9] art directions   [0] current look   [F2/F3/F4] spawn emus / wombat / kangaroos";
 	}
 
 	/// <summary>Lets the game run for a while, saves one screenshot and quits. Leaves the mouse alone.</summary>

@@ -9,13 +9,13 @@ namespace Deadset.ArtPreviews;
 /// <summary>
 /// Screenshot tool for the art directions: poses the same shots in every style, saves a PNG of
 /// each, measures frame time and builds side-by-side comparison sheets.
-/// Run: godot --path . res://art_previews/StyleCapture.tscn -- out=C:/some/folder [styles=0,A,C,E1,E3_05] [shots=1,2,3,4] [perf] [sheets] [hybridsheets]
+/// Run: godot --path . res://art_previews/StyleCapture.tscn -- out=C:/some/folder [styles=0,A,C,E1,E3_05] [shots=1,2,3,4] [perf] [perf=name] [sheets] [hybridsheets] [postersheets]
 /// </summary>
 public partial class StyleCapture : Node
 {
-	private static readonly string[] StyleKeys = { "0", "A", "B", "C", "D", "E1", "E2", "E3_0", "E3_05", "E3_1" };
+	private static readonly string[] StyleKeys = { "0", "A", "B", "C", "D", "E1", "E2", "E3_0", "E3_05", "E3_1", "F1_0", "F1_05", "F1_1", "F2_0", "F2_05", "F2_1" };
 	/// <summary>StyleApplier.Dusk for each entry (only E3 reacts to it).</summary>
-	private static readonly float[] StyleDusk = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0.5f, 1f };
+	private static readonly float[] StyleDusk = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0.5f, 1f, 0f, 0.5f, 1f, 0f, 0.5f, 1f };
 	private static readonly string[] StyleFiles =
 	{
 		null,
@@ -28,11 +28,19 @@ public partial class StyleCapture : Node
 		"res://art_previews/styles/E3_DuskShift.tres",
 		"res://art_previews/styles/E3_DuskShift.tres",
 		"res://art_previews/styles/E3_DuskShift.tres",
+		"res://art_previews/styles/F1_CleanPosterDusk.tres",
+		"res://art_previews/styles/F1_CleanPosterDusk.tres",
+		"res://art_previews/styles/F1_CleanPosterDusk.tres",
+		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
+		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
+		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
 	};
 	private static readonly string[] StyleLabels =
 	{
 		"Current look (baseline)", "A  Classic toon", "B  Inked comic", "C  Neon-mutant dusk", "D  Flat outback poster",
 		"E1  Poster + neon threat", "E2  Neon poster dusk", "E3  Dusk shift at 0", "E3  Dusk shift at 0.5", "E3  Dusk shift at 1",
+		"F1  Clean poster dusk at 0", "F1  Clean poster dusk at 0.5", "F1  Clean poster dusk at 1",
+		"F2  Poster dusk + soft sky rim at 0", "F2  Poster dusk + soft sky rim at 0.5", "F2  Poster dusk + soft sky rim at 1",
 	};
 	private static readonly string[] ShotNames = { "", "1_arena", "2_flock", "3_lineup", "4_windup_sparks" };
 
@@ -46,6 +54,8 @@ public partial class StyleCapture : Node
 	{
 		var styles = new List<string> { "0", "A", "B", "C", "D" };
 		bool hybridSheets = false;
+		bool posterSheets = false;
+		string perfName = "perf";
 		var shots = new List<int> { 1, 2, 3, 4 };
 		bool perf = false;
 		bool sheets = false;
@@ -68,6 +78,13 @@ public partial class StyleCapture : Node
 				sheets = true;
 			else if (arg == "hybridsheets")
 				hybridSheets = true;
+			else if (arg == "postersheets")
+				posterSheets = true;
+			else if (arg.StartsWith("perf="))
+			{
+				perf = true;
+				perfName = arg[5..];
+			}
 		}
 		DirAccess.MakeDirRecursiveAbsolute(_out);
 
@@ -120,7 +137,7 @@ public partial class StyleCapture : Node
 
 		if (perfLines.Count > 0)
 		{
-			using var file = FileAccess.Open($"{_out}/perf.txt", FileAccess.ModeFlags.Write);
+			using var file = FileAccess.Open($"{_out}/{perfName}.txt", FileAccess.ModeFlags.Write);
 			foreach (string line in perfLines)
 			{
 				file.StoreLine(line);
@@ -136,6 +153,13 @@ public partial class StyleCapture : Node
 			for (int shot = 1; shot <= 3; shot++)
 				await BuildSheet($"sheet_hybrids_{ShotNames[shot]}", shot, new[] { "C", "D", "E1", "E2", "E3_05" }, 3);
 			await BuildSheet("sheet_E3_progression_2_flock", 2, new[] { "E3_0", "E3_05", "E3_1" }, 3);
+		}
+		if (posterSheets)
+		{
+			await BuildSheet("sheet_F_2_flock", 2, new[] { "D", "E2", "F1_05", "F2_05" }, 2);
+			await BuildSheet("sheet_F_3_lineup", 3, new[] { "D", "E2", "F1_05", "F2_05" }, 2);
+			await BuildSheet("sheet_F1_progression_2_flock", 2, new[] { "F1_0", "F1_05", "F1_1" }, 3);
+			await BuildSheet("sheet_F2_progression_2_flock", 2, new[] { "F2_0", "F2_05", "F2_1" }, 3);
 		}
 
 		GetTree().Quit();

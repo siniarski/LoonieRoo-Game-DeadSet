@@ -41,6 +41,8 @@ public partial class CelStyle : Resource
 	[Export] public bool GlowKeepHue { get; set; } = true;
 	/// <summary>Brightness of unshaded parts (eyes, muzzle flash). Above 1 they bloom.</summary>
 	[Export] public float UnshadedBoost { get; set; } = 1f;
+	/// <summary>Unshaded parts (eyes) swell by this many metres per metre of distance beyond 6 m, to stay visible at range.</summary>
+	[Export] public float UnshadedFarGrow { get; set; }
 	/// <summary>How much of the source noise texture shows on the floor and walls (0-1).</summary>
 	[Export] public float TextureAmount { get; set; } = 1f;
 	/// <summary>Size of the texture pattern: below 1 the blotches get bigger.</summary>
@@ -51,6 +53,8 @@ public partial class CelStyle : Resource
 	/// <summary>Extra brightness multiplier for enemy surfaces (below 1 pushes them towards silhouettes).</summary>
 	[Export] public float EnemyValue { get; set; } = 1f;
 
+	/// <summary>Extra saturation multiplier for enemy surfaces (above 1 keeps them richer than the world behind them).</summary>
+	[Export] public float EnemySaturation { get; set; } = 1f;
 	/// <summary>Self-lighting on enemy surfaces: keeps their shadow side from going muddy up close.</summary>
 	[Export] public float EnemySelfLight { get; set; }
 	/// <summary>Self-lighting on the player's weapon: keeps the nail gun orange in shadow.</summary>
@@ -67,6 +71,8 @@ public partial class CelStyle : Resource
 	[Export] public Color RimColor { get; set; } = Colors.White;
 	[Export] public float RimStrength { get; set; }
 	[Export] public float RimWidth { get; set; } = 0.35f;
+	/// <summary>Inner fade of the rim. Small = a crisp line, large = a soft backlight.</summary>
+	[Export] public float RimSoftness { get; set; } = 0.06f;
 	/// <summary>Rim on world geometry and the weapon too. Off by default: flat faces light up whole at grazing angles.</summary>
 	[Export] public bool RimOnWorld { get; set; }
 	/// <summary>Rim strength on enemies, as a multiple of RimStrength.</summary>

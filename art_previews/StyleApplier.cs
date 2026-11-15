@@ -42,6 +42,7 @@ public partial class StyleApplier : Node
 	}
 
 	private float _dusk;
+	private readonly Dictionary<(ulong, int), CelStyle> _blends = new();
 	private CelStyle _baseStyle;
 
 	private sealed class Saved
@@ -107,13 +108,28 @@ public partial class StyleApplier : Node
 		if (style == null)
 			return;
 		_baseStyle = style;
-		style = style.DuskTarget != null ? CelStyle.Blend(style, style.DuskTarget, _dusk) : style;
+		style = style.DuskTarget != null ? Blended(style) : style;
 		Current = style;
 
 		ApplyWorld(style);
 		ApplyEdges(style);
 		ApplyGrade(style);
 		StyleTree(_root);
+	}
+
+	/// <summary>
+	/// The blend for the current Dusk, in steps of 0.01. Blends are kept for the life of the
+	/// applier: re-visiting a dusk value is free, and no half-used style is ever collected mid-run.
+	/// </summary>
+	private CelStyle Blended(CelStyle style)
+	{
+		var key = (style.GetInstanceId(), Mathf.RoundToInt(_dusk * 100f));
+		if (!_blends.TryGetValue(key, out CelStyle blend))
+		{
+			blend = CelStyle.Blend(style, style.DuskTarget, key.Item2 / 100f);
+			_blends[key] = blend;
+		}
+		return blend;
 	}
 
 	/// <summary>Restores every material, the environment, the sun and the viewport.</summary>
@@ -382,6 +398,8 @@ public partial class StyleApplier : Node
 		toon.SetShaderParameter("rim_strength", rim);
 		toon.SetShaderParameter("self_light", enemy ? s.EnemySelfLight : kind == 2 ? s.WeaponSelfLight : 0f);
 		toon.SetShaderParameter("rim_width", s.RimWidth);
+		toon.SetShaderParameter("rim_softness", s.RimSoftness);
+		toon.SetShaderParameter("far_grow", s.UnshadedFarGrow);
 		toon.SetShaderParameter("shadow_pattern", s.ShadowPattern);
 		toon.SetShaderParameter("pattern_scale", s.PatternScale);
 		toon.SetShaderParameter("pattern_strength", s.PatternStrength);
@@ -431,7 +449,7 @@ public partial class StyleApplier : Node
 	private Color Grade(Color color, bool enemy)
 	{
 		color.ToHsv(out float h, out float sat, out float v);
-		sat = Mathf.Clamp(sat * Current.Saturation, 0f, 1f);
+		sat = Mathf.Clamp(sat * Current.Saturation * (enemy ? Current.EnemySaturation : 1f), 0f, 1f);
 		v = Mathf.Max(v * Current.Value, Mathf.Min(Current.MinValue, 1f)) * (enemy ? Current.EnemyValue : 1f);
 		return Color.FromHsv(h, sat, Mathf.Min(v, 1f), color.A);
 	}

@@ -14,6 +14,9 @@ uniform float glow_keep_hue = 1.0;
 /// Adds this much of the surface colour as its own light, so the shadow side keeps its hue
 /// (the orange nail gun, enemy bodies) instead of sinking into the ambient colour.
 uniform float self_light = 0.0;
+/// Unshaded parts (the red eyes) swell by this many metres per metre of distance beyond 6 m,
+/// so they stay more than a pixel wide at range without changing up close.
+uniform float far_grow = 0.0;
 /// 1 = the source was unshaded (eyes, muzzle flash): draw the flat colour, ignore lights.
 uniform float unshaded = 0.0;
 uniform sampler2D albedo_tex : source_color, hint_default_white, filter_linear_mipmap, repeat_enable;
@@ -33,6 +36,8 @@ uniform float band_softness = 0.01;
 uniform vec3 rim_color : source_color = vec3(1.0);
 uniform float rim_strength = 0.0;
 uniform float rim_width = 0.35;
+/// Width of the rim's inner fade. Small = a crisp line, large = a soft backlight.
+uniform float rim_softness = 0.06;
 /// 0 none, 1 halftone dots on the terminator, 2 dots plus hatching inside the shadow.
 uniform int shadow_pattern = 0;
 uniform float pattern_scale = 6.0;
@@ -53,6 +58,10 @@ varying vec3 world_pos;
 varying vec3 world_normal;
 
 void vertex() {
+	if (unshaded > 0.5 && far_grow > 0.0) {
+		float dist = length((MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz);
+		VERTEX += NORMAL * far_grow * clamp(dist - 6.0, 0.0, 24.0);
+	}
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 }
@@ -109,7 +118,7 @@ void fragment() {
 
 	// View-space rim, biased to faces that look up or sideways (sky light), not down.
 	float fres = 1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0);
-	float rim = smoothstep(1.0 - rim_width, 1.0 - rim_width + 0.06, fres);
+	float rim = smoothstep(1.0 - rim_width, 1.0 - rim_width + rim_softness, fres);
 	rim *= smoothstep(-0.5, 0.2, world_normal.y) * (1.0 - unshaded);
 	glow += rim_color * rim * rim_strength;
 	EMISSION = glow;

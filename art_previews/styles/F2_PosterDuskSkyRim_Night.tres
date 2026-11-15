@@ -1,0 +1,90 @@
+[gd_resource type="Resource" script_class="CelStyle" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://art_previews/CelStyle.cs" id="1_style"]
+[ext_resource type="Shader" path="res://art_previews/shaders/cel_sky.gdshader" id="2_sky"]
+
+[sub_resource type="ShaderMaterial" id="SkyMat"]
+shader = ExtResource("2_sky")
+shader_parameter/top_color = Color(0.1, 0.06, 0.3, 1)
+shader_parameter/mid_color = Color(0.66, 0.17, 0.5, 1)
+shader_parameter/horizon_color = Color(1, 0.52, 0.22, 1)
+shader_parameter/ground_color = Color(0.2, 0.08, 0.2, 1)
+shader_parameter/gradient_height = 0.9
+shader_parameter/mid_point = 0.4
+shader_parameter/bands = 6.0
+shader_parameter/flat_bands = true
+shader_parameter/sun_color = Color(1, 0.5, 0.28, 1)
+shader_parameter/sun_size = 0.15
+shader_parameter/sun_energy = 1.5
+shader_parameter/sun_rings = 3.0
+shader_parameter/sun_ring_step = 0.06
+shader_parameter/sun_halo = 0.25
+shader_parameter/ridge_height = 0.13
+shader_parameter/ridge_color = Color(0.13, 0.05, 0.22, 1)
+shader_parameter/ridge_far_color = Color(0.36, 0.11, 0.36, 1)
+shader_parameter/stars = 0.9
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+reflected_light_source = 1
+ambient_light_color = Color(0.58, 0.46, 0.9, 1)
+ambient_light_energy = 1.05
+tonemap_mode = 0
+glow_enabled = true
+glow_intensity = 0.7
+glow_bloom = 0.04
+glow_hdr_threshold = 0.95
+
+[resource]
+script = ExtResource("1_style")
+Environment = SubResource("Env")
+DisplayName = "F2  Poster dusk + soft sky rim"
+SunColor = Color(1, 0.74, 0.58, 1)
+SunEnergy = 0.95
+OverrideSunRotation = true
+SunRotationDegrees = Vector3(-11, 208, 0)
+Saturation = 1.1
+Value = 1.1
+MinValue = 0.32
+EmissionBoost = 0.85
+UnshadedBoost = 2.4
+TextureAmount = 0.0
+TextureSteps = 2.0
+EnemyValue = 1.15
+EnemySelfLight = 0.2
+WeaponSelfLight = 0.22
+Bands = 2
+LitThreshold = 0.1
+BandSoftness = 0.004
+RimColor = Color(0.8, 0.7, 1, 1)
+RimStrength = 0.65
+RimWidth = 0.36
+FogMax = 0.55
+FogColor = Color(0.45, 0.2, 0.58, 1)
+FogStart = 13.0
+FogEnd = 50.0
+FogBands = 4.0
+EnemyFogScale = 0.2
+GradeEnabled = true
+GradeSaturation = 1.0
+GradeContrast = 1.05
+ShadowTint = Color(0.42, 0.32, 0.7, 1)
+HighlightTint = Color(0.68, 0.55, 0.42, 1)
+TintAmount = 0.3
+PaperColor = Color(1, 1, 1, 1)
+BlackLift = 0.04
+Grain = 0.04
+Vignette = 0.2
+HullEnabled = false
+HullOnWorld = false
+HullOnWeapon = false
+UseEnemyHullColor = false
+HullGlowFromEmission = false
+RimSoftness = 0.3
+EnemySaturation = 1.1
+UnshadedFarGrow = 0.0016
