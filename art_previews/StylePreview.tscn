@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://art_previews/styles/E2_NeonPosterDusk.tres" id="7_e2"]
 [ext_resource type="Resource" path="res://art_previews/styles/E3_DuskShift.tres" id="8_e3"]
 [ext_resource type="Resource" path="res://art_previews/styles/F1_CleanPosterDusk.tres" id="9_f1"]
-[ext_resource type="Resource" path="res://art_previews/styles/F2_PosterDuskSkyRim.tres" id="10_f2"]
+[ext_resource type="Resource" path="res://resources/styles/PosterDusk.tres" id="10_f2"]
 
 [node name="StylePreview" type="Node"]
 script = ExtResource("1_preview")

@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="CelStyle" load_steps=7 format=3]
 
-[ext_resource type="Script" path="res://art_previews/CelStyle.cs" id="1_style"]
-[ext_resource type="Shader" path="res://art_previews/shaders/cel_sky.gdshader" id="2_sky"]
+[ext_resource type="Script" path="res://scripts/Visuals/CelStyle.cs" id="1_style"]
+[ext_resource type="Shader" path="res://shaders/cel_sky.gdshader" id="2_sky"]
 
-[ext_resource type="Resource" path="res://art_previews/styles/F2_PosterDuskSkyRim_Night.tres" id="3_dusk"]
+[ext_resource type="Resource" path="res://resources/styles/PosterDusk_Night.tres" id="3_dusk"]
 
 [sub_resource type="ShaderMaterial" id="SkyMat"]
 shader = ExtResource("2_sky")

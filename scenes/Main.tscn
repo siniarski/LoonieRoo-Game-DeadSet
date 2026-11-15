@@ -22,6 +22,9 @@
 [ext_resource type="Script" path="res://scripts/UI/GameOverScreen.cs" id="8_gameover"]
 [ext_resource type="Script" path="res://scripts/Economy/Trader.cs" id="9_trader"]
 [ext_resource type="Script" path="res://scripts/UI/TraderMenu.cs" id="10_tradermenu"]
+[ext_resource type="Script" path="res://scripts/Visuals/StyleApplier.cs" id="11_style"]
+[ext_resource type="Resource" path="res://resources/styles/PosterDusk.tres" id="12_posterdusk"]
+[ext_resource type="Script" path="res://scripts/Visuals/DuskByWave.cs" id="13_dusk"]
 
 [node name="Main" type="Node3D"]
 
@@ -53,3 +56,10 @@ script = ExtResource("9_trader")
 
 [node name="TraderMenu" type="CanvasLayer" parent="."]
 script = ExtResource("10_tradermenu")
+
+[node name="StyleApplier" type="Node" parent="."]
+script = ExtResource("11_style")
+InitialStyle = ExtResource("12_posterdusk")
+
+[node name="DuskByWave" type="Node" parent="."]
+script = ExtResource("13_dusk")

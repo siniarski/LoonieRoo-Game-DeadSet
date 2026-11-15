@@ -1,3 +1,4 @@
+using Deadset.Visuals;
 using Deadset.Debug;
 using Godot;
 using Godot.Collections;
@@ -29,6 +30,9 @@ public partial class StylePreview : Node
 		ProcessMode = ProcessModeEnum.Always;
 
 		var main = GD.Load<PackedScene>("res://scenes/Main.tscn").Instantiate<Node3D>();
+		// The game now carries its own style; previews swap styles themselves.
+		main.GetNodeOrNull("StyleApplier")?.Free();
+		main.GetNodeOrNull("DuskByWave")?.Free();
 		_spawner = main.GetNode<TestSpawner>("TestSpawner");
 		_spawner.InitialIndex = -1;
 		AddChild(main);

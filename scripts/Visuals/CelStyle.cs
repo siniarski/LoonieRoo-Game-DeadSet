@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Deadset.ArtPreviews;
+namespace Deadset.Visuals;
 
 /// <summary>
 /// One cel-shaded art direction as data: lighting bands, outlines, ink lines, fog, sky and grade.

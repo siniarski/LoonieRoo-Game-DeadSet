@@ -1,3 +1,4 @@
+using Deadset.Visuals;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Deadset.Effects;
@@ -31,9 +32,9 @@ public partial class StyleCapture : Node
 		"res://art_previews/styles/F1_CleanPosterDusk.tres",
 		"res://art_previews/styles/F1_CleanPosterDusk.tres",
 		"res://art_previews/styles/F1_CleanPosterDusk.tres",
-		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
-		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
-		"res://art_previews/styles/F2_PosterDuskSkyRim.tres",
+		"res://resources/styles/PosterDusk.tres",
+		"res://resources/styles/PosterDusk.tres",
+		"res://resources/styles/PosterDusk.tres",
 	};
 	private static readonly string[] StyleLabels =
 	{
@@ -89,6 +90,9 @@ public partial class StyleCapture : Node
 		DirAccess.MakeDirRecursiveAbsolute(_out);
 
 		_main = GD.Load<PackedScene>("res://scenes/Main.tscn").Instantiate<Node3D>();
+		// The game now carries its own style; the capture swaps styles itself.
+		_main.GetNodeOrNull("StyleApplier")?.Free();
+		_main.GetNodeOrNull("DuskByWave")?.Free();
 		_main.GetNode("TestSpawner").Set("InitialIndex", -1);
 		Node director = _main.GetNode("WaveDirector");
 		_main.RemoveChild(director);

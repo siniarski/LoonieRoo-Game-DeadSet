@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Deadset.ArtPreviews;
+namespace Deadset.Visuals;
 
 /// <summary>
 /// Restyles a scene tree with a CelStyle, without touching the scenes on disk.
@@ -12,7 +12,7 @@ namespace Deadset.ArtPreviews;
 /// </summary>
 public partial class StyleApplier : Node
 {
-	private const string ShaderDir = "res://art_previews/shaders/";
+	private const string ShaderDir = "res://shaders/";
 
 	/// <summary>The tree to restyle. Empty = this node's parent.</summary>
 	[Export] public NodePath RootPath { get; set; }
