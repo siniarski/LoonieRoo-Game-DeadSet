@@ -45,6 +45,8 @@ public abstract partial class Weapon : Node3D
 	public int Chain => OwnMods.Chain + SharedMods.Chain;
 	public float ReachMultiplier => OwnMods.ReachMultiplier * SharedMods.ReachMultiplier;
 	public int ExtraTargets => OwnMods.ExtraTargets + SharedMods.ExtraTargets;
+	/// <summary>Chance per unit of ammo that it isn't used up (Tough Line).</summary>
+	public float AmmoSaveChance => Mathf.Clamp(OwnMods.AmmoSaveChance + SharedMods.AmmoSaveChance, 0f, 0.9f);
 	public int MagazineSize =>
 		Mathf.Max(1, Mathf.RoundToInt(Stats.MagazineSize * OwnMods.MagazineMultiplier * SharedMods.MagazineMultiplier));
 
@@ -137,6 +139,26 @@ public abstract partial class Weapon : Node3D
 	/// <summary>Called by this weapon's projectiles when they damage something.</summary>
 	public void ReportHit(bool killed, bool weakSpot = false) => EmitSignal(SignalName.HitLanded, killed, weakSpot);
 
+	/// <summary>
+	/// True for weapons that use ammo per hit rather than per shot (the brushcutter's line):
+	/// a swing that hits nothing is free, and FireShot calls UseAmmo for what it hits.
+	/// </summary>
+	protected virtual bool AmmoPerHit => false;
+
+	/// <summary>Uses ammo from the magazine for a per-hit weapon. Rolls the ammo-save mods per unit.</summary>
+	protected void UseAmmo(int amount)
+	{
+		int used = 0;
+		float save = AmmoSaveChance;
+		for (int i = 0; i < amount; i++)
+			if (save <= 0f || GD.Randf() >= save)
+				used++;
+		if (used == 0)
+			return;
+		AmmoInMagazine = Mathf.Max(0, AmmoInMagazine - used);
+		EmitSignal(SignalName.AmmoChanged, AmmoInMagazine, ReserveAmmo);
+	}
+
 	/// <summary>Perform one shot. Ammo and timing are already handled.</summary>
 	protected abstract void FireShot();
 
@@ -172,7 +194,7 @@ public abstract partial class Weapon : Node3D
 
 	private void Shoot(float dt)
 	{
-		if (Stats.UsesAmmo)
+		if (Stats.UsesAmmo && !AmmoPerHit)
 			AmmoInMagazine--;
 		FireShot();
 

@@ -25,6 +25,8 @@ public enum WeaponModStat
 	ExtraTargets,
 	/// <summary>Adds Value (whole number) wall bounces.</summary>
 	Ricochets,
+	/// <summary>Adds Value to the chance per unit of ammo that it isn't used (0.2 = 20%).</summary>
+	AmmoSave,
 }
 
 /// <summary>
@@ -62,6 +64,7 @@ public partial class WeaponMod : Resource
 			case WeaponModStat.Reach: mods.ReachMultiplier *= Value; break;
 			case WeaponModStat.ExtraTargets: mods.ExtraTargets += Mathf.RoundToInt(Value); break;
 			case WeaponModStat.Ricochets: mods.Ricochets += Mathf.RoundToInt(Value); break;
+			case WeaponModStat.AmmoSave: mods.AmmoSaveChance += Value; break;
 		}
 	}
 }

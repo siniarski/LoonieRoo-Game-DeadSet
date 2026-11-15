@@ -37,6 +37,8 @@ public partial class WeaponStats : Resource
 	[Export] public int MaxReserve { get; set; } = 240;
 	/// <summary>Seconds from reload start until the magazine is refilled.</summary>
 	[Export] public float ReloadTime { get; set; } = 1.4f;
+	/// <summary>What the HUD calls a reload ("RELOADING", "BUMP FEED").</summary>
+	[Export] public string ReloadLabel { get; set; } = "RELOADING";
 
 	[ExportGroup("Projectile")]
 	/// <summary>Metres per second.</summary>

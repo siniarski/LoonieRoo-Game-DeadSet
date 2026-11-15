@@ -406,7 +406,7 @@ public partial class Hud : CanvasLayer
 		bool reloading = _weapon != null && _weapon.IsReloading;
 		_reloadLabel.Visible = reloading;
 		if (reloading)
-			_reloadLabel.Text = $"RELOADING {Mathf.RoundToInt(_weapon.ReloadProgress * 100f)}%";
+			_reloadLabel.Text = $"{_weapon.Stats.ReloadLabel} {Mathf.RoundToInt(_weapon.ReloadProgress * 100f)}%";
 	}
 
 	private void BuildDashBar()

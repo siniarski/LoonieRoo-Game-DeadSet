@@ -28,6 +28,24 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 
 ## Unplayed
 
+### Brushcutter trimmer line (2026-11-16)
+- What changed: the brushcutter now runs on line: 36 per load, each enemy hit uses 1 (whiffs are free), reload is a 0.9 s bump feed. Also costs $300, 16 damage, 3 enemies per swing (was $150, 22, 4). New mods: Tough Line (chance a hit uses no line) and Razor Wire (+12% damage).
+- Fun bet: still the panic button at arm's reach, but you can't just hold it down all wave; feeding line mid-crowd is a tense moment.
+- Try it: `play.cmd --nowaves --god --weapon=cutter --spawn=emu:16`
+- Judge: does running out of line in a crowd feel tense-good or annoying?
+
+### Economy retune (2026-11-16)
+- What changed: start with $200 (was $60); kill cash tapers from wave 6 down to 60% by wave 9.
+- Fun bet: a first weapon or mod by wave 2-3, and still something worth buying late.
+- Try it: `play.cmd` (a normal run; check what you can afford at the first two traders), then `play.cmd --wave=8 --trader --cash=1500`
+- Judge: at each trader, is there a real choice, or is it either "can't afford anything" or "buy everything"?
+
+### Rivet ammo (2026-11-16)
+- What changed: carry 120 rivets (was 96), start with 48 (was 40).
+- Fun bet: enough rivets to use it for a whole wave if you save it for lines and big targets.
+- Try it: `play.cmd --wave=5 --weapon=rivet`
+- Judge: do you run dry before the wave ends when you use it sensibly?
+
 ### Vents (2026-11-16)
 - What changed: a few enemies can climb out of glowing floor grates near you after a 1.3 s rattle; much more likely if you camp in one spot for 6 s.
 - Fun bet: camping a lane stops being a free farm; you have to keep an ear out and move.
@@ -39,12 +57,6 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 - Fun bet: a lane is a place to fight from for a bit, not a funnel you can stand at the end of forever.
 - Try it: `play.cmd --wave=6 --at=alley`
 - Judge: standing in the alley, do enemies now reach you from more than one side?
-
-### Brushcutter nerf (2026-11-15)
-- What changed: $300 (was $150), 16 damage (was 22), 3 enemies per swing (was 4).
-- Fun bet: still a lifesaver at arm's reach, but no longer the obvious first buy.
-- Try it: `play.cmd --nowaves --god --weapon=cutter --spawn=emu:12`
-- Judge: does clearing a ring of 12 emus feel good but take real effort?
 
 ### Nail gun mods toned down (2026-11-15)
 - What changed: pierce max 2 levels, damage kept per pierce 50% (+10% per level, max 2), ricochet one level at half damage.

@@ -27,4 +27,6 @@ public sealed class WeaponModifiers
 	public float ReachMultiplier { get; set; } = 1f;
 	/// <summary>Extra enemies one melee swing can hit.</summary>
 	public int ExtraTargets { get; set; }
+	/// <summary>Chance per unit of ammo that it isn't used up.</summary>
+	public float AmmoSaveChance { get; set; }
 }

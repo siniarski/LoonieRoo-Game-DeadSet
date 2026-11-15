@@ -318,8 +318,8 @@ public partial class SimPlayer : Node
 		Weapon want = null;
 		foreach (Weapon weapon in _arsenal.Weapons)
 		{
-			bool melee = !weapon.Stats.UsesAmmo;
-			if (melee && close >= 2)
+			bool melee = weapon is MeleeConeWeapon;
+			if (melee && close >= 2 && weapon.AmmoInMagazine + weapon.ReserveAmmo > 0)
 				want = weapon;
 			else if (!melee && want == null && weapon.Stats.DisplayName.Contains("Rivet") && weapon.AmmoInMagazine + weapon.ReserveAmmo > 0)
 				want = weapon;
@@ -347,7 +347,7 @@ public partial class SimPlayer : Node
 		_player.Rotation = new Vector3(0f, Mathf.Atan2(-d.X, -d.Z), 0f);
 		_head.Rotation = new Vector3(Mathf.Asin(Mathf.Clamp(d.Normalized().Y, -1f, 1f)), 0f, 0f);
 
-		bool inReach = gun.Stats.UsesAmmo || distance < gun.Stats.MaxRange * gun.ReachMultiplier + 0.5f;
+		bool inReach = gun is not MeleeConeWeapon || distance < gun.Stats.MaxRange * gun.ReachMultiplier + 0.5f;
 		gun.SetTriggerHeld(inReach);
 		if (gun.Stats.UsesAmmo && gun.AmmoInMagazine == 0)
 			gun.RequestReload();

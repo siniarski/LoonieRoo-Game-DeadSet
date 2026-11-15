@@ -5,10 +5,10 @@
 [resource]
 script = ExtResource("1_mod")
 Id = "cutter_damage"
-DisplayName = "Steel Blade"
-Description = "Each level: +20% damage."
+DisplayName = "Razor Wire"
+Description = "Each level: +12% damage."
 Stat = 6
-Value = 1.2
+Value = 1.12
 MaxLevel = 3
 Price = 120
 PriceGrowth = 1.6

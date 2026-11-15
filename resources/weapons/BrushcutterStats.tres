@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponStats" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="WeaponStats" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/Weapons/WeaponStats.cs" id="1_stats"]
 [ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="2_mod"]
@@ -6,24 +6,29 @@
 [ext_resource type="Resource" path="res://resources/weapons/mods/cutter_targets.tres" id="m1"]
 [ext_resource type="Resource" path="res://resources/weapons/mods/cutter_rate.tres" id="m2"]
 [ext_resource type="Resource" path="res://resources/weapons/mods/cutter_damage.tres" id="m3"]
+[ext_resource type="Resource" path="res://resources/weapons/mods/cutter_line.tres" id="m4"]
 
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Brushcutter"
-Description = "Hold to mow down whatever's within arm's reach, 3 at a time. Never needs ammo."
+Description = "Whips trimmer line through whatever is within arm's reach, 3 at a time. Each hit uses line; reload bump-feeds more."
 Price = 300
 Automatic = true
 FireRate = 4.0
 Damage = 16.0
 SpreadDegrees = 0.0
-UsesAmmo = false
-MagazineSize = 1
-StartingReserve = 0
-MaxReserve = 0
+UsesAmmo = true
+PricePerRound = 0.35
+AmmoName = "line"
+MagazineSize = 36
+StartingReserve = 108
+MaxReserve = 216
+ReloadTime = 0.9
+ReloadLabel = "BUMP FEED"
 MaxRange = 2.6
 AdsFov = 75.0
 RecoilPitchDegrees = 0.3
 RecoilYawJitterDegrees = 0.6
 ModelKickDistance = 0.02
 ModelKickDegrees = 3.0
-Mods = Array[ExtResource("2_mod")]([ExtResource("m0"), ExtResource("m1"), ExtResource("m2"), ExtResource("m3")])
+Mods = Array[ExtResource("2_mod")]([ExtResource("m0"), ExtResource("m1"), ExtResource("m2"), ExtResource("m3"), ExtResource("m4")])
