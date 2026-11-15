@@ -51,3 +51,21 @@ decides how. A small version would be:
 
 Questions to settle first: buy weapons with cash or unlock them at set waves? Can mods be
 bought more than once (stacking)?
+
+## From playtest 3 (2026-11-15): lanes are too easy to exploit (not built, brainstorm)
+
+The open yard is fine, but standing at the end of a lane lets you funnel a flock into a line and
+farm it. Rule of thumb to aim for: **no spot on the map should be fed from only one direction.**
+
+Ideas to explore:
+- **Loops instead of dead ends:** every lane has two exits, so a flock can split and come round
+  behind you (Container Alley could open at both ends and halfway on both sides).
+- **Vents and skylights:** enemies drop in through roof hatches, drains, gaps under containers or
+  holes in the shed roof, right next to a camper.
+- **Wall and roof climbers:** an enemy type that runs over containers and walls instead of round
+  them (a goanna or possum special), so cover isn't a wall at your back.
+- **Flankers:** a few enemies in each pack path to a point behind the player rather than straight at
+  them (KF-style "the rest wait at reach" could prefer the open side).
+- **Spawn awareness:** when the player has been holding one spot for a while, favour spawns and
+  entry points that come at it from behind.
+- **Breakable cover:** enemies (wombats) knock down besser walls or barricades you're hiding behind.
