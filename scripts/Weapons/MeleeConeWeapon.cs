@@ -15,7 +15,7 @@ public partial class MeleeConeWeapon : Weapon
 	/// <summary>Full width of the cutting arc, in degrees (before reach mods).</summary>
 	[Export] public float ConeDegrees { get; set; } = 80f;
 	/// <summary>Most enemies one swing hits (before mods), nearest first.</summary>
-	[Export] public int MaxTargets { get; set; } = 4;
+	[Export] public int MaxTargets { get; set; } = 3;
 	/// <summary>Enemies are this wide: they're hit when their edge is in reach, not their centre.</summary>
 	[Export] public float EnemyRadius { get; set; } = 0.45f;
 	[Export] public Color CutSparkColor { get; set; } = new(0.55f, 1f, 0.45f);

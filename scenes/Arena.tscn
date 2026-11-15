@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scripts/World/NavigationBaker.cs" id="1_navbaker"]
 
@@ -39,40 +39,93 @@ noise = SubResource("DirtNoise")
 
 [sub_resource type="StandardMaterial3D" id="FloorMat"]
 albedo_color = Color(0.62, 0.34, 0.2, 1)
-albedo_texture = SubResource("DirtTex")
 roughness = 1.0
+albedo_texture = SubResource("DirtTex")
 uv1_scale = Vector3(0.25, 0.25, 0.25)
 uv1_triplanar = true
 uv1_world_triplanar = true
 
+
+[sub_resource type="StandardMaterial3D" id="TrackMat"]
+albedo_color = Color(0.48, 0.25, 0.15, 1)
+roughness = 1.0
+albedo_texture = SubResource("DirtTex")
+uv1_scale = Vector3(0.3, 0.3, 0.3)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+
 [sub_resource type="StandardMaterial3D" id="WallMat"]
 albedo_color = Color(0.46, 0.48, 0.5, 1)
-albedo_texture = SubResource("DirtTex")
 roughness = 0.8
+albedo_texture = SubResource("DirtTex")
 uv1_scale = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 uv1_world_triplanar = true
+
 
 [sub_resource type="StandardMaterial3D" id="TimberMat"]
 albedo_color = Color(0.66, 0.48, 0.27, 1)
 roughness = 0.9
 
+
 [sub_resource type="StandardMaterial3D" id="ContainerRustMat"]
 albedo_color = Color(0.6, 0.22, 0.14, 1)
 roughness = 0.7
+
 
 [sub_resource type="StandardMaterial3D" id="ContainerTealMat"]
 albedo_color = Color(0.22, 0.45, 0.45, 1)
 roughness = 0.7
 
+
+[sub_resource type="StandardMaterial3D" id="ContainerCreamMat"]
+albedo_color = Color(0.82, 0.74, 0.55, 1)
+roughness = 0.7
+
+
 [sub_resource type="StandardMaterial3D" id="ConcreteMat"]
 albedo_color = Color(0.68, 0.66, 0.6, 1)
 roughness = 1.0
 
+
 [sub_resource type="StandardMaterial3D" id="TankMat"]
 albedo_color = Color(0.35, 0.45, 0.28, 1)
-metallic = 0.3
 roughness = 0.6
+metallic = 0.3
+
+
+[sub_resource type="StandardMaterial3D" id="ShedMat"]
+albedo_color = Color(0.55, 0.6, 0.58, 1)
+roughness = 0.6
+metallic = 0.4
+
+
+[sub_resource type="StandardMaterial3D" id="HayMat"]
+albedo_color = Color(0.88, 0.72, 0.36, 1)
+roughness = 1.0
+
+
+[sub_resource type="StandardMaterial3D" id="WreckBlueMat"]
+albedo_color = Color(0.32, 0.42, 0.55, 1)
+roughness = 0.7
+
+
+[sub_resource type="StandardMaterial3D" id="WreckWhiteMat"]
+albedo_color = Color(0.78, 0.76, 0.7, 1)
+roughness = 0.7
+
+
+[sub_resource type="StandardMaterial3D" id="SteelMat"]
+albedo_color = Color(0.3, 0.3, 0.32, 1)
+roughness = 0.5
+metallic = 0.6
+
+
+[sub_resource type="StandardMaterial3D" id="GatePostMat"]
+albedo_color = Color(0.85, 0.75, 0.2, 1)
+roughness = 0.6
+
 
 [sub_resource type="StandardMaterial3D" id="SpawnPadMat"]
 albedo_color = Color(0.9, 0.15, 0.1, 1)
@@ -80,11 +133,13 @@ emission_enabled = true
 emission = Color(0.9, 0.15, 0.1, 1)
 emission_energy_multiplier = 0.6
 
+
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
 agent_radius = 0.5
 agent_height = 1.25
 agent_max_climb = 0.25
+
 
 [node name="Arena" type="Node3D"]
 
@@ -96,6 +151,7 @@ rotation = Vector3(-0.9, 0.6, 0)
 light_color = Color(1, 0.88, 0.72, 1)
 light_energy = 1.2
 shadow_enabled = true
+directional_shadow_max_distance = 80.0
 
 [node name="Navigation" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavMesh")
@@ -106,117 +162,590 @@ script = ExtResource("1_navbaker")
 [node name="Floor" type="CSGBox3D" parent="Navigation/Geometry"]
 position = Vector3(0, -0.5, 0)
 use_collision = true
-size = Vector3(42, 1, 42)
+size = Vector3(66, 1, 66)
 material = SubResource("FloorMat")
 
 [node name="WallNorth" type="CSGBox3D" parent="Navigation/Geometry"]
-position = Vector3(0, 2, -20.5)
+position = Vector3(0, 2.5, -32.5)
 use_collision = true
-size = Vector3(42, 4, 1)
+size = Vector3(66, 5, 1)
 material = SubResource("WallMat")
 
 [node name="WallSouth" type="CSGBox3D" parent="Navigation/Geometry"]
-position = Vector3(0, 2, 20.5)
+position = Vector3(0, 2.5, 32.5)
 use_collision = true
-size = Vector3(42, 4, 1)
+size = Vector3(66, 5, 1)
 material = SubResource("WallMat")
 
 [node name="WallWest" type="CSGBox3D" parent="Navigation/Geometry"]
-position = Vector3(-20.5, 2, 0)
+position = Vector3(-32.5, 2.5, 0)
 use_collision = true
-size = Vector3(1, 4, 40)
+size = Vector3(1, 5, 64)
 material = SubResource("WallMat")
 
 [node name="WallEast" type="CSGBox3D" parent="Navigation/Geometry"]
-position = Vector3(20.5, 2, 0)
+position = Vector3(32.5, 2.5, 0)
 use_collision = true
-size = Vector3(1, 4, 40)
+size = Vector3(1, 5, 64)
 material = SubResource("WallMat")
 
-[node name="Cover" type="Node3D" parent="Navigation"]
+[node name="ContainerAlley" type="Node3D" parent="Navigation"]
 
-[node name="ShippingContainerRust" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(-11, 1.3, 9)
+[node name="Outer0" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, -22)
 use_collision = true
-size = Vector3(6, 2.6, 2.4)
+size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
-[node name="ShippingContainerTeal" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(13, 1.3, -10)
+[node name="Inner0" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, -22)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
-[node name="CrateLow" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(-5, 0.5, -4)
+[node name="Outer1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, -16)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerTealMat")
+
+[node name="Inner1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, -16)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerCreamMat")
+
+[node name="Outer2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, -10)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerCreamMat")
+
+[node name="Inner2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, -10)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerRustMat")
+
+[node name="Outer3" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, -4)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerRustMat")
+
+[node name="Outer4" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, 2)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerTealMat")
+
+[node name="Inner4" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, 2)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerCreamMat")
+
+[node name="Outer5" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 1.3, 8)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerCreamMat")
+
+[node name="Inner5" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, 8)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerRustMat")
+
+[node name="OuterStack1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 3.9, -16)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerCreamMat")
+
+[node name="OuterStack2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-30.8, 3.9, 2)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerRustMat")
+
+[node name="InnerStack" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 3.9, -10)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerTealMat")
+
+[node name="InnerCapNorth" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-24.8, 1.3, -28.5)
+use_collision = true
+size = Vector3(2.4, 2.6, 7)
+material = SubResource("ContainerRustMat")
+
+[node name="ShearingShed" type="Node3D" parent="Navigation"]
+
+[node name="WallW_A" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(14, 1.6, -7.5)
+use_collision = true
+size = Vector3(0.4, 3.2, 5)
+material = SubResource("ShedMat")
+
+[node name="WallW_B" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(14, 1.6, 1.1)
+use_collision = true
+size = Vector3(0.4, 3.2, 5.8)
+material = SubResource("ShedMat")
+
+[node name="WallN_A" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(16, 1.6, -10)
+use_collision = true
+size = Vector3(4, 3.2, 0.4)
+material = SubResource("ShedMat")
+
+[node name="WallN_B" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(24.1, 1.6, -10)
+use_collision = true
+size = Vector3(5.8, 3.2, 0.4)
+material = SubResource("ShedMat")
+
+[node name="WallS" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(20.5, 1.6, 4)
+use_collision = true
+size = Vector3(13.4, 3.2, 0.4)
+material = SubResource("ShedMat")
+
+[node name="WallE" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(27, 1.6, -3)
+use_collision = true
+size = Vector3(0.4, 3.2, 14)
+material = SubResource("ShedMat")
+
+[node name="Bale1" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(24.5, 0.55, 1.5)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="Bale2" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(24.5, 0.55, 0.2)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="Bale3" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(24.5, 1.65, 0.85)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="ShearingBoard" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(19.5, 0.35, -1.5)
+use_collision = true
+size = Vector3(4, 0.7, 1.2)
+material = SubResource("TimberMat")
+
+[node name="BoreTank" type="Node3D" parent="Navigation"]
+
+[node name="Tank" type="CSGCylinder3D" parent="Navigation/BoreTank"]
+position = Vector3(9, 2, 12)
+use_collision = true
+radius = 2.2
+height = 4
+sides = 20
+material = SubResource("TankMat")
+
+[node name="Trough0" type="CSGBox3D" parent="Navigation/BoreTank"]
+position = Vector3(13.7767, 0.4, 13.4776)
+rotation = Vector3(0, 1.2708, 0)
+use_collision = true
+size = Vector3(3.2, 0.8, 0.9)
+material = SubResource("SteelMat")
+
+[node name="Trough1" type="CSGBox3D" parent="Navigation/BoreTank"]
+position = Vector3(9.0708, 0.4, 16.9995)
+rotation = Vector3(0, 0.0142, 0)
+use_collision = true
+size = Vector3(3.2, 0.8, 0.9)
+material = SubResource("SteelMat")
+
+[node name="Trough2" type="CSGBox3D" parent="Navigation/BoreTank"]
+position = Vector3(4.2671, 0.4, 13.6123)
+rotation = Vector3(0, -1.2425, 0)
+use_collision = true
+size = Vector3(3.2, 0.8, 0.9)
+material = SubResource("SteelMat")
+
+[node name="Trough3" type="CSGBox3D" parent="Navigation/BoreTank"]
+position = Vector3(6.0041, 0.4, 7.9969)
+rotation = Vector3(0, -2.4991, 0)
+use_collision = true
+size = Vector3(3.2, 0.8, 0.9)
+material = SubResource("SteelMat")
+
+[node name="Trough4" type="CSGBox3D" parent="Navigation/BoreTank"]
+position = Vector3(11.8814, 0.4, 7.9137)
+rotation = Vector3(0, -3.7558, 0)
+use_collision = true
+size = Vector3(3.2, 0.8, 0.9)
+material = SubResource("SteelMat")
+
+[node name="NorthYard" type="Node3D" parent="Navigation"]
+
+[node name="WreckBlue" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(7, 0.7, -19)
+rotation = Vector3(0, 0.35, 0)
+use_collision = true
+size = Vector3(4.2, 1.4, 2)
+material = SubResource("WreckBlueMat")
+
+[node name="WreckBlueCab" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(6.6, 1.65, -18.85)
+rotation = Vector3(0, 0.35, 0)
+use_collision = true
+size = Vector3(1.8, 0.5, 1.8)
+material = SubResource("WreckBlueMat")
+
+[node name="WreckWhite" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-7, 0.7, -23)
+rotation = Vector3(0, -0.8, 0)
+use_collision = true
+size = Vector3(4.2, 1.4, 2)
+material = SubResource("WreckWhiteMat")
+
+[node name="WreckWhiteCab" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-7.4, 1.65, -22.6)
+rotation = Vector3(0, -0.8, 0)
+use_collision = true
+size = Vector3(1.8, 0.5, 1.8)
+material = SubResource("WreckWhiteMat")
+
+[node name="Hay0" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(17, 0.55, -25)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="Hay1" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(18.7, 0.55, -25)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="Hay2" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(17.85, 1.65, -25)
+use_collision = true
+size = Vector3(1.6, 1.1, 1.1)
+material = SubResource("HayMat")
+
+[node name="Hay3" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-16, 0.55, -14)
+use_collision = true
+size = Vector3(1.1, 1.1, 1.6)
+material = SubResource("HayMat")
+
+[node name="Hay4" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-16, 0.55, -12.4)
+use_collision = true
+size = Vector3(1.1, 1.1, 1.6)
+material = SubResource("HayMat")
+
+[node name="FuelBowser" type="CSGCylinder3D" parent="Navigation/NorthYard"]
+position = Vector3(-2, 1, -26)
+rotation = Vector3(0, 0, 1.5708)
+use_collision = true
+radius = 1.0
+height = 3.6
+sides = 16
+material = SubResource("ContainerRustMat")
+
+[node name="CrateLow" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-6, 0.5, -6)
 use_collision = true
 size = Vector3(2, 1, 2)
 material = SubResource("TimberMat")
 
-[node name="CrateTall" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(-7, 1, -4)
+[node name="CrateTall" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(-8, 1, -6)
 use_collision = true
 size = Vector3(2, 2, 2)
 material = SubResource("TimberMat")
 
-[node name="BesserBlockWall" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(4, 0.65, 5)
+[node name="ContainerNE" type="CSGBox3D" parent="Navigation/NorthYard"]
+position = Vector3(25, 1.3, -24)
+rotation = Vector3(0, 0.25, 0)
 use_collision = true
-size = Vector3(8, 1.3, 0.8)
+size = Vector3(6, 2.6, 2.4)
+material = SubResource("ContainerTealMat")
+
+[node name="SouthYard" type="Node3D" parent="Navigation"]
+
+[node name="Besser1" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(-10, 0.65, 21)
+rotation = Vector3(0, 0.5, 0)
+use_collision = true
+size = Vector3(7, 1.3, 0.8)
 material = SubResource("ConcreteMat")
 
-[node name="PalletStack" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(2, 0.3, -12)
+[node name="Besser2" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(-2, 0.65, 23)
+rotation = Vector3(0, -0.5, 0)
+use_collision = true
+size = Vector3(7, 1.3, 0.8)
+material = SubResource("ConcreteMat")
+
+[node name="Besser3" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(-18, 0.65, 18)
+rotation = Vector3(0, -0.4, 0)
+use_collision = true
+size = Vector3(6, 1.3, 0.8)
+material = SubResource("ConcreteMat")
+
+[node name="Pallets1" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(20, 0.3, 15)
 rotation = Vector3(0, 0.4, 0)
 use_collision = true
 size = Vector3(1.6, 0.6, 1.6)
 material = SubResource("TimberMat")
 
-[node name="WreckedUte" type="CSGBox3D" parent="Navigation/Cover"]
-position = Vector3(-13, 0.7, -12)
-rotation = Vector3(0, 0.55, 0)
+[node name="Pallets2" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(-14, 0.45, 27)
+rotation = Vector3(0, 0.2, 0)
+use_collision = true
+size = Vector3(1.6, 0.9, 1.6)
+material = SubResource("TimberMat")
+
+[node name="Ute" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(21, 0.7, 25)
+rotation = Vector3(0, 0.6, 0)
 use_collision = true
 size = Vector3(4.2, 1.4, 2)
-material = SubResource("ConcreteMat")
+material = SubResource("WreckWhiteMat")
 
-[node name="WaterTank" type="CSGCylinder3D" parent="Navigation/Cover"]
-position = Vector3(10, 1.5, 10)
+[node name="UteTray" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(20, 1.2, 24.4)
+rotation = Vector3(0, 0.6, 0)
 use_collision = true
-radius = 1.5
-height = 3.0
-sides = 16
-material = SubResource("TankMat")
+size = Vector3(2, 0.5, 2)
+material = SubResource("SteelMat")
+
+[node name="ContainerSE" type="CSGBox3D" parent="Navigation/SouthYard"]
+position = Vector3(27, 1.3, 13)
+use_collision = true
+size = Vector3(2.4, 2.6, 6)
+material = SubResource("ContainerRustMat")
+
+[node name="Windmill" type="Node3D" parent="."]
+position = Vector3(-12, 0, 13)
+
+[node name="Leg0" type="CSGBox3D" parent="Navigation/Geometry"]
+position = Vector3(-12.9, 4.5, 12.1)
+rotation = Vector3(-0.06, 0, 0.06)
+use_collision = true
+size = Vector3(0.2, 9, 0.2)
+material = SubResource("SteelMat")
+
+[node name="Leg1" type="CSGBox3D" parent="Navigation/Geometry"]
+position = Vector3(-11.1, 4.5, 12.1)
+rotation = Vector3(-0.06, 0, -0.06)
+use_collision = true
+size = Vector3(0.2, 9, 0.2)
+material = SubResource("SteelMat")
+
+[node name="Leg2" type="CSGBox3D" parent="Navigation/Geometry"]
+position = Vector3(-12.9, 4.5, 13.9)
+rotation = Vector3(0.06, 0, 0.06)
+use_collision = true
+size = Vector3(0.2, 9, 0.2)
+material = SubResource("SteelMat")
+
+[node name="Leg3" type="CSGBox3D" parent="Navigation/Geometry"]
+position = Vector3(-11.1, 4.5, 13.9)
+rotation = Vector3(0.06, 0, -0.06)
+use_collision = true
+size = Vector3(0.2, 9, 0.2)
+material = SubResource("SteelMat")
+
+[node name="Platform" type="CSGBox3D" parent="Windmill"]
+position = Vector3(0, 9.1, 0)
+size = Vector3(1.4, 0.2, 1.4)
+material = SubResource("SteelMat")
+
+[node name="Tail" type="CSGBox3D" parent="Windmill"]
+position = Vector3(0, 9.6, 1.6)
+size = Vector3(0.1, 0.8, 2.4)
+material = SubResource("SteelMat")
+
+[node name="Wheel" type="CSGCylinder3D" parent="Windmill"]
+position = Vector3(0, 9.6, -0.5)
+rotation = Vector3(1.5708, 0, 0)
+radius = 1.8
+height = 0.12
+sides = 18
+material = SubResource("ContainerCreamMat")
+
+[node name="Hub" type="CSGCylinder3D" parent="Windmill"]
+position = Vector3(0, 9.6, -0.6)
+rotation = Vector3(1.5708, 0, 0)
+radius = 0.3
+height = 0.3
+sides = 10
+material = SubResource("SteelMat")
+
+[node name="Tracks" type="Node3D" parent="."]
+
+[node name="TrackNS" type="CSGBox3D" parent="Tracks"]
+position = Vector3(3, 0.01, 0)
+cast_shadow = 0
+size = Vector3(2.4, 0.02, 60)
+material = SubResource("TrackMat")
+
+[node name="TrackEW" type="CSGBox3D" parent="Tracks"]
+position = Vector3(0, 0.01, -14)
+cast_shadow = 0
+size = Vector3(56, 0.02, 2.4)
+material = SubResource("TrackMat")
 
 [node name="SpawnPoints" type="Node3D" parent="."]
 
+[node name="SpawnAlley" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(-27.8, 0, -29.5)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnAlley"]
+position = Vector3(0, 0.02, 0)
+cast_shadow = 0
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnAlley"]
+position = Vector3(-1.9, 1.9, -2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnAlley"]
+position = Vector3(1.9, 1.9, -2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnAlley"]
+position = Vector3(0, 3.9, -2)
+size = Vector3(4.2, 0.35, 0.35)
+material = SubResource("GatePostMat")
+
 [node name="SpawnNorth" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
-position = Vector3(0, 0, -18.5)
+position = Vector3(6, 0, -29.5)
 
 [node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnNorth"]
 position = Vector3(0, 0.02, 0)
+cast_shadow = 0
 size = Vector3(3, 0.04, 3)
 material = SubResource("SpawnPadMat")
 
-[node name="SpawnSouth" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
-position = Vector3(0, 0, 18.5)
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnNorth"]
+position = Vector3(-1.9, 1.9, -2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
 
-[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
-position = Vector3(0, 0.02, 0)
-size = Vector3(3, 0.04, 3)
-material = SubResource("SpawnPadMat")
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnNorth"]
+position = Vector3(1.9, 1.9, -2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
 
-[node name="SpawnWest" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
-position = Vector3(-18.5, 0, 0)
-
-[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
-position = Vector3(0, 0.02, 0)
-size = Vector3(3, 0.04, 3)
-material = SubResource("SpawnPadMat")
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnNorth"]
+position = Vector3(0, 3.9, -2)
+size = Vector3(4.2, 0.35, 0.35)
+material = SubResource("GatePostMat")
 
 [node name="SpawnEast" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
-position = Vector3(18.5, 0, 0)
+position = Vector3(29.5, 0, -16)
 
 [node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnEast"]
 position = Vector3(0, 0.02, 0)
+cast_shadow = 0
 size = Vector3(3, 0.04, 3)
 material = SubResource("SpawnPadMat")
+
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnEast"]
+position = Vector3(2, 1.9, -1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnEast"]
+position = Vector3(2, 1.9, 1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnEast"]
+position = Vector3(2, 3.9, 0)
+size = Vector3(0.35, 0.35, 4.2)
+material = SubResource("GatePostMat")
+
+[node name="SpawnSouthEast" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(29.5, 0, 24)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnSouthEast"]
+position = Vector3(0, 0.02, 0)
+cast_shadow = 0
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnSouthEast"]
+position = Vector3(2, 1.9, -1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnSouthEast"]
+position = Vector3(2, 1.9, 1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnSouthEast"]
+position = Vector3(2, 3.9, 0)
+size = Vector3(0.35, 0.35, 4.2)
+material = SubResource("GatePostMat")
+
+[node name="SpawnSouth" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(-4, 0, 29.5)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
+position = Vector3(0, 0.02, 0)
+cast_shadow = 0
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
+position = Vector3(-1.9, 1.9, 2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
+position = Vector3(1.9, 1.9, 2)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnSouth"]
+position = Vector3(0, 3.9, 2)
+size = Vector3(4.2, 0.35, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="SpawnWest" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
+position = Vector3(-29.5, 0, 22)
+
+[node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
+position = Vector3(0, 0.02, 0)
+cast_shadow = 0
+size = Vector3(3, 0.04, 3)
+material = SubResource("SpawnPadMat")
+
+[node name="PostL" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
+position = Vector3(-2, 1.9, -1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="PostR" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
+position = Vector3(-2, 1.9, 1.9)
+size = Vector3(0.35, 3.8, 0.35)
+material = SubResource("GatePostMat")
+
+[node name="Lintel" type="CSGBox3D" parent="SpawnPoints/SpawnWest"]
+position = Vector3(-2, 3.9, 0)
+size = Vector3(0.35, 0.35, 4.2)
+material = SubResource("GatePostMat")

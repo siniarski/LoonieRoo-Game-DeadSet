@@ -10,11 +10,11 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Brushcutter"
-Description = "Hold to mow through everything within arm's reach. Never needs ammo."
-Price = 150
+Description = "Hold to mow down whatever's within arm's reach, 3 at a time. Never needs ammo."
+Price = 300
 Automatic = true
 FireRate = 4.0
-Damage = 22.0
+Damage = 16.0
 SpreadDegrees = 0.0
 UsesAmmo = false
 MagazineSize = 1

@@ -22,12 +22,20 @@ Branch `prototype-loop`. Open the project in Godot and press F5 (or run `Main.ts
 1. A 6 s countdown, then **wave 1** (10 emus). The top of the screen shows the wave number and enemies left.
 2. **Kills pay cash** (top right): emus $10, wombats $35, specials more.
 3. **Wave cleared** opens the **trader**. Buy ammo and armour, **buy weapons and weapon mods**, then **pick 1 of 3 upgrades**. You get 30 s, or press Enter.
-   - **Brushcutter ($150):** hold fire to cut everything within arm's reach (4 enemies per swing). No ammo.
+   - **Brushcutter ($300):** hold fire to cut whatever is within arm's reach (3 enemies per swing). No ammo.
    - **Rivet Gun ($300):** slow, heavy rivets that pass through 2 enemies.
    - **Mods** are per weapon and most stack up to 3 levels, getting pricier each level: pierce count and damage kept after a pierce (nail gun and rivet gun), ricochet to a nearby enemy, bigger magazine, fire rate, reload, reach, extra targets.
 4. Waves escalate from 10 to 70 enemies alive at once by wave 7, then +30 per wave up to **200 alive**. **Wombats** arrive from wave 3, and **dingoes, magpies, kangaroos and cassowaries** mix in later. Only 6 enemies attack at once; the rest wait at reach.
 5. The sky shifts from poster sunset to purple dusk as the waves go on.
 6. Die and you get **"You carked it"** with a summary. R restarts.
+
+## The arena: the Bore Yard (64 x 64 m)
+
+- **Container Alley** (west): a narrow lane between two container rows, fed by its own spawn gate at the north end, with one side opening halfway. Flocks come down it single file.
+- **Shearing Shed** (east): walled, two doorways (west and north). Hold a door and let them come to you.
+- **Bore tank** (centre-south): a tank ringed by troughs with gaps, for running a flock in circles.
+- **North yard:** car wrecks, hay bales and a fuel bowser. **South yard:** zigzag besser walls, pallets, a ute.
+- The **windmill** is the landmark. Six spawn gates (yellow frames, red pads) around the walls.
 
 ## What to look for (please note your answers)
 
@@ -43,5 +51,6 @@ Branch `prototype-loop`. Open the project in Godot and press F5 (or run `Main.ts
 
 10. **Weapons:** is each one worth buying? Does the brushcutter save you when emus get close? Does the rivet gun feel heavy and worth its price? Which mods did you buy, and did you feel them?
 11. **Footsteps:** can you hear enemies coming up behind you now?
+12. **Arena:** do you find yourself using the alley, the shed doors or the tank loop, or just standing in the open? Is it too big now (long walks between fights) or about right?
 
 Anything that feels flat, tell me the moment and what you expected instead.
