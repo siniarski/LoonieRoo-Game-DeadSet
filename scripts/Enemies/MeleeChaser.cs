@@ -125,6 +125,7 @@ public partial class MeleeChaser : Enemy
 		if (!HasLiveTarget)
 		{
 			_state = State.Chase;
+			AttackSlots.Release(this);
 			Steer(Vector3.Zero, dt);
 			return;
 		}
@@ -150,19 +151,23 @@ public partial class MeleeChaser : Enemy
 				_stateTimer -= dt;
 				bool landed = !lunging || Flying || Grounded;
 				if (_stateTimer <= 0f && landed)
+				{
 					_state = State.Chase;
+					AttackSlots.Release(this);
+				}
 				Steer(Vector3.Zero, dt, allowSteering: !lunging || Grounded);
 				return;
 		}
 
-		if (distance <= Stats.AttackRange && _melee.IsReady && (Flying || Grounded))
+		if (distance <= Stats.AttackRange && _melee.IsReady && (Flying || Grounded) && AttackSlots.TryAcquire(this))
 		{
 			StartWindup(toTargetDir);
 			Steer(Vector3.Zero, dt, allowSteering: !lunging);
 			return;
 		}
 
-		// In reach but still cooling down: hold ground instead of crowding into the player's face.
+		// In reach but cooling down or waiting for an attack slot: hold ground instead of
+		// crowding into the player's face.
 		if (distance <= Stats.AttackRange)
 		{
 			Steer(Separation(), dt);

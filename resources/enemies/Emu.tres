@@ -5,13 +5,13 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Emu"
-Bounty = 10
+Bounty = 8
 MaxHealth = 40
 MoveSpeed = 6.5
 Acceleration = 30
 RepathInterval = 0.2
 SeparationRadius = 1.1
 SeparationStrength = 4
-AttackDamage = 5
+AttackDamage = 3
 AttackRange = 1.7
 AttackCooldown = 1.4

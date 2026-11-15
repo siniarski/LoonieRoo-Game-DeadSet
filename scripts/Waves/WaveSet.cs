@@ -16,4 +16,6 @@ public partial class WaveSet : Resource
 	[Export] public float EndlessCountMultiplier { get; set; } = 1.2f;
 	/// <summary>MaxAlive grows by this per extra wave after the list runs out.</summary>
 	[Export] public int EndlessMaxAliveGrowth { get; set; } = 2;
+	/// <summary>Hard cap on enemies alive at once, however far the endless waves go.</summary>
+	[Export] public int MaxAliveCap { get; set; } = 200;
 }

@@ -27,6 +27,8 @@ public partial class WaveDirector : Node
 	/// instead of landing in a single frame, which would hitch.
 	/// </summary>
 	[Export] public int MaxSpawnsPerTick { get; set; } = 3;
+	/// <summary>How many enemies may be mid-attack at once, however many surround the player.</summary>
+	[Export] public int MaxSimultaneousAttackers { get; set; } = 6;
 
 	public Phase CurrentPhase { get; private set; } = Phase.Stopped;
 	/// <summary>The wave in progress, or the next one during a countdown or break. Starts at 1.</summary>
@@ -64,6 +66,7 @@ public partial class WaveDirector : Node
 
 	public override void _Ready()
 	{
+		Deadset.Enemies.AttackSlots.MaxAttackers = MaxSimultaneousAttackers;
 		AddToGroup("wave_director");
 		GameEvents.Instance.EnemyKilled += OnEnemyKilled;
 
@@ -149,7 +152,7 @@ public partial class WaveDirector : Node
 		WaveDefinition wave = Waves.Waves[index];
 		float countScale = Mathf.Pow(Waves.EndlessCountMultiplier, extra);
 
-		_maxAlive = wave.MaxAlive + Waves.EndlessMaxAliveGrowth * extra;
+		_maxAlive = Mathf.Min(wave.MaxAlive + Waves.EndlessMaxAliveGrowth * extra, Waves.MaxAliveCap);
 		_packInterval = wave.PackInterval;
 
 		foreach (WaveSpawn spawn in wave.Spawns)

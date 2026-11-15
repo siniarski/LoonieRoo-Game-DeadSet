@@ -84,7 +84,11 @@ public abstract partial class Enemy : CharacterBody3D
 		All.Add(this);
 		AddToGroup("enemies");
 	}
-	public override void _ExitTree() => All.Remove(this);
+	public override void _ExitTree()
+	{
+		All.Remove(this);
+		AttackSlots.Release(this);
+	}
 
 	public override void _Ready()
 	{
