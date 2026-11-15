@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WaveSet" load_steps=33 format=3]
+[gd_resource type="Resource" script_class="WaveSet" load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://scripts/Waves/WaveSet.cs" id="s_set"]
 [ext_resource type="Script" path="res://scripts/Waves/WaveDefinition.cs" id="s_def"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/Emu.tscn" id="e_Emu"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Kangaroo.tscn" id="e_Kangaroo"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Magpie.tscn" id="e_Magpie"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/Wombat.tscn" id="e_Wombat"]
 
 [sub_resource type="Resource" id="w1_Emu"]
 script = ExtResource("s_spawn")
@@ -49,9 +50,16 @@ Count = 3
 PackSize = 3
 EarliestFraction = 0.4
 
+[sub_resource type="Resource" id="w3_Wombat"]
+script = ExtResource("s_spawn")
+Enemy = ExtResource("e_Wombat")
+Count = 1
+PackSize = 1
+EarliestFraction = 0.5
+
 [sub_resource type="Resource" id="wave3"]
 script = ExtResource("s_def")
-Spawns = Array[ExtResource("s_spawn")]([SubResource("w3_Emu"), SubResource("w3_Dingo")])
+Spawns = Array[ExtResource("s_spawn")]([SubResource("w3_Emu"), SubResource("w3_Dingo"), SubResource("w3_Wombat")])
 MaxAlive = 12
 PackInterval = 2.3
 
@@ -69,9 +77,16 @@ Count = 3
 PackSize = 3
 EarliestFraction = 0.3
 
+[sub_resource type="Resource" id="w4_Wombat"]
+script = ExtResource("s_spawn")
+Enemy = ExtResource("e_Wombat")
+Count = 2
+PackSize = 1
+EarliestFraction = 0.3
+
 [sub_resource type="Resource" id="wave4"]
 script = ExtResource("s_def")
-Spawns = Array[ExtResource("s_spawn")]([SubResource("w4_Emu"), SubResource("w4_Magpie")])
+Spawns = Array[ExtResource("s_spawn")]([SubResource("w4_Emu"), SubResource("w4_Magpie"), SubResource("w4_Wombat")])
 MaxAlive = 14
 PackInterval = 2.2
 
@@ -96,9 +111,16 @@ Count = 2
 PackSize = 1
 EarliestFraction = 0.3
 
+[sub_resource type="Resource" id="w5_Wombat"]
+script = ExtResource("s_spawn")
+Enemy = ExtResource("e_Wombat")
+Count = 2
+PackSize = 1
+EarliestFraction = 0.2
+
 [sub_resource type="Resource" id="wave5"]
 script = ExtResource("s_def")
-Spawns = Array[ExtResource("s_spawn")]([SubResource("w5_Emu"), SubResource("w5_Dingo"), SubResource("w5_Kangaroo")])
+Spawns = Array[ExtResource("s_spawn")]([SubResource("w5_Emu"), SubResource("w5_Dingo"), SubResource("w5_Kangaroo"), SubResource("w5_Wombat")])
 MaxAlive = 16
 PackInterval = 2.1
 
@@ -123,9 +145,16 @@ Count = 1
 PackSize = 1
 EarliestFraction = 0.5
 
+[sub_resource type="Resource" id="w6_Wombat"]
+script = ExtResource("s_spawn")
+Enemy = ExtResource("e_Wombat")
+Count = 3
+PackSize = 1
+EarliestFraction = 0.2
+
 [sub_resource type="Resource" id="wave6"]
 script = ExtResource("s_def")
-Spawns = Array[ExtResource("s_spawn")]([SubResource("w6_Emu"), SubResource("w6_Magpie"), SubResource("w6_Cassowary")])
+Spawns = Array[ExtResource("s_spawn")]([SubResource("w6_Emu"), SubResource("w6_Magpie"), SubResource("w6_Cassowary"), SubResource("w6_Wombat")])
 MaxAlive = 16
 PackInterval = 2.0
 
@@ -164,9 +193,16 @@ Count = 2
 PackSize = 1
 EarliestFraction = 0.4
 
+[sub_resource type="Resource" id="w7_Wombat"]
+script = ExtResource("s_spawn")
+Enemy = ExtResource("e_Wombat")
+Count = 4
+PackSize = 1
+EarliestFraction = 0.2
+
 [sub_resource type="Resource" id="wave7"]
 script = ExtResource("s_def")
-Spawns = Array[ExtResource("s_spawn")]([SubResource("w7_Emu"), SubResource("w7_Dingo"), SubResource("w7_Magpie"), SubResource("w7_Kangaroo"), SubResource("w7_Cassowary")])
+Spawns = Array[ExtResource("s_spawn")]([SubResource("w7_Emu"), SubResource("w7_Dingo"), SubResource("w7_Magpie"), SubResource("w7_Kangaroo"), SubResource("w7_Cassowary"), SubResource("w7_Wombat")])
 MaxAlive = 18
 PackInterval = 1.9
 

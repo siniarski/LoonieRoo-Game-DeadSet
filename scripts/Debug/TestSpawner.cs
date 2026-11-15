@@ -4,13 +4,13 @@ using Godot.Collections;
 namespace Deadset.Debug;
 
 /// <summary>
-/// TEMPORARY (until the wave director in Milestone 4): number keys 1-0 spawn a pack of the
+/// DEBUG: keys 1-0 and minus spawn a pack of the
 /// matching enemy at a random spawn point, so enemy types can be compared side by side.
 /// Shows a small key legend in the top-left corner.
 /// </summary>
 public partial class TestSpawner : Node
 {
-	/// <summary>One entry per number key, in order 1, 2, ... 9, 0.</summary>
+	/// <summary>One entry per key, in order 1, 2, ... 9, 0, then minus.</summary>
 	[Export] public Array<PackedScene> EnemyScenes { get; set; } = new();
 	/// <summary>Pack size per entry; missing entries default to 1.</summary>
 	[Export] public Array<int> PackSizes { get; set; } = new();
@@ -21,7 +21,7 @@ public partial class TestSpawner : Node
 	[Export] public float ScatterRadius { get; set; } = 1.6f;
 
 	private static readonly Key[] Keys =
-		{ Key.Key1, Key.Key2, Key.Key3, Key.Key4, Key.Key5, Key.Key6, Key.Key7, Key.Key8, Key.Key9, Key.Key0 };
+		{ Key.Key1, Key.Key2, Key.Key3, Key.Key4, Key.Key5, Key.Key6, Key.Key7, Key.Key8, Key.Key9, Key.Key0, Key.Minus };
 
 	public override void _Ready()
 	{
@@ -68,7 +68,8 @@ public partial class TestSpawner : Node
 		for (int i = 0; i < EnemyScenes.Count; i++)
 		{
 			string name = EnemyScenes[i]?.ResourcePath.GetFile().GetBaseName() ?? "?";
-			lines.Append($"{(i + 1) % 10}  {name} x{PackSize(i)}\n");
+			string key = i < 10 ? ((i + 1) % 10).ToString() : "-";
+			lines.Append($"{key}  {name} x{PackSize(i)}\n");
 		}
 
 		var layer = new CanvasLayer { Layer = 5 };
