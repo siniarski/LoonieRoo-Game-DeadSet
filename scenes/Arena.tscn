@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/World/NavigationBaker.cs" id="1_navbaker"]
 
@@ -141,6 +141,20 @@ agent_height = 1.25
 agent_max_climb = 0.25
 
 
+[sub_resource type="StandardMaterial3D" id="GrateMat"]
+albedo_color = Color(0.16, 0.16, 0.17, 1)
+roughness = 0.6
+metallic = 0.5
+
+
+[sub_resource type="StandardMaterial3D" id="VentGlowMat"]
+albedo_color = Color(0.25, 0.9, 0.3, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(0.25, 0.9, 0.3, 1)
+emission_energy_multiplier = 1.4
+
+
 [node name="Arena" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -192,91 +206,79 @@ material = SubResource("WallMat")
 [node name="ContainerAlley" type="Node3D" parent="Navigation"]
 
 [node name="Outer0" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, -22)
+position = Vector3(-27.6, 1.3, -22)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
 [node name="Inner0" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, -22)
+position = Vector3(-21.6, 1.3, -22)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
 [node name="Outer1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, -16)
+position = Vector3(-27.6, 1.3, -16)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
-[node name="Inner1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, -16)
-use_collision = true
-size = Vector3(2.4, 2.6, 6)
-material = SubResource("ContainerCreamMat")
-
-[node name="Outer2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, -10)
-use_collision = true
-size = Vector3(2.4, 2.6, 6)
-material = SubResource("ContainerCreamMat")
-
 [node name="Inner2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, -10)
+position = Vector3(-21.6, 1.3, -10)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
 [node name="Outer3" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, -4)
+position = Vector3(-27.6, 1.3, -4)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
-[node name="Outer4" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, 2)
+[node name="Inner3" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-21.6, 1.3, -4)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
-[node name="Inner4" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, 2)
+[node name="Outer4" type="CSGBox3D" parent="Navigation/ContainerAlley"]
+position = Vector3(-27.6, 1.3, 2)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
-material = SubResource("ContainerCreamMat")
+material = SubResource("ContainerTealMat")
 
 [node name="Outer5" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 1.3, 8)
+position = Vector3(-27.6, 1.3, 8)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerCreamMat")
 
 [node name="Inner5" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, 8)
+position = Vector3(-21.6, 1.3, 8)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
 [node name="OuterStack1" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 3.9, -16)
+position = Vector3(-27.6, 3.9, -16)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerCreamMat")
 
 [node name="OuterStack2" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-30.8, 3.9, 2)
+position = Vector3(-27.6, 3.9, 2)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerRustMat")
 
 [node name="InnerStack" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 3.9, -10)
+position = Vector3(-21.6, 3.9, -10)
 use_collision = true
 size = Vector3(2.4, 2.6, 6)
 material = SubResource("ContainerTealMat")
 
 [node name="InnerCapNorth" type="CSGBox3D" parent="Navigation/ContainerAlley"]
-position = Vector3(-24.8, 1.3, -28.5)
+position = Vector3(-21.6, 1.3, -28.5)
 use_collision = true
 size = Vector3(2.4, 2.6, 7)
 material = SubResource("ContainerRustMat")
@@ -307,10 +309,16 @@ use_collision = true
 size = Vector3(5.8, 3.2, 0.4)
 material = SubResource("ShedMat")
 
-[node name="WallS" type="CSGBox3D" parent="Navigation/ShearingShed"]
-position = Vector3(20.5, 1.6, 4)
+[node name="WallS_A" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(17, 1.6, 4)
 use_collision = true
-size = Vector3(13.4, 3.2, 0.4)
+size = Vector3(6.4, 3.2, 0.4)
+material = SubResource("ShedMat")
+
+[node name="WallS_B" type="CSGBox3D" parent="Navigation/ShearingShed"]
+position = Vector3(25.1, 1.6, 4)
+use_collision = true
+size = Vector3(4.2, 3.2, 0.4)
 material = SubResource("ShedMat")
 
 [node name="WallE" type="CSGBox3D" parent="Navigation/ShearingShed"]
@@ -607,7 +615,7 @@ material = SubResource("TrackMat")
 [node name="SpawnPoints" type="Node3D" parent="."]
 
 [node name="SpawnAlley" type="Marker3D" parent="SpawnPoints" groups=["enemy_spawn"]]
-position = Vector3(-27.8, 0, -29.5)
+position = Vector3(-26.5, 0, -29.5)
 
 [node name="Pad" type="CSGBox3D" parent="SpawnPoints/SpawnAlley"]
 position = Vector3(0, 0.02, 0)
@@ -749,3 +757,487 @@ material = SubResource("GatePostMat")
 position = Vector3(-2, 3.9, 0)
 size = Vector3(0.35, 0.35, 4.2)
 material = SubResource("GatePostMat")
+
+[node name="Vents" type="Node3D" parent="."]
+
+[node name="VentAlleyNorth" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(-24.6, 0, -18)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentAlleyNorth"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentAlleySouth" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(-24.6, 0, 6)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentAlleySouth"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentBackLane" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(-30.4, 0, -3)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentBackLane"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentShed" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(21, 0, -6)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentShed"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentTank" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(2.5, 0, 9)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentTank"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentNorthYard" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(-2, 0, -17)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentNorthYard"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentSouthYard" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(-8, 0, 26)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentSouthYard"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="VentSouthEast" type="Marker3D" parent="Vents" groups=["enemy_vent"]]
+position = Vector3(16, 0, 21)
+
+[node name="Glow" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+size = Vector3(1.5, 0.01, 1.5)
+material = SubResource("VentGlowMat")
+
+[node name="Slat0" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(-0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat1" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(-0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat2" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0.15, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="Slat3" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0.45, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.14, 0.05, 1.4)
+material = SubResource("GrateMat")
+
+[node name="FrameN" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0, 0.03, -0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameS" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0, 0.03, 0.75)
+cast_shadow = 0
+size = Vector3(1.6, 0.06, 0.1)
+material = SubResource("GrateMat")
+
+[node name="FrameW" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(-0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="FrameE" type="CSGBox3D" parent="Vents/VentSouthEast"]
+position = Vector3(0.75, 0.03, 0)
+cast_shadow = 0
+size = Vector3(0.1, 0.06, 1.6)
+material = SubResource("GrateMat")
+
+[node name="PlayerSpots" type="Node3D" parent="."]
+
+[node name="Start" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(0, 0, 4)
+rotation = Vector3(0, 0.0, 0)
+
+[node name="Alley" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(-24.6, 0, 12)
+rotation = Vector3(0, 0.0, 0)
+
+[node name="Shed" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(24, 0, -3)
+rotation = Vector3(0, 1.5708, 0)
+
+[node name="Tank" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(2, 0, 18)
+rotation = Vector3(0, -0.6, 0)
+
+[node name="North" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(0, 0, -20)
+rotation = Vector3(0, 3.1416, 0)
+
+[node name="South" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]
+position = Vector3(0, 0, 25)
+rotation = Vector3(0, 0.0, 0)

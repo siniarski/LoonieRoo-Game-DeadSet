@@ -88,7 +88,7 @@ Next:
 ## Working style
 
 - Before each milestone, give a short plan and wait for my go-ahead.
-- Afterwards, tell me exactly what to test and what to look for. Keep `PLAYTEST.md` current.
+- Every feel-changing feature gets a play card in `PLAYTEST.md` and a jump-in flag (`scripts/Debug/LaunchFlags.cs`, run with `play.cmd`). Record my verdicts on the cards.
 - Prioritise game feel over features. If something feels flat, say so and suggest a fix.
 - Flag scope creep, including mine. Unreviewed ideas go to `ideas.md`.
 

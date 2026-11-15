@@ -27,6 +27,7 @@
 [ext_resource type="Script" path="res://scripts/Visuals/DuskByWave.cs" id="13_dusk"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/Brushcutter.tscn" id="14_cutter"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/RivetGun.tscn" id="15_rivet"]
+[ext_resource type="Script" path="res://scripts/Debug/LaunchFlags.cs" id="16_flags"]
 
 [node name="Main" type="Node3D"]
 
@@ -66,3 +67,6 @@ InitialStyle = ExtResource("12_posterdusk")
 
 [node name="DuskByWave" type="Node" parent="."]
 script = ExtResource("13_dusk")
+
+[node name="LaunchFlags" type="Node" parent="."]
+script = ExtResource("16_flags")

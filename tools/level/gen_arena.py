@@ -1,9 +1,11 @@
 """Generates scenes/Arena.tscn: the Bore Yard, a 64 x 64 m outback depot.
 
 Layout (north = -Z):
-- West: Container Alley, a 3.6 m lane between two container rows, fed by the NW spawn, with
-  a side opening halfway. Flocks string out in a line: rivet gun territory.
-- East: the Shearing Shed, walled on all sides, two doorways (west and north). Hold a door.
+- West: Container Alley, a 3.6 m lane between two container rows, fed by the NW spawn. A back
+  lane runs behind the outer row, and both rows have gaps, so a flock in the alley can also come
+  at you from the side and from behind. Vents in the alley and the shed let a few climb out
+  right next to someone camping there.
+- East: the Shearing Shed, walled on all sides, three doorways (west, north, south).
 - Centre-south: the bore tank ringed by troughs with gaps, a loop to kite a flock around.
 - North yard: car wrecks and hay bales, open with scattered cover.
 - South yard: zigzag besser walls (low cover), pallets, a ute.
@@ -148,11 +150,14 @@ box("WallEast", G, (HALF + 0.5, WALL_H / 2, 0), (1, WALL_H, HALF * 2), "WallMat"
 # ---- Container Alley (west) ------------------------------------------------------------
 A = "Navigation/ContainerAlley"
 group("ContainerAlley", "Navigation")
-outer_x, inner_x = -30.8, -24.8          # alley runs between x = -29.6 and -26.0 (3.6 m)
+# Back lane x -32..-28.8 (3.2 m), outer row, alley x -26.4..-22.8 (3.6 m), inner row.
+outer_x, inner_x = -27.6, -21.6
+ALLEY_X = (outer_x + inner_x) / 2
 colours = ["ContainerRustMat", "ContainerTealMat", "ContainerCreamMat"]
 for i, z in enumerate([-22, -16, -10, -4, 2, 8]):
-    box(f"Outer{i}", A, (outer_x, 1.3, z), (2.4, 2.6, 6), colours[i % 3])
-    if z != -4:   # side opening halfway down the alley
+    if z != -10:             # gap to the back lane
+        box(f"Outer{i}", A, (outer_x, 1.3, z), (2.4, 2.6, 6), colours[i % 3])
+    if z not in (-16, 2):    # two gaps to the yard, staggered against the back-lane gap
         box(f"Inner{i}", A, (inner_x, 1.3, z), (2.4, 2.6, 6), colours[(i + 1) % 3])
 # A few stacked on top for a skyline.
 box("OuterStack1", A, (outer_x, 3.9, -16), (2.4, 2.6, 6), "ContainerCreamMat")
@@ -173,7 +178,9 @@ box("WallW_B", S, (x0, h / 2, (door_w[1] + z1) / 2), (t, h, z1 - door_w[1]), "Sh
 # North wall, split by its door.
 box("WallN_A", S, ((x0 + door_n[0]) / 2, h / 2, z0), (door_n[0] - x0, h, t), "ShedMat")
 box("WallN_B", S, ((door_n[1] + x1) / 2, h / 2, z0), (x1 - door_n[1], h, t), "ShedMat")
-box("WallS", S, ((x0 + x1) / 2, h / 2, z1), (x1 - x0 + t, h, t), "ShedMat")
+door_s = (x0 + 6.0, x0 + 9.2)     # south doorway (3.2 m)
+box("WallS_A", S, ((x0 + door_s[0]) / 2, h / 2, z1), (door_s[0] - x0 + t, h, t), "ShedMat")
+box("WallS_B", S, ((door_s[1] + x1) / 2, h / 2, z1), (x1 - door_s[1] + t, h, t), "ShedMat")
 box("WallE", S, (x1, h / 2, (z0 + z1) / 2), (t, h, z1 - z0), "ShedMat")
 # Wool bales inside: something to back onto.
 box("Bale1", S, (24.5, 0.55, 1.5), (1.6, 1.1, 1.1), "HayMat")
@@ -240,7 +247,7 @@ box("TrackEW", T, (0, 0.01, -14), (56, 0.02, 2.4), "TrackMat", collide=False, ca
 # ---- Spawn gates -----------------------------------------------------------------------
 group("SpawnPoints", ".")
 spawns = {
-    "SpawnAlley": (-27.8, -29.5, 0),         # head of Container Alley (faces south)
+    "SpawnAlley": (-26.5, -29.5, 0),         # head of Container Alley and the back lane
     "SpawnNorth": (6, -29.5, 0),
     "SpawnEast": (29.5, -16, math.pi / 2),
     "SpawnSouthEast": (29.5, 24, math.pi / 2),
@@ -262,6 +269,42 @@ for name, (x, z, yaw) in spawns.items():
         box(side, f"SpawnPoints/{name}", (back[0] + along[0] * 1.9 * sgn, 1.9, back[1] + along[1] * 1.9 * sgn),
             (0.35, 3.8, 0.35), "GatePostMat", collide=False)
     box("Lintel", f"SpawnPoints/{name}", (back[0], 3.9, back[1]), lintel, "GatePostMat", collide=False)
+
+# ---- Vents: floor grates a few enemies climb out of, near a player camping close by ------
+mat("GrateMat", (0.16, 0.16, 0.17), 0.6, "metallic = 0.5\n")
+mat("VentGlowMat", (0.25, 0.9, 0.3), 1.0, "emission_enabled = true\nemission = Color(0.25, 0.9, 0.3, 1)\nemission_energy_multiplier = 1.4\n")
+group("Vents", ".")
+vents = {
+    "VentAlleyNorth": (ALLEY_X, -18),
+    "VentAlleySouth": (ALLEY_X, 6),
+    "VentBackLane": (-30.4, -3),
+    "VentShed": (21, -6),
+    "VentTank": (2.5, 9),
+    "VentNorthYard": (-2, -17),
+    "VentSouthYard": (-8, 26),
+    "VentSouthEast": (16, 21),
+}
+for name, (x, z) in vents.items():
+    nodes.append(f'[node name="{name}" type="Marker3D" parent="Vents" groups=["enemy_vent"]]\nposition = {vec((x, 0, z))}\n')
+    box("Glow", f"Vents/{name}", (0, 0.012, 0), (1.5, 0.01, 1.5), "VentGlowMat", collide=False, cast_shadow=False)
+    for k in range(4):
+        box(f"Slat{k}", f"Vents/{name}", (-0.45 + k * 0.3, 0.03, 0), (0.14, 0.05, 1.4), "GrateMat", collide=False, cast_shadow=False)
+    for side, (fx, fz, sx, sz) in {"FrameN": (0, -0.75, 1.6, 0.1), "FrameS": (0, 0.75, 1.6, 0.1),
+                                    "FrameW": (-0.75, 0, 0.1, 1.6), "FrameE": (0.75, 0, 0.1, 1.6)}.items():
+        box(side, f"Vents/{name}", (fx, 0.03, fz), (sx, 0.06, sz), "GrateMat", collide=False, cast_shadow=False)
+
+# ---- Player spots for the --at launch flag ----------------------------------------------
+group("PlayerSpots", ".")
+spots = {
+    "Start": (0, 4, 0.0),
+    "Alley": (ALLEY_X, 12, 0.0),                 # south mouth of the alley, looking up it
+    "Shed": (24, -3, math.pi / 2),               # inside the shed, facing the west door
+    "Tank": (2, 18, -0.6),
+    "North": (0, -20, math.pi),
+    "South": (0, 25, 0.0),
+}
+for name, (x, z, yaw) in spots.items():
+    nodes.append(f'[node name="{name}" type="Marker3D" parent="PlayerSpots" groups=["player_spot"]]\nposition = {vec((x, 0, z))}\nrotation = Vector3(0, {round(yaw, 4)}, 0)\n')
 
 header = f'[gd_scene load_steps={len(sub_ids) + 6 + 2} format=3]\n\n[ext_resource type="Script" path="res://scripts/World/NavigationBaker.cs" id="1_navbaker"]\n\n'
 open("scenes/Arena.tscn", "w").write(header + "\n".join(subs) + "\n" + "\n".join(nodes))

@@ -38,6 +38,8 @@ public static class NavGrid
 	public static int RefillFrames { get; set; } = 6;
 
 	public static bool Ready => _walkable != null && _goal >= 0;
+	/// <summary>The walkable grid exists (the arena is baked), whether or not anything is chasing yet.</summary>
+	public static bool Built => _walkable != null;
 
 	private const int Unreachable = int.MaxValue;
 	private const int StraightCost = 10;

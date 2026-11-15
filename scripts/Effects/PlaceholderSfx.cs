@@ -42,6 +42,15 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _dashWhoosh;
 	private static AudioStreamWav _ricochet;
 	private static AudioStreamWav _brushcutter;
+	private static AudioStreamWav _ventRattle;
+	/// <summary>A grate rattling and clanking as something climbs up underneath it.</summary>
+	public static AudioStreamWav VentRattle => _ventRattle ??= Build(1.3f, t =>
+	{
+		float beat = t * 11f - MathF.Floor(t * 11f);       // eleven clanks a second
+		float clank = MathF.Exp(-beat * 18f) * (Sine(620f + 90f * MathF.Sin(t * 7f), t) * 0.5f + Noise() * 0.5f);
+		float scrabble = Noise() * 0.18f * (0.5f + 0.5f * Sine(23f, t));
+		return (clank + scrabble) * MathF.Min(1f, t * 4f) * (t > 1.15f ? MathF.Max(0f, (1.3f - t) / 0.15f) : 1f);
+	});
 	/// <summary>Two-stroke buzz of one brushcutter swing.</summary>
 	public static AudioStreamWav Brushcutter => _brushcutter ??= Build(0.26f, t =>
 		(MathF.Sign(Sine(170f + 40f * t, t)) * 0.35f + Sine(340f, t) * 0.25f + Noise() * 0.3f)
