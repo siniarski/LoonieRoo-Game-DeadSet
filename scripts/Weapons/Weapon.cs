@@ -26,17 +26,47 @@ public abstract partial class Weapon : Node3D
 	/// <summary>0 at reload start, 1 when done. 0 when not reloading.</summary>
 	public float ReloadProgress => IsReloading ? 1f - _reloadTimer / _reloadDuration : 0f;
 	/// <summary>How many more rounds fit in the reserve.</summary>
-	public int ReserveSpace => Mathf.Max(0, Stats.MaxReserve - ReserveAmmo);
+	public int ReserveSpace => Stats.UsesAmmo ? Mathf.Max(0, Stats.MaxReserve - ReserveAmmo) : 0;
 
-	// Runtime modifiers (upgrades and the like). The shared Stats resource is never changed.
-	/// <summary>Scales reload time. Below 1 = faster reloads.</summary>
-	public float ReloadTimeMultiplier { get; set; } = 1f;
-	/// <summary>Scales shots per second.</summary>
-	public float FireRateMultiplier { get; set; } = 1f;
-	/// <summary>Scales damage per shot.</summary>
-	public float DamageMultiplier { get; set; } = 1f;
-	/// <summary>How many times each shot bounces off the world before sticking.</summary>
-	public int ExtraRicochets { get; set; }
+	// ---- Modifiers. The shared Stats resource is never changed. ----
+
+	/// <summary>This weapon's own modifiers, from mods bought for it.</summary>
+	public WeaponModifiers OwnMods { get; } = new();
+	/// <summary>Modifiers shared by every weapon the player carries (player upgrades). Set by the wielder.</summary>
+	public WeaponModifiers SharedMods { get; set; } = new();
+
+	public float ReloadTimeMultiplier => OwnMods.ReloadTimeMultiplier * SharedMods.ReloadTimeMultiplier;
+	public float FireRateMultiplier => OwnMods.FireRateMultiplier * SharedMods.FireRateMultiplier;
+	public float DamageMultiplier => OwnMods.DamageMultiplier * SharedMods.DamageMultiplier;
+	public int ExtraRicochets => OwnMods.Ricochets + SharedMods.Ricochets;
+	public int Pierce => Stats.BasePierce + OwnMods.Pierce + SharedMods.Pierce;
+	public float PierceDamageKeep =>
+		Mathf.Clamp(Stats.BasePierceDamageKeep + OwnMods.PierceDamageKeep + SharedMods.PierceDamageKeep, 0f, 1f);
+	public int Chain => OwnMods.Chain + SharedMods.Chain;
+	public float ReachMultiplier => OwnMods.ReachMultiplier * SharedMods.ReachMultiplier;
+	public int ExtraTargets => OwnMods.ExtraTargets + SharedMods.ExtraTargets;
+	public int MagazineSize =>
+		Mathf.Max(1, Mathf.RoundToInt(Stats.MagazineSize * OwnMods.MagazineMultiplier * SharedMods.MagazineMultiplier));
+
+	private readonly System.Collections.Generic.Dictionary<WeaponMod, int> _modLevels = new();
+
+	public int LevelOf(WeaponMod mod) => mod != null && _modLevels.TryGetValue(mod, out int level) ? level : 0;
+
+	/// <summary>Applies one more level of a mod. Returns false if it is already maxed.</summary>
+	public bool AddModLevel(WeaponMod mod)
+	{
+		int level = LevelOf(mod);
+		if (mod == null || level >= mod.MaxLevel)
+			return false;
+		_modLevels[mod] = level + 1;
+		int magazineBefore = MagazineSize;
+		mod.Apply(OwnMods);
+		// A bigger magazine comes loaded.
+		if (Stats.UsesAmmo && MagazineSize > magazineBefore)
+			AmmoInMagazine += MagazineSize - magazineBefore;
+		EmitSignal(SignalName.AmmoChanged, AmmoInMagazine, ReserveAmmo);
+		return true;
+	}
 
 	/// <summary>Reload time after modifiers, in seconds.</summary>
 	public float EffectiveReloadTime => Stats.ReloadTime * ReloadTimeMultiplier;
@@ -63,8 +93,8 @@ public abstract partial class Weapon : Node3D
 
 	public override void _Ready()
 	{
-		AmmoInMagazine = Stats.MagazineSize;
-		ReserveAmmo = Stats.StartingReserve;
+		AmmoInMagazine = Stats.UsesAmmo ? Stats.MagazineSize : 0;
+		ReserveAmmo = Stats.UsesAmmo ? Stats.StartingReserve : 0;
 	}
 
 	public void SetTriggerHeld(bool held)
@@ -76,9 +106,19 @@ public abstract partial class Weapon : Node3D
 
 	public void SetAimHeld(bool held) => _aimHeld = held;
 
+	/// <summary>Put away: lets go of everything and cancels a reload in progress.</summary>
+	public virtual void Holster()
+	{
+		_triggerHeld = false;
+		_triggerJustPressed = false;
+		_aimHeld = false;
+		AimBlend = 0f;
+		IsReloading = false;
+	}
+
 	public void RequestReload()
 	{
-		if (IsReloading || AmmoInMagazine >= Stats.MagazineSize || ReserveAmmo <= 0)
+		if (!Stats.UsesAmmo || IsReloading || AmmoInMagazine >= MagazineSize || ReserveAmmo <= 0)
 			return;
 
 		IsReloading = true;
@@ -119,7 +159,7 @@ public abstract partial class Weapon : Node3D
 
 		if (wantsToFire && _cooldown <= 0f && !IsReloading)
 		{
-			if (AmmoInMagazine > 0)
+			if (!Stats.UsesAmmo || AmmoInMagazine > 0)
 				Shoot(dt);
 			else if (ReserveAmmo > 0)
 				RequestReload();
@@ -132,7 +172,8 @@ public abstract partial class Weapon : Node3D
 
 	private void Shoot(float dt)
 	{
-		AmmoInMagazine--;
+		if (Stats.UsesAmmo)
+			AmmoInMagazine--;
 		FireShot();
 
 		float recoilScale = Mathf.Lerp(1f, Stats.AdsRecoilMultiplier, AimBlend);
@@ -147,7 +188,7 @@ public abstract partial class Weapon : Node3D
 
 	private void FinishReload()
 	{
-		int taken = Mathf.Min(Stats.MagazineSize - AmmoInMagazine, ReserveAmmo);
+		int taken = Mathf.Min(MagazineSize - AmmoInMagazine, ReserveAmmo);
 		AmmoInMagazine += taken;
 		ReserveAmmo -= taken;
 		IsReloading = false;

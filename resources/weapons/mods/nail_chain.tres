@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponMod" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="1_mod"]
+
+[resource]
+script = ExtResource("1_mod")
+Id = "nail_chain"
+DisplayName = "Ricochet Coil"
+Description = "Each level: a nail that stops in an enemy jumps once more to the nearest enemy nearby."
+Stat = 2
+Value = 1
+MaxLevel = 2
+Price = 160
+PriceGrowth = 1.75

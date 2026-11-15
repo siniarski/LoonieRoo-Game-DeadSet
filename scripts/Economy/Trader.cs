@@ -20,8 +20,8 @@ public partial class Trader : Node
 	[Signal] public delegate void StockChangedEventHandler();
 
 	[ExportGroup("Prices")]
-	/// <summary>Cash per nail. Fractions round up per purchase.</summary>
-	[Export] public float PricePerNail { get; set; } = 0.4f;
+	/// <summary>Weapons the trader sells. Ammo prices and mods come from each weapon's stats.</summary>
+	[Export] public Array<PackedScene> WeaponsForSale { get; set; } = new();
 	/// <summary>Cash per point of armour.</summary>
 	[Export] public float PricePerArmour { get; set; } = 2f;
 	/// <summary>Armour points per small armour purchase.</summary>
@@ -39,6 +39,16 @@ public partial class Trader : Node
 	public HealthComponent Health { get; private set; }
 	public PlayerUpgrades Upgrades { get; private set; }
 	public Weapon Weapon => _weaponInput?.EquippedWeapon;
+	public PlayerWeaponInput Arsenal => _weaponInput;
+
+	/// <summary>A weapon on sale and the stats read from its scene.</summary>
+	public readonly struct WeaponOffer
+	{
+		public PackedScene Scene { get; init; }
+		public WeaponStats Stats { get; init; }
+	}
+
+	public System.Collections.Generic.List<WeaponOffer> Offers { get; } = new();
 
 	private PlayerWeaponInput _weaponInput;
 
@@ -53,6 +63,17 @@ public partial class Trader : Node
 
 		if (Wallet != null)
 			Wallet.CashChanged += (_, _) => EmitSignal(SignalName.StockChanged);
+
+		foreach (PackedScene scene in WeaponsForSale)
+		{
+			if (scene == null)
+				continue;
+			// Read the stats once; the weapon itself is only created when bought.
+			Node probe = scene.Instantiate();
+			if (probe is Weapon weapon && weapon.Stats != null)
+				Offers.Add(new WeaponOffer { Scene = scene, Stats = weapon.Stats });
+			probe.Free();
+		}
 
 		GameEvents.Instance.BreakStarted += OnBreakStarted;
 		GameEvents.Instance.WaveStarted += OnWaveStarted;
@@ -82,25 +103,67 @@ public partial class Trader : Node
 		EmitSignal(SignalName.Closed);
 	}
 
+	// ---- Weapons ----
+
+	public bool Owns(WeaponStats stats) => _weaponInput?.Owns(stats) ?? false;
+
+	public int OfferCount => Offers.Count;
+
+	/// <summary>Buys the offer at this index (for tests and scripts).</summary>
+	public bool BuyWeaponAt(int index) => index >= 0 && index < Offers.Count && BuyWeapon(Offers[index]);
+
+	/// <summary>Buys a weapon and puts it in the player's hands. Returns true on success.</summary>
+	public bool BuyWeapon(WeaponOffer offer)
+	{
+		if (!IsOpen || Wallet == null || _weaponInput == null || Owns(offer.Stats))
+			return false;
+		if (!Wallet.TrySpend(offer.Stats.Price))
+			return false;
+		_weaponInput.Give(offer.Scene);
+		EmitSignal(SignalName.StockChanged);
+		return true;
+	}
+
 	// ---- Ammo ----
 
-	public int AmmoSpace => Weapon?.ReserveSpace ?? 0;
-	public int CostOfNails(int nails) => Mathf.CeilToInt(nails * PricePerNail);
-	public int MagazineSize => Weapon?.Stats.MagazineSize ?? 0;
+	public static int AmmoSpace(Weapon weapon) => weapon?.ReserveSpace ?? 0;
+	public static int CostOfAmmo(Weapon weapon, int rounds) =>
+		weapon == null ? 0 : Mathf.CeilToInt(rounds * weapon.Stats.PricePerRound);
 
-	/// <summary>Buys up to this many nails, limited by reserve space and cash. Returns nails bought.</summary>
-	public int BuyNails(int nails)
+	/// <summary>Buys up to this many rounds, limited by reserve space and cash. Returns rounds bought.</summary>
+	public int BuyAmmo(Weapon weapon, int rounds)
 	{
-		if (!IsOpen || Weapon == null || Wallet == null)
+		if (!IsOpen || weapon == null || Wallet == null)
 			return 0;
-		nails = Mathf.Min(nails, AmmoSpace);
-		while (nails > 0 && CostOfNails(nails) > Wallet.Cash)
-			nails--;
-		if (nails <= 0 || !Wallet.TrySpend(CostOfNails(nails)))
+		rounds = Mathf.Min(rounds, AmmoSpace(weapon));
+		while (rounds > 0 && CostOfAmmo(weapon, rounds) > Wallet.Cash)
+			rounds--;
+		if (rounds <= 0 || !Wallet.TrySpend(CostOfAmmo(weapon, rounds)))
 			return 0;
-		Weapon.AddReserveAmmo(nails);
+		weapon.AddReserveAmmo(rounds);
 		EmitSignal(SignalName.StockChanged);
-		return nails;
+		return rounds;
+	}
+
+	// ---- Weapon mods ----
+
+	/// <summary>Price of the next level of a mod on this weapon, or -1 when it is maxed.</summary>
+	public static int NextModPrice(Weapon weapon, WeaponMod mod)
+	{
+		int level = weapon.LevelOf(mod);
+		return level >= mod.MaxLevel ? -1 : mod.PriceForLevel(level + 1);
+	}
+
+	public bool BuyMod(Weapon weapon, WeaponMod mod)
+	{
+		if (!IsOpen || weapon == null || mod == null || Wallet == null)
+			return false;
+		int price = NextModPrice(weapon, mod);
+		if (price < 0 || !Wallet.TrySpend(price))
+			return false;
+		weapon.AddModLevel(mod);
+		EmitSignal(SignalName.StockChanged);
+		return true;
 	}
 
 	// ---- Armour ----

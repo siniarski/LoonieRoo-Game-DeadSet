@@ -9,18 +9,22 @@ Branch `prototype-loop`. Open the project in Godot and press F5 (or run `Main.ts
 | WASD, Shift, Space | Move, sprint, jump |
 | Mouse, LMB, RMB | Look, fire, iron sights |
 | R | Reload (also restarts on the game-over screen) |
+| 1 / 2 / 3, mouse wheel | Switch weapon (once you've bought more than the nail gun) |
 | Enter | Ready up: skip the break countdown to 3 s |
 | B | Close or reopen the trader during a break |
 | Q | Dash (only after taking **Oi! Watch It!**) |
 | Esc | Free the mouse (click to recapture) |
-| F1 | Show the debug spawn legend (keys 1–0 and minus spawn test enemies) |
+| F1 | Show the debug spawn legend (Ctrl + 1–0 and Ctrl + minus spawn test enemies) |
 | F5 | Debug: spawn a mixed horde of 200 (press again for 400) |
 
 ## The loop
 
 1. A 6 s countdown, then **wave 1** (10 emus). The top of the screen shows the wave number and enemies left.
 2. **Kills pay cash** (top right): emus $10, wombats $35, specials more.
-3. **Wave cleared** opens the **trader**. Buy nails and armour, then **pick 1 of 3 upgrades**. You get 30 s, or press Enter.
+3. **Wave cleared** opens the **trader**. Buy ammo and armour, **buy weapons and weapon mods**, then **pick 1 of 3 upgrades**. You get 30 s, or press Enter.
+   - **Brushcutter ($150):** hold fire to cut everything within arm's reach (4 enemies per swing). No ammo.
+   - **Rivet Gun ($300):** slow, heavy rivets that pass through 2 enemies.
+   - **Mods** are per weapon and most stack up to 3 levels, getting pricier each level: pierce count and damage kept after a pierce (nail gun and rivet gun), ricochet to a nearby enemy, bigger magazine, fire rate, reload, reach, extra targets.
 4. Waves escalate from 10 to 70 enemies alive at once by wave 7, then +30 per wave up to **200 alive**. **Wombats** arrive from wave 3, and **dingoes, magpies, kangaroos and cassowaries** mix in later. Only 6 enemies attack at once; the rest wait at reach.
 5. The sky shifts from poster sunset to purple dusk as the waves go on.
 6. Die and you get **"You carked it"** with a summary. R restarts.
@@ -36,5 +40,8 @@ Branch `prototype-loop`. Open the project in Godot and press F5 (or run `Main.ts
 7. **Hordes:** from wave 5 on, does the crowd feel exciting or overwhelming? Do big glowing emu heads up close clutter your view?
 8. **Look:** does the poster-dusk style and the new models read well in motion?
 9. **Specials:** do magpies (overhead) and dingoes (low) break the rhythm in a fun way or an annoying way?
+
+10. **Weapons:** is each one worth buying? Does the brushcutter save you when emus get close? Does the rivet gun feel heavy and worth its price? Which mods did you buy, and did you feel them?
+11. **Footsteps:** can you hear enemies coming up behind you now?
 
 Anything that feels flat, tell me the moment and what you expected instead.

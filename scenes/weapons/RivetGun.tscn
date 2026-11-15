@@ -1,0 +1,122 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/ProjectileWeapon.cs" id="1_weapon"]
+[ext_resource type="Resource" path="res://resources/weapons/RivetGunStats.tres" id="2_stats"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/Rivet.tscn" id="3_nail"]
+
+[sub_resource type="StandardMaterial3D" id="BodyMat"]
+albedo_color = Color(0.78, 0.16, 0.12, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="DarkMat"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="SteelMat"]
+albedo_color = Color(0.55, 0.56, 0.58, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BodyMesh"]
+material = SubResource("BodyMat")
+size = Vector3(0.1, 0.13, 0.34)
+
+[sub_resource type="BoxMesh" id="NoseMesh"]
+material = SubResource("SteelMat")
+size = Vector3(0.07, 0.07, 0.12)
+
+[sub_resource type="BoxMesh" id="HandleMesh"]
+material = SubResource("DarkMat")
+size = Vector3(0.055, 0.15, 0.07)
+
+[sub_resource type="BoxMesh" id="MagazineMesh"]
+material = SubResource("SteelMat")
+size = Vector3(0.05, 0.09, 0.09)
+
+[sub_resource type="StandardMaterial3D" id="FlashMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.45, 1)
+
+[sub_resource type="SphereMesh" id="FlashMesh"]
+material = SubResource("FlashMat")
+radius = 0.05
+height = 0.1
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="FrontSightMat"]
+albedo_color = Color(0.4, 0.8, 1, 1)
+emission_enabled = true
+emission = Color(0.4, 0.8, 1, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="RearSightMesh"]
+material = SubResource("DarkMat")
+size = Vector3(0.012, 0.03, 0.02)
+
+[sub_resource type="BoxMesh" id="FrontSightMesh"]
+material = SubResource("FrontSightMat")
+size = Vector3(0.008, 0.022, 0.015)
+
+[node name="RivetGun" type="Node3D"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.15, -0.15, -0.34)
+script = ExtResource("1_weapon")
+ProjectileScene = ExtResource("3_nail")
+Stats = ExtResource("2_stats")
+FirePitch = 0.6
+FireVolumeDb = -1.0
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+cast_shadow = 0
+mesh = SubResource("BodyMesh")
+
+[node name="Nose" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, -0.22)
+cast_shadow = 0
+mesh = SubResource("NoseMesh")
+
+[node name="Handle" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.969, 0.247, 0, -0.247, 0.969, 0, -0.11, 0.09)
+cast_shadow = 0
+mesh = SubResource("HandleMesh")
+
+[node name="Magazine" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -0.08)
+cast_shadow = 0
+mesh = SubResource("MagazineMesh")
+
+[node name="Muzzle" type="Marker3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, -0.29)
+
+[node name="Flash" type="Node3D" parent="Model/Muzzle"]
+visible = false
+
+[node name="Light" type="OmniLight3D" parent="Model/Muzzle/Flash"]
+light_color = Color(1, 0.75, 0.4, 1)
+light_energy = 4.0
+omni_range = 5.0
+
+[node name="FlashMesh" type="MeshInstance3D" parent="Model/Muzzle/Flash"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2.2, 0, 0, -0.05)
+cast_shadow = 0
+mesh = SubResource("FlashMesh")
+
+[node name="RearSightLeft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.013, 0.08, 0.14)
+cast_shadow = 0
+mesh = SubResource("RearSightMesh")
+
+[node name="RearSightRight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013, 0.08, 0.14)
+cast_shadow = 0
+mesh = SubResource("RearSightMesh")
+
+[node name="FrontSight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.076, -0.15)
+cast_shadow = 0
+mesh = SubResource("FrontSightMesh")
+
+[node name="AimPoint" type="Marker3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.087, -0.15)

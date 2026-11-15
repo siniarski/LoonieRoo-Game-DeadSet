@@ -293,12 +293,60 @@ public partial class Hud : CanvasLayer
 		_weapon.Fired += OnFired;
 		_weapon.HitLanded += OnHitLanded;
 		OnAmmoChanged(_weapon.AmmoInMagazine, _weapon.ReserveAmmo);
+		ShowWeaponName(weapon);
+	}
+
+	private Label _weaponName;
+	private float _weaponNameFlash;
+
+	/// <summary>The equipped weapon's name above the ammo count; it flares up on a switch.</summary>
+	private void ShowWeaponName(Weapon weapon)
+	{
+		if (_weaponName == null)
+		{
+			_weaponName = new Label
+			{
+				HorizontalAlignment = HorizontalAlignment.Right,
+				MouseFilter = Control.MouseFilterEnum.Ignore,
+				AnchorLeft = 1f, AnchorRight = 1f, AnchorTop = 1f, AnchorBottom = 1f,
+				OffsetLeft = -420f, OffsetRight = -40f, OffsetTop = -130f, OffsetBottom = -98f,
+			};
+			_weaponName.AddThemeFontSizeOverride("font_size", 22);
+			_weaponName.AddThemeConstantOverride("outline_size", 6);
+			_weaponName.AddThemeColorOverride("font_outline_color", new Color(0f, 0f, 0f, 0.8f));
+			AddChild(_weaponName);
+		}
+		var input = GetTree().GetFirstNodeInGroup("player")?.GetNodeOrNull<PlayerWeaponInput>("WeaponInput");
+		int slot = 1;
+		for (int i = 0; input != null && i < input.Weapons.Count; i++)
+			if (input.Weapons[i] == weapon)
+				slot = i + 1;
+		_weaponName.Text = input != null && input.Weapons.Count > 1
+			? $"[{slot}] {weapon.Stats.DisplayName.ToUpper()}"
+			: weapon.Stats.DisplayName.ToUpper();
+		_weaponNameFlash = 1f;
+	}
+
+	private void UpdateWeaponName(float dt)
+	{
+		if (_weaponName == null)
+			return;
+		_weaponNameFlash = Mathf.MoveToward(_weaponNameFlash, 0f, dt * 1.2f);
+		_weaponName.Modulate = new Color(1f, 0.85f + 0.15f * _weaponNameFlash, 0.6f + 0.4f * _weaponNameFlash,
+			0.55f + 0.45f * _weaponNameFlash);
+		_weaponName.Scale = Vector2.One;
 	}
 
 	private void OnAmmoChanged(int inMagazine, int reserve)
 	{
+		if (!_weapon.Stats.UsesAmmo)
+		{
+			_ammoLabel.Text = "\u221E";
+			_ammoLabel.Modulate = Colors.White;
+			return;
+		}
 		_ammoLabel.Text = $"{inMagazine} / {reserve}";
-		bool low = inMagazine <= Mathf.CeilToInt(_weapon.Stats.MagazineSize * LowAmmoFraction);
+		bool low = inMagazine <= Mathf.CeilToInt(_weapon.MagazineSize * LowAmmoFraction);
 		_ammoLabel.Modulate = low ? LowAmmoColor : Colors.White;
 	}
 
@@ -319,6 +367,7 @@ public partial class Hud : CanvasLayer
 		float dt = (float)delta;
 
 		UpdateWaveInfo(dt);
+		UpdateWeaponName(dt);
 
 		if (_cashPopupTimer > 0f)
 		{

@@ -3,12 +3,13 @@ using Deadset.Core;
 using Deadset.Economy;
 using Deadset.Upgrades;
 using Deadset.Waves;
+using Deadset.Weapons;
 using Godot;
 
 namespace Deadset.UI;
 
 /// <summary>
-/// Display for the Trader: shop buttons and the 1-of-3 upgrade cards.
+/// Display for the Trader: supplies, weapons and weapon mods, and the 1-of-3 upgrade cards.
 /// Opens automatically when a break starts; B reopens it during the break,
 /// Esc/B closes it, Enter readies up. All rules and state live in Trader.
 /// </summary>
@@ -24,13 +25,13 @@ public partial class TraderMenu : CanvasLayer
 	private Label _status;
 	private Label _summary;
 	private Label _cash;
-	private Button _fillNails;
-	private Button _buyMagazine;
+	private VBoxContainer _ammoList;
+	private VBoxContainer _weaponList;
 	private Button _buyArmour;
 	private Button _fillArmour;
 	private Label _pickHeader;
 	private readonly List<Button> _cards = new();
-	private HBoxContainer _cardRow;
+	private VBoxContainer _cardRow;
 
 	public override void _Ready()
 	{
@@ -50,7 +51,7 @@ public partial class TraderMenu : CanvasLayer
 		}
 		_trader.Opened += () => { RebuildCards(); SetOpen(true); };
 		_trader.Closed += () => SetOpen(false);
-		_trader.StockChanged += Refresh;
+		_trader.StockChanged += () => CallDeferred(MethodName.Refresh);
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -98,8 +99,8 @@ public partial class TraderMenu : CanvasLayer
 		var panel = new PanelContainer();
 		panel.AddThemeStyleboxOverride("panel", Box(PanelColor, Accent, 3, 18));
 		panel.SetAnchorsPreset(Control.LayoutPreset.Center);
-		panel.OffsetLeft = -590; panel.OffsetRight = 590;
-		panel.OffsetTop = -300; panel.OffsetBottom = 300;
+		panel.OffsetLeft = -760; panel.OffsetRight = 760;
+		panel.OffsetTop = -410; panel.OffsetBottom = 410;
 		_root.AddChild(panel);
 
 		var outer = new VBoxContainer();
@@ -123,16 +124,32 @@ public partial class TraderMenu : CanvasLayer
 		outer.AddChild(body);
 
 		// Shop column.
-		var shop = new VBoxContainer { CustomMinimumSize = new Vector2(380, 0) };
+		var shop = new VBoxContainer { CustomMinimumSize = new Vector2(360, 0) };
 		shop.AddThemeConstantOverride("separation", 10);
 		body.AddChild(shop);
 		shop.AddChild(MakeLabel("SUPPLIES", 22, new Color(1f, 1f, 1f, 0.7f)));
-		_fillNails = MakeShopButton(shop, () => _trader.BuyNails(_trader.AmmoSpace));
-		_buyMagazine = MakeShopButton(shop, () => _trader.BuyNails(_trader.MagazineSize));
+		_ammoList = new VBoxContainer();
+		_ammoList.AddThemeConstantOverride("separation", 8);
+		shop.AddChild(_ammoList);
 		_buyArmour = MakeShopButton(shop, () => _trader.BuyArmour(_trader.ArmourStep));
 		_fillArmour = MakeShopButton(shop, () => _trader.BuyArmour(_trader.ArmourSpace));
 		_status = MakeLabel("", 18, new Color(1f, 1f, 1f, 0.75f));
 		shop.AddChild(_status);
+
+		// Weapons and mods column (scrolls when the list gets long).
+		var weapons = new VBoxContainer { CustomMinimumSize = new Vector2(500, 0) };
+		weapons.AddThemeConstantOverride("separation", 10);
+		body.AddChild(weapons);
+		weapons.AddChild(MakeLabel("WEAPONS & MODS", 22, new Color(1f, 1f, 1f, 0.7f)));
+		var scroll = new ScrollContainer
+		{
+			SizeFlagsVertical = Control.SizeFlags.ExpandFill,
+			HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled,
+		};
+		weapons.AddChild(scroll);
+		_weaponList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
+		_weaponList.AddThemeConstantOverride("separation", 6);
+		scroll.AddChild(_weaponList);
 
 		// Upgrade column.
 		var picks = new VBoxContainer();
@@ -141,7 +158,7 @@ public partial class TraderMenu : CanvasLayer
 		body.AddChild(picks);
 		_pickHeader = MakeLabel("PICK ONE UPGRADE", 22, new Color(1f, 1f, 1f, 0.7f));
 		picks.AddChild(_pickHeader);
-		_cardRow = new HBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
+		_cardRow = new VBoxContainer { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
 		_cardRow.AddThemeConstantOverride("separation", 14);
 		picks.AddChild(_cardRow);
 
@@ -162,7 +179,7 @@ public partial class TraderMenu : CanvasLayer
 			int index = i;
 			var card = new Button
 			{
-				CustomMinimumSize = new Vector2(230, 210),
+				CustomMinimumSize = new Vector2(0, 150),
 				SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
 				SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
 				FocusMode = Control.FocusModeEnum.None,
@@ -177,12 +194,12 @@ public partial class TraderMenu : CanvasLayer
 			var content = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
 			content.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 			content.OffsetLeft = 16; content.OffsetRight = -16; content.OffsetTop = 18; content.OffsetBottom = -16;
-			content.AddThemeConstantOverride("separation", 12);
+			content.AddThemeConstantOverride("separation", 6);
 			card.AddChild(content);
 
 			var swatch = new ColorRect { Color = upgrade.AccentColor, CustomMinimumSize = new Vector2(0, 6), MouseFilter = Control.MouseFilterEnum.Ignore };
 			content.AddChild(swatch);
-			var name = MakeLabel(upgrade.DisplayName, 26, upgrade.AccentColor);
+			var name = MakeLabel(upgrade.DisplayName, 24, upgrade.AccentColor);
 			name.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 			content.AddChild(name);
 			var description = MakeLabel(upgrade.Description, 18, new Color(1f, 1f, 1f, 0.85f));
@@ -225,19 +242,20 @@ public partial class TraderMenu : CanvasLayer
 		var director = GetTree().GetFirstNodeInGroup("wave_director") as WaveDirector;
 		_title.Text = director != null ? $"TRADER  ·  WAVE {director.WaveNumber} NEXT" : "TRADER";
 
-		int space = _trader.AmmoSpace;
-		int mag = Mathf.Min(_trader.MagazineSize, space);
-		SetShopButton(_fillNails, $"Fill nails  (+{space})", _trader.CostOfNails(space), space > 0, cash);
-		SetShopButton(_buyMagazine, $"One magazine  (+{mag})", _trader.CostOfNails(mag), mag > 0, cash);
+		RebuildAmmo(cash);
+		RebuildWeapons(cash);
 		int armourSpace = _trader.ArmourSpace;
 		int step = Mathf.Min(_trader.ArmourStep, armourSpace);
 		SetShopButton(_buyArmour, $"Armour  (+{step})", _trader.CostOfArmour(step), step > 0, cash);
 		SetShopButton(_fillArmour, $"Fill armour  (+{armourSpace})", _trader.CostOfArmour(armourSpace), armourSpace > 0, cash);
 
-		var weapon = _trader.Weapon;
 		var health = _trader.Health;
-		_status.Text = $"Nails  {weapon?.AmmoInMagazine ?? 0} + {weapon?.ReserveAmmo ?? 0} / {weapon?.Stats.MaxReserve ?? 0}\n"
-			+ $"Armour  {Mathf.RoundToInt(health?.Armour ?? 0)} / {Mathf.RoundToInt(health?.MaxArmour ?? 0)}";
+		var status = new System.Text.StringBuilder();
+		foreach (Weapon owned in OwnedWeapons())
+			if (owned.Stats.UsesAmmo)
+				status.Append($"{Capitalise(owned.Stats.AmmoName)}  {owned.AmmoInMagazine} + {owned.ReserveAmmo} / {owned.Stats.MaxReserve}\n");
+		status.Append($"Armour  {Mathf.RoundToInt(health?.Armour ?? 0)} / {Mathf.RoundToInt(health?.MaxArmour ?? 0)}");
+		_status.Text = status.ToString();
 
 		bool picked = _trader.PickedIndex >= 0;
 		_pickHeader.Text = picked ? "UPGRADE TAKEN" : "PICK ONE UPGRADE";
@@ -245,6 +263,85 @@ public partial class TraderMenu : CanvasLayer
 		{
 			_cards[i].Disabled = picked;
 			_cards[i].Modulate = picked && i != _trader.PickedIndex ? new Color(1f, 1f, 1f, 0.35f) : Colors.White;
+		}
+	}
+
+	private IReadOnlyList<Weapon> OwnedWeapons() =>
+		_trader.Arsenal != null ? _trader.Arsenal.Weapons : System.Array.Empty<Weapon>();
+
+	private static string Capitalise(string text) =>
+		string.IsNullOrEmpty(text) ? text : char.ToUpper(text[0]) + text[1..];
+
+	private static void Clear(Container container)
+	{
+		foreach (Node child in container.GetChildren())
+		{
+			container.RemoveChild(child);
+			child.QueueFree();
+		}
+	}
+
+	/// <summary>Fill and one-magazine buttons for every owned weapon that uses ammo.</summary>
+	private void RebuildAmmo(int cash)
+	{
+		Clear(_ammoList);
+		foreach (Weapon weapon in OwnedWeapons())
+		{
+			if (!weapon.Stats.UsesAmmo)
+				continue;
+			Weapon w = weapon;
+			int space = Trader.AmmoSpace(w);
+			int mag = Mathf.Min(w.MagazineSize, space);
+			string ammo = w.Stats.AmmoName;
+			SetShopButton(MakeShopButton(_ammoList, () => _trader.BuyAmmo(w, Trader.AmmoSpace(w))),
+				$"Fill {ammo}  (+{space})", Trader.CostOfAmmo(w, space), space > 0, cash);
+			SetShopButton(MakeShopButton(_ammoList, () => _trader.BuyAmmo(w, w.MagazineSize)),
+				$"One magazine of {ammo}  (+{mag})", Trader.CostOfAmmo(w, mag), mag > 0, cash);
+		}
+	}
+
+	/// <summary>Weapons for sale, then each owned weapon with its mods.</summary>
+	private void RebuildWeapons(int cash)
+	{
+		Clear(_weaponList);
+		foreach (Trader.WeaponOffer offer in _trader.Offers)
+		{
+			if (_trader.Owns(offer.Stats))
+				continue;
+			Trader.WeaponOffer o = offer;
+			Button buy = MakeShopButton(_weaponList, () => _trader.BuyWeapon(o));
+			buy.CustomMinimumSize = new Vector2(0, 64);
+			buy.Text = $"BUY {o.Stats.DisplayName.ToUpper()}    ${o.Stats.Price}\n{o.Stats.Description}";
+			buy.AddThemeFontSizeOverride("font_size", 17);
+			buy.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			buy.Disabled = o.Stats.Price > cash;
+		}
+
+		IReadOnlyList<Weapon> owned = OwnedWeapons();
+		for (int slot = 0; slot < owned.Count; slot++)
+		{
+			Weapon weapon = owned[slot];
+			if (weapon.Stats.Mods.Count == 0)
+				continue;
+			_weaponList.AddChild(MakeLabel($"[{slot + 1}] {weapon.Stats.DisplayName.ToUpper()}", 20, Accent));
+			foreach (WeaponMod mod in weapon.Stats.Mods)
+			{
+				if (mod == null)
+					continue;
+				WeaponMod m = mod;
+				Weapon w = weapon;
+				int level = w.LevelOf(m);
+				int price = Trader.NextModPrice(w, m);
+				Button button = MakeShopButton(_weaponList, () => _trader.BuyMod(w, m));
+				button.CustomMinimumSize = new Vector2(0, 56);
+				button.AddThemeFontSizeOverride("font_size", 16);
+				button.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+				string pips = new string('■', level) + new string('□', m.MaxLevel - level);
+				button.Text = price < 0
+					? $"{m.DisplayName}  {pips}    MAXED\n{m.Description}"
+					: $"{m.DisplayName}  {pips}    ${price}\n{m.Description}";
+				button.Disabled = price < 0 || price > cash;
+			}
 		}
 	}
 

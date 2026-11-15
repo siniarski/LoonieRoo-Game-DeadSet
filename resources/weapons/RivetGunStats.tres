@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="WeaponStats" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponStats.cs" id="1_stats"]
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="2_mod"]
+[ext_resource type="Resource" path="res://resources/weapons/mods/rivet_pierce.tres" id="m0"]
+[ext_resource type="Resource" path="res://resources/weapons/mods/rivet_keep.tres" id="m1"]
+[ext_resource type="Resource" path="res://resources/weapons/mods/rivet_reload.tres" id="m2"]
+[ext_resource type="Resource" path="res://resources/weapons/mods/rivet_damage.tres" id="m3"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Rivet Gun"
+Description = "Slow, heavy rivets that punch through 2 enemies. For wombats and lined-up flocks."
+Price = 300
+PricePerRound = 1.5
+AmmoName = "rivets"
+Automatic = true
+FireRate = 2.2
+Damage = 60.0
+SpreadDegrees = 0.3
+UsesAmmo = true
+MagazineSize = 8
+StartingReserve = 40
+MaxReserve = 96
+ReloadTime = 2.0
+ProjectileSpeed = 120.0
+MaxRange = 150.0
+BasePierce = 2
+BasePierceDamageKeep = 0.7
+AdsFov = 55.0
+AdsTime = 0.2
+AdsSpreadDegrees = 0.05
+AdsRecoilMultiplier = 0.6
+RecoilPitchDegrees = 4.5
+RecoilYawJitterDegrees = 1.2
+ModelKickDistance = 0.1
+ModelKickDegrees = 14.0
+Mods = Array[ExtResource("2_mod")]([ExtResource("m0"), ExtResource("m1"), ExtResource("m2"), ExtResource("m3")])

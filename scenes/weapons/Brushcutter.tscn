@@ -1,0 +1,92 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/MeleeConeWeapon.cs" id="1_weapon"]
+[ext_resource type="Resource" path="res://resources/weapons/BrushcutterStats.tres" id="2_stats"]
+
+[sub_resource type="StandardMaterial3D" id="ShaftMat"]
+albedo_color = Color(0.92, 0.4, 0.1, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="DarkMat"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="BladeMat"]
+albedo_color = Color(0.62, 0.64, 0.66, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="ToothMat"]
+albedo_color = Color(1, 0.85, 0.3, 1)
+emission_enabled = true
+emission = Color(1, 0.8, 0.3, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="ShaftMesh"]
+material = SubResource("ShaftMat")
+size = Vector3(0.035, 0.035, 0.8)
+
+[sub_resource type="BoxMesh" id="GripMesh"]
+material = SubResource("DarkMat")
+size = Vector3(0.05, 0.05, 0.16)
+
+[sub_resource type="BoxMesh" id="GuardMesh"]
+material = SubResource("DarkMat")
+size = Vector3(0.22, 0.04, 0.12)
+
+[sub_resource type="CylinderMesh" id="BladeMesh"]
+material = SubResource("BladeMat")
+top_radius = 0.18
+bottom_radius = 0.18
+height = 0.012
+radial_segments = 16
+rings = 1
+
+[sub_resource type="BoxMesh" id="ToothMesh"]
+material = SubResource("ToothMat")
+size = Vector3(0.05, 0.016, 0.03)
+
+[node name="Brushcutter" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.22, -0.28)
+script = ExtResource("1_weapon")
+Stats = ExtResource("2_stats")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Grip" type="MeshInstance3D" parent="Model"]
+cast_shadow = 0
+mesh = SubResource("GripMesh")
+
+[node name="Shaft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.946, 0.324, 0, -0.324, 0.946, -0.04, -0.12, -0.35)
+cast_shadow = 0
+mesh = SubResource("ShaftMesh")
+
+[node name="Head" type="Node3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.44, -0.9, 0, 0.9, 0.44, -0.08, -0.26, -0.74)
+
+[node name="Guard" type="MeshInstance3D" parent="Model/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.06)
+cast_shadow = 0
+mesh = SubResource("GuardMesh")
+
+[node name="Blade" type="Node3D" parent="Model/Head"]
+
+[node name="Disc" type="MeshInstance3D" parent="Model/Head/Blade"]
+cast_shadow = 0
+mesh = SubResource("BladeMesh")
+
+[node name="Tooth1" type="MeshInstance3D" parent="Model/Head/Blade"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0, 0)
+cast_shadow = 0
+mesh = SubResource("ToothMesh")
+
+[node name="Tooth2" type="MeshInstance3D" parent="Model/Head/Blade"]
+transform = Transform3D(-0.5, 0, -0.866, 0, 1, 0, 0.866, 0, -0.5, -0.09, 0, 0.156)
+cast_shadow = 0
+mesh = SubResource("ToothMesh")
+
+[node name="Tooth3" type="MeshInstance3D" parent="Model/Head/Blade"]
+transform = Transform3D(-0.5, 0, 0.866, 0, 1, 0, -0.866, 0, -0.5, -0.09, 0, -0.156)
+cast_shadow = 0
+mesh = SubResource("ToothMesh")

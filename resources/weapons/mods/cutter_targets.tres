@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponMod" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="1_mod"]
+
+[resource]
+script = ExtResource("1_mod")
+Id = "cutter_targets"
+DisplayName = "Twin Line"
+Description = "Each level: each swing hits 2 more enemies."
+Stat = 8
+Value = 2
+MaxLevel = 3
+Price = 100
+PriceGrowth = 1.5

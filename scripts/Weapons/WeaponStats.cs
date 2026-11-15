@@ -7,6 +7,18 @@ namespace Deadset.Weapons;
 public partial class WeaponStats : Resource
 {
 	[Export] public string DisplayName { get; set; } = "Weapon";
+	/// <summary>One line for the trader.</summary>
+	[Export] public string Description { get; set; } = "";
+
+	[ExportGroup("Trader")]
+	/// <summary>Cash to buy the weapon (0 = starting weapon, never sold).</summary>
+	[Export] public int Price { get; set; }
+	/// <summary>Cash per round of ammo. Fractions round up per purchase.</summary>
+	[Export] public float PricePerRound { get; set; } = 0.4f;
+	/// <summary>What the ammo is called in the trader ("nails", "rivets").</summary>
+	[Export] public string AmmoName { get; set; } = "rounds";
+	/// <summary>Upgrades the trader sells for this weapon.</summary>
+	[Export] public Godot.Collections.Array<WeaponMod> Mods { get; set; } = new();
 
 	[ExportGroup("Firing")]
 	/// <summary>Hold to keep firing (true) or one shot per click (false).</summary>
@@ -18,6 +30,8 @@ public partial class WeaponStats : Resource
 	[Export] public float SpreadDegrees { get; set; } = 0.6f;
 
 	[ExportGroup("Ammo")]
+	/// <summary>False for melee: no magazine, no reloads, never runs dry.</summary>
+	[Export] public bool UsesAmmo { get; set; } = true;
 	[Export] public int MagazineSize { get; set; } = 24;
 	[Export] public int StartingReserve { get; set; } = 120;
 	[Export] public int MaxReserve { get; set; } = 240;
@@ -29,6 +43,10 @@ public partial class WeaponStats : Resource
 	[Export] public float ProjectileSpeed { get; set; } = 70f;
 	/// <summary>Metres a projectile travels before despawning.</summary>
 	[Export] public float MaxRange { get; set; } = 150f;
+	/// <summary>Enemies each shot passes through before mods.</summary>
+	[Export] public int BasePierce { get; set; }
+	/// <summary>Share of damage a shot keeps after passing through an enemy, before mods.</summary>
+	[Export(PropertyHint.Range, "0,1")] public float BasePierceDamageKeep { get; set; } = 0.6f;
 
 	[ExportGroup("Aiming (iron sights)")]
 	/// <summary>Camera field of view while aiming down sights.</summary>

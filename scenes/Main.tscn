@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/Arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -25,6 +25,8 @@
 [ext_resource type="Script" path="res://scripts/Visuals/StyleApplier.cs" id="11_style"]
 [ext_resource type="Resource" path="res://resources/styles/PosterDusk.tres" id="12_posterdusk"]
 [ext_resource type="Script" path="res://scripts/Visuals/DuskByWave.cs" id="13_dusk"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/Brushcutter.tscn" id="14_cutter"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/RivetGun.tscn" id="15_rivet"]
 
 [node name="Main" type="Node3D"]
 
@@ -53,6 +55,7 @@ script = ExtResource("8_gameover")
 
 [node name="Trader" type="Node" parent="."]
 script = ExtResource("9_trader")
+WeaponsForSale = Array[PackedScene]([ExtResource("14_cutter"), ExtResource("15_rivet")])
 
 [node name="TraderMenu" type="CanvasLayer" parent="."]
 script = ExtResource("10_tradermenu")

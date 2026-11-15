@@ -41,6 +41,11 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _growl;
 	private static AudioStreamWav _dashWhoosh;
 	private static AudioStreamWav _ricochet;
+	private static AudioStreamWav _brushcutter;
+	/// <summary>Two-stroke buzz of one brushcutter swing.</summary>
+	public static AudioStreamWav Brushcutter => _brushcutter ??= Build(0.26f, t =>
+		(MathF.Sign(Sine(170f + 40f * t, t)) * 0.35f + Sine(340f, t) * 0.25f + Noise() * 0.3f)
+		* (0.6f + 0.4f * Sine(32f, t)) * MathF.Min(1f, t * 60f) * MathF.Exp(-t * 6f));
 	private static AudioStreamWav _footLight;
 	private static AudioStreamWav _footHeavy;
 	private static AudioStreamWav _playerStep;

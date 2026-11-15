@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponMod" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="1_mod"]
+
+[resource]
+script = ExtResource("1_mod")
+Id = "rivet_reload"
+DisplayName = "Quick Magazine"
+Description = "Each level: reload 15% faster."
+Stat = 5
+Value = 0.85
+MaxLevel = 3
+Price = 90
+PriceGrowth = 1.5

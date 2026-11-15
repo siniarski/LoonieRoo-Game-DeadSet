@@ -26,6 +26,12 @@ public partial class Nail : Node3D
 		public Rid Exclude;
 		/// <summary>How many times the nail bounces off the world before sticking.</summary>
 		public int Ricochets;
+		/// <summary>Enemies the nail passes straight through before stopping.</summary>
+		public int Pierce;
+		/// <summary>Share of damage kept after each pierce or chain jump.</summary>
+		public float PierceDamageKeep;
+		/// <summary>Times the nail jumps from a hit enemy to another one nearby.</summary>
+		public int Chain;
 	}
 
 	[Export] public float StuckLifetime { get; set; } = 4f;
@@ -38,6 +44,9 @@ public partial class Nail : Node3D
 	/// <summary>Share of its remaining range a nail keeps after a ricochet.</summary>
 	[Export(PropertyHint.Range, "0.05,1")] public float RicochetRangeKeep { get; set; } = 0.4f;
 	[Export] public Color RicochetSparkColor { get; set; } = new(0.6f, 0.9f, 1f);
+	/// <summary>How far a chain jump looks for its next enemy, in metres.</summary>
+	[Export] public float ChainRange { get; set; } = 6f;
+	[Export] public Color ChainSparkColor { get; set; } = new(0.75f, 0.5f, 1f);
 	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 5;  // world + enemies
 	[Export] public Color WallSparkColor { get; set; } = new(1f, 0.7f, 0.3f);
 	[Export] public Color FleshSparkColor { get; set; } = new(1f, 1f, 0.85f);
@@ -49,6 +58,10 @@ public partial class Nail : Node3D
 	private float _damage;
 	private float _remainingRange;
 	private int _ricochetsLeft;
+	private int _pierceLeft;
+	private int _chainLeft;
+	private float _pierceKeep;
+	private readonly System.Collections.Generic.HashSet<HealthComponent> _alreadyHit = new();
 	private Weapon _source;
 	private Array<Rid> _exclude;
 	private Vector3 _visualOffset;
@@ -68,6 +81,9 @@ public partial class Nail : Node3D
 		_damage = p.Damage;
 		_remainingRange = p.MaxRange;
 		_ricochetsLeft = p.Ricochets;
+		_pierceLeft = p.Pierce;
+		_chainLeft = p.Chain;
+		_pierceKeep = p.PierceDamageKeep;
 		_source = p.Source;
 		_exclude = new Array<Rid>();
 		if (p.Exclude.IsValid)
@@ -128,7 +144,7 @@ public partial class Nail : Node3D
 		if (health != null)
 		{
 			WeakSpot weakSpot = WeakSpot.FromHit(collider, shapeIndex);
-			if (!health.IsDead)
+			if (!health.IsDead && _alreadyHit.Add(health))
 			{
 				float damage = _damage * (weakSpot?.DamageMultiplier ?? 1f);
 				bool killed = health.ApplyDamage(damage);
@@ -137,6 +153,19 @@ public partial class Nail : Node3D
 			}
 			ImpactEffects.SpawnSparks(effectsParent, point, normal,
 				weakSpot != null ? WeakSpotSparkColor : FleshSparkColor, weakSpot != null ? 22 : 12);
+
+			// Keep going: straight through first, then jump to a neighbour.
+			if (collider is CollisionObject3D body)
+				_exclude.Add(body.GetRid());
+			if (_pierceLeft > 0)
+			{
+				_pierceLeft--;
+				_damage *= _pierceKeep;
+				GlobalPosition = point + _direction * 0.05f;
+				return;
+			}
+			if (_chainLeft > 0 && ChainTo(point, effectsParent))
+				return;
 			QueueFree();
 			return;
 		}
@@ -154,6 +183,49 @@ public partial class Nail : Node3D
 		_mesh.Position = Vector3.Zero;
 		ImpactEffects.SpawnSparks(effectsParent, point, normal, WallSparkColor, 8);
 		PlaceholderSfx.PlayAt(effectsParent, PlaceholderSfx.NailImpact, point, -10f);
+	}
+
+	/// <summary>
+	/// Redirects the nail from the enemy it just hit to the nearest other live enemy within
+	/// ChainRange, aiming at its head. Returns false if there is nobody to jump to.
+	/// </summary>
+	private bool ChainTo(Vector3 point, Node effectsParent)
+	{
+		Node3D best = null;
+		Vector3 bestAim = default;
+		float bestDistance = ChainRange * ChainRange;
+		foreach (Node node in GetTree().GetNodesInGroup("enemies"))
+		{
+			if (node is not Node3D enemy || enemy.IsQueuedForDeletion())
+				continue;
+			HealthComponent health = HealthComponent.FindOn(enemy);
+			if (health == null || health.IsDead || _alreadyHit.Contains(health))
+				continue;
+			Vector3 aim = enemy.GetNodeOrNull<Node3D>("HeadWeakSpot")?.GlobalPosition ?? enemy.GlobalPosition + Vector3.Up;
+			float distance = aim.DistanceSquaredTo(point);
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				best = enemy;
+				bestAim = aim;
+			}
+		}
+		if (best == null)
+			return false;
+
+		_chainLeft--;
+		_damage *= _pierceKeep;
+		_direction = (bestAim - point).Normalized();
+		_velocity = _direction * _velocity.Length();
+		_remainingRange = ChainRange * 1.5f;
+		GlobalPosition = point;
+		Vector3 up = Mathf.Abs(_direction.Y) > 0.99f ? Vector3.Right : Vector3.Up;
+		LookAt(GlobalPosition + _direction, up);
+		_visualOffset = Vector3.Zero;
+		_mesh.Position = Vector3.Zero;
+		ImpactEffects.SpawnSparks(effectsParent, point, _direction, ChainSparkColor, 10);
+		PlaceholderSfx.PlayAt(effectsParent, PlaceholderSfx.Ricochet, point, -10f, 0.2f);
+		return true;
 	}
 
 	/// <summary>Bounce off a world surface: reflect, lose some speed and range, carry on.</summary>

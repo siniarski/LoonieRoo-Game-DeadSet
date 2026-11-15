@@ -26,6 +26,8 @@ public partial class ProjectileWeapon : Weapon
 
 	[ExportGroup("Volume (dB)")]
 	[Export] public float FireVolumeDb { get; set; } = -4f;
+	/// <summary>Pitch of the shot sound. Below 1 sounds heavier (the rivet gun).</summary>
+	[Export] public float FirePitch { get; set; } = 1f;
 	[Export] public float HitVolumeDb { get; set; } = -8f;
 	[Export] public float ReloadVolumeDb { get; set; } = -6f;
 
@@ -89,6 +91,9 @@ public partial class ProjectileWeapon : Weapon
 			Damage = Stats.Damage * DamageMultiplier,
 			MaxRange = Stats.MaxRange,
 			Ricochets = ExtraRicochets,
+			Pierce = Pierce,
+			PierceDamageKeep = PierceDamageKeep,
+			Chain = Chain,
 			VisualStart = _muzzle.GlobalPosition,
 			Source = this,
 			Exclude = Wielder?.GetRid() ?? new Rid(),
@@ -100,7 +105,7 @@ public partial class ProjectileWeapon : Weapon
 		_flash.Rotation = new Vector3(0f, 0f, (float)GD.RandRange(0, Mathf.Tau));
 		_flash.Scale = Vector3.One * (float)GD.RandRange(0.8, 1.25);
 
-		_fireSfx.PitchScale = (float)GD.RandRange(0.92, 1.08);
+		_fireSfx.PitchScale = FirePitch * (float)GD.RandRange(0.92, 1.08);
 		_fireSfx.Play();
 	}
 

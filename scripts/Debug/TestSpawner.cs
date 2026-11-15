@@ -70,7 +70,8 @@ public partial class TestSpawner : Node
 			SpawnHorde(HordeSize);
 			return;
 		}
-		int index = System.Array.IndexOf(Keys, key.PhysicalKeycode);
+		// Number keys switch weapons; Ctrl+number spawns.
+		int index = key.CtrlPressed ? System.Array.IndexOf(Keys, key.PhysicalKeycode) : -1;
 		if (index >= 0 && index < EnemyScenes.Count)
 			SpawnPack(index);
 	}
@@ -152,7 +153,7 @@ public partial class TestSpawner : Node
 
 	private void BuildLegend()
 	{
-		var lines = new System.Text.StringBuilder("TEST SPAWN\n");
+		var lines = new System.Text.StringBuilder("TEST SPAWN (hold Ctrl)\n");
 		for (int i = 0; i < EnemyScenes.Count; i++)
 		{
 			string name = EnemyScenes[i]?.ResourcePath.GetFile().GetBaseName() ?? "?";

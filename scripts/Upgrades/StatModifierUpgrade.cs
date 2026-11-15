@@ -42,17 +42,17 @@ public partial class StatModifierUpgrade : UpgradeDefinition
 			case UpgradeStat.Dash:
 				context.Player.DashUnlocked = true;
 				break;
-			case UpgradeStat.ReloadTime when context.Weapon != null:
-				context.Weapon.ReloadTimeMultiplier *= Value;
+			case UpgradeStat.ReloadTime when context.WeaponMods != null:
+				context.WeaponMods.ReloadTimeMultiplier *= Value;
 				break;
-			case UpgradeStat.FireRate when context.Weapon != null:
-				context.Weapon.FireRateMultiplier *= Value;
+			case UpgradeStat.FireRate when context.WeaponMods != null:
+				context.WeaponMods.FireRateMultiplier *= Value;
 				break;
-			case UpgradeStat.WeaponDamage when context.Weapon != null:
-				context.Weapon.DamageMultiplier *= Value;
+			case UpgradeStat.WeaponDamage when context.WeaponMods != null:
+				context.WeaponMods.DamageMultiplier *= Value;
 				break;
-			case UpgradeStat.Ricochets when context.Weapon != null:
-				context.Weapon.ExtraRicochets += Mathf.RoundToInt(Value);
+			case UpgradeStat.Ricochets when context.WeaponMods != null:
+				context.WeaponMods.Ricochets += Mathf.RoundToInt(Value);
 				break;
 		}
 	}

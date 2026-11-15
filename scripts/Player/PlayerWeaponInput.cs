@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Deadset.Weapons;
 using Godot;
 
@@ -6,15 +7,25 @@ namespace Deadset.Player;
 /// <summary>
 /// Turns player input into weapon commands (trigger, reload) and feeds weapon recoil
 /// to the camera. Knows nothing about how the equipped weapon actually fires.
+/// Also holds the weapons the player owns (one per slot) and switches between them:
+/// 1/2/3 or the mouse wheel.
 /// </summary>
 public partial class PlayerWeaponInput : Node
 {
 	[Signal] public delegate void WeaponEquippedEventHandler(Weapon weapon);
+	/// <summary>A weapon was added to the inventory.</summary>
+	[Signal] public delegate void WeaponAddedEventHandler(Weapon weapon);
 
 	[Export] public NodePath StartingWeaponPath { get; set; } = "../Head/Camera3D/NailGun";
 	[Export] public NodePath CameraPath { get; set; } = "../Head/Camera3D";
 
 	public Weapon EquippedWeapon { get; private set; }
+	/// <summary>Owned weapons in the order they were acquired (slot 1 first).</summary>
+	public IReadOnlyList<Weapon> Weapons => _weapons;
+	/// <summary>Player-upgrade modifiers that apply to every weapon carried, including ones bought later.</summary>
+	public WeaponModifiers SharedMods { get; } = new();
+
+	private readonly List<Weapon> _weapons = new();
 
 	private CameraRecoil _camera;
 	private PlayerController _player;
@@ -24,19 +35,79 @@ public partial class PlayerWeaponInput : Node
 	{
 		_camera = GetNode<CameraRecoil>(CameraPath);
 		_player = GetParent<PlayerController>();
-		Equip(GetNode<Weapon>(StartingWeaponPath));
+		Equip(AddWeapon(GetNode<Weapon>(StartingWeaponPath)));
+	}
+
+	/// <summary>True if a weapon using these stats is already owned.</summary>
+	public bool Owns(WeaponStats stats) => FindByStats(stats) != null;
+
+	public Weapon FindByStats(WeaponStats stats)
+	{
+		foreach (Weapon weapon in _weapons)
+			if (weapon.Stats == stats)
+				return weapon;
+		return null;
+	}
+
+	/// <summary>Creates a weapon from its scene, puts it in the player's hands and equips it.</summary>
+	public Weapon Give(PackedScene scene)
+	{
+		var weapon = scene.Instantiate<Weapon>();
+		if (Owns(weapon.Stats))
+		{
+			weapon.Free();
+			return null;
+		}
+		GetNode(CameraPath).AddChild(weapon);
+		Equip(AddWeapon(weapon));
+		return weapon;
+	}
+
+	private Weapon AddWeapon(Weapon weapon)
+	{
+		weapon.SharedMods = SharedMods;
+		weapon.AimSource = _camera;
+		weapon.Wielder = _player;
+		_weapons.Add(weapon);
+		SetActive(weapon, false);
+		EmitSignal(SignalName.WeaponAdded, weapon);
+		return weapon;
+	}
+
+	private static void SetActive(Weapon weapon, bool active)
+	{
+		weapon.Visible = active;
+		weapon.ProcessMode = active ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+	}
+
+	/// <summary>Switches by slot (0-based). Ignored for empty slots.</summary>
+	public void EquipSlot(int slot)
+	{
+		if (slot >= 0 && slot < _weapons.Count)
+			Equip(_weapons[slot]);
+	}
+
+	private void Cycle(int step)
+	{
+		if (_weapons.Count < 2 || EquippedWeapon == null)
+			return;
+		int index = _weapons.IndexOf(EquippedWeapon);
+		Equip(_weapons[(index + step + _weapons.Count) % _weapons.Count]);
 	}
 
 	public void Equip(Weapon weapon)
 	{
+		if (weapon == null || weapon == EquippedWeapon)
+			return;
 		if (EquippedWeapon != null)
 		{
-			EquippedWeapon.SetTriggerHeld(false);
-			EquippedWeapon.SetAimHeld(false);
+			EquippedWeapon.Holster();
 			EquippedWeapon.Fired -= OnWeaponFired;
+			SetActive(EquippedWeapon, false);
 		}
 
 		EquippedWeapon = weapon;
+		SetActive(weapon, true);
 		weapon.AimSource = _camera;
 		weapon.Wielder = _player;
 		weapon.Fired += OnWeaponFired;
@@ -53,7 +124,18 @@ public partial class PlayerWeaponInput : Node
 		if (EquippedWeapon == null)
 			return;
 
-		if (@event.IsActionPressed("fire"))
+		if (@event is InputEventKey { Pressed: true, Echo: false, CtrlPressed: false } key
+			&& key.PhysicalKeycode is >= Key.Key1 and <= Key.Key9)
+		{
+			EquipSlot((int)(key.PhysicalKeycode - Key.Key1));
+		}
+		else if (@event is InputEventMouseButton { Pressed: true } wheel
+			&& wheel.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown
+			&& Input.MouseMode == Input.MouseModeEnum.Captured)
+		{
+			Cycle(wheel.ButtonIndex == MouseButton.WheelDown ? 1 : -1);
+		}
+		else if (@event.IsActionPressed("fire"))
 		{
 			// Ignore the click that recaptures the mouse.
 			if (Input.MouseMode == Input.MouseModeEnum.Captured)

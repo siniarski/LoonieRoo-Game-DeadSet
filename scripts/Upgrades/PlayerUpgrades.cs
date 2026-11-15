@@ -103,7 +103,7 @@ public partial class PlayerUpgrades : Node
 		{
 			Player = GetParent<PlayerController>(),
 			Health = GetNode<HealthComponent>(HealthPath),
-			Weapon = GetNodeOrNull<PlayerWeaponInput>(WeaponInputPath)?.EquippedWeapon,
+			WeaponMods = GetNodeOrNull<PlayerWeaponInput>(WeaponInputPath)?.SharedMods,
 			Upgrades = this,
 		}, stacks);
 

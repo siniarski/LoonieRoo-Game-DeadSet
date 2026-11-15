@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponMod" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponMod.cs" id="1_mod"]
+
+[resource]
+script = ExtResource("1_mod")
+Id = "nail_pierce_keep"
+DisplayName = "Tempered Tips"
+Description = "Each level: nails keep 15% more damage after each enemy they pass through."
+Stat = 1
+Value = 0.15
+MaxLevel = 3
+Price = 90
+PriceGrowth = 1.5

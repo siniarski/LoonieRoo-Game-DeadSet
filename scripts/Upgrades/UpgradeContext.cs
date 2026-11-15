@@ -9,8 +9,8 @@ public sealed class UpgradeContext
 {
 	public PlayerController Player { get; init; }
 	public HealthComponent Health { get; init; }
-	/// <summary>The weapon equipped when the upgrade was granted. May be null.</summary>
-	public Weapon Weapon { get; init; }
+	/// <summary>Modifiers shared by every weapon the player carries, now and later. May be null.</summary>
+	public WeaponModifiers WeaponMods { get; init; }
 	/// <summary>Subscribe to game events here so hooks end when the player does.</summary>
 	public PlayerUpgrades Upgrades { get; init; }
 }
