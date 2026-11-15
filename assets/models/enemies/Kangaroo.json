@@ -1,0 +1,123 @@
+{
+	"name": "Kangaroo",
+	"materials": {
+		"M_Fur": {
+			"color": [
+				0.6,
+				0.32,
+				0.2
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Pale": {
+			"color": [
+				0.8,
+				0.62,
+				0.45
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Dark": {
+			"color": [
+				0.2,
+				0.12,
+				0.1
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Glow": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 1.5,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				1.0,
+				0.12,
+				0.05
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": true
+		}
+	},
+	"nodes": [
+		{
+			"name": "Striker",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.2000000476837158,
+				-0.20000000298023224
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Fur",
+				"M_Pale",
+				"M_Dark",
+				"M_Glow"
+			],
+			"verts_blender": 1430,
+			"tris": 2772,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.65,
+				-0.08
+			],
+			"materials": [
+				"M_Fur",
+				"M_Dark",
+				"M_Eye"
+			],
+			"verts_blender": 486,
+			"tris": 928,
+			"cast_shadow": true
+		},
+		{
+			"name": "Arms",
+			"parent": "Visual/Striker",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Fur",
+				"M_Glow"
+			],
+			"verts_blender": 380,
+			"tris": 736,
+			"cast_shadow": true
+		}
+	]
+}

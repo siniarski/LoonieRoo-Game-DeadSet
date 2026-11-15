@@ -1,0 +1,156 @@
+{
+	"name": "Wombat",
+	"materials": {
+		"M_Fur": {
+			"color": [
+				0.44,
+				0.35,
+				0.28
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Dark": {
+			"color": [
+				0.24,
+				0.2,
+				0.18
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Pale": {
+			"color": [
+				0.62,
+				0.53,
+				0.45
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Glow": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 1.5,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				1.0,
+				0.12,
+				0.05
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": true
+		}
+	},
+	"nodes": [
+		{
+			"name": "Paw",
+			"parent": "Visual",
+			"position": [
+				-0.4000000059604645,
+				0.0,
+				-0.41999998688697815
+			]
+		},
+		{
+			"name": "Glow",
+			"parent": "Visual",
+			"position": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "HeadPivot",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.340000033378601,
+				-0.7200000286102295
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Fur",
+				"M_Dark",
+				"M_Pale"
+			],
+			"verts_blender": 798,
+			"tris": 1496,
+			"cast_shadow": true
+		},
+		{
+			"name": "Leg",
+			"parent": "Visual/Paw",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Dark",
+				"M_Pale"
+			],
+			"verts_blender": 112,
+			"tris": 192,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual/HeadPivot",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Fur",
+				"M_Dark",
+				"M_Pale",
+				"M_Eye"
+			],
+			"verts_blender": 626,
+			"tris": 1170,
+			"cast_shadow": true
+		},
+		{
+			"name": "Patches",
+			"parent": "Visual/Glow",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Glow"
+			],
+			"verts_blender": 900,
+			"tris": 1760,
+			"cast_shadow": true
+		}
+	]
+}

@@ -1,0 +1,112 @@
+{
+	"name": "UprightBunny",
+	"materials": {
+		"M_Glow": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 1.4,
+			"unshaded": false
+		},
+		"M_Belly": {
+			"color": [
+				0.75,
+				1.0,
+				0.6
+			],
+			"emission": [
+				0.75,
+				1.0,
+				0.6
+			],
+			"energy": 0.8,
+			"unshaded": false
+		},
+		"M_Dark": {
+			"color": [
+				0.1,
+				0.3,
+				0.12
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				1.0,
+				0.12,
+				0.05
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": true
+		},
+		"M_Tooth": {
+			"color": [
+				0.95,
+				0.95,
+				0.85
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		}
+	},
+	"nodes": [
+		{
+			"name": "Striker",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.4800000190734863,
+				-0.05999999865889549
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Glow",
+				"M_Belly",
+				"M_Dark"
+			],
+			"verts_blender": 1171,
+			"tris": 2248,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual/Striker",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Glow",
+				"M_Belly",
+				"M_Dark",
+				"M_Eye",
+				"M_Tooth"
+			],
+			"verts_blender": 570,
+			"tris": 1080,
+			"cast_shadow": true
+		}
+	]
+}

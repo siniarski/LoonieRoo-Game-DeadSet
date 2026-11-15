@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Enemies/MeleeChaser.cs" id="1_chaser"]
 [ext_resource type="Resource" path="res://resources/enemies/UprightBunny.tres" id="2_stats"]
@@ -6,90 +6,15 @@
 [ext_resource type="Script" path="res://scripts/Combat/HitReaction.cs" id="4_hit"]
 [ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
 [ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/UprightBunny/Body.res" id="mesh_Body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/UprightBunny/Head.res" id="mesh_Head"]
 
 [sub_resource type="CapsuleShape3D" id="BodyShape"]
 radius = 0.3
-height = 1.6
+height = 1.3
 
 [sub_resource type="SphereShape3D" id="WeakShape"]
 radius = 0.17
-
-[sub_resource type="StandardMaterial3D" id="M_Glow"]
-albedo_color = Color(0.35, 0.95, 0.3, 1)
-roughness = 0.85
-emission_enabled = true
-emission = Color(0.35, 0.95, 0.3, 1)
-emission_energy_multiplier = 1.4
-
-[sub_resource type="StandardMaterial3D" id="M_Belly"]
-albedo_color = Color(0.75, 1, 0.6, 1)
-roughness = 0.85
-emission_enabled = true
-emission = Color(0.75, 1, 0.6, 1)
-emission_energy_multiplier = 0.8
-
-[sub_resource type="StandardMaterial3D" id="M_Eye"]
-shading_mode = 0
-albedo_color = Color(1, 0.12, 0.05, 1)
-roughness = 0.85
-
-[sub_resource type="StandardMaterial3D" id="M_Tooth"]
-albedo_color = Color(0.95, 0.95, 0.85, 1)
-roughness = 0.85
-
-[sub_resource type="SphereMesh" id="Mesh0"]
-radius = 0.3
-height = 0.6
-radial_segments = 12
-rings = 6
-material = SubResource("M_Glow")
-
-[sub_resource type="SphereMesh" id="Mesh1"]
-radius = 0.22
-height = 0.44
-radial_segments = 12
-rings = 6
-material = SubResource("M_Belly")
-
-[sub_resource type="SphereMesh" id="Mesh2"]
-radius = 0.17
-height = 0.34
-radial_segments = 12
-rings = 6
-material = SubResource("M_Glow")
-
-[sub_resource type="BoxMesh" id="Mesh3"]
-size = Vector3(0.12, 0.08, 0.38)
-material = SubResource("M_Glow")
-
-[sub_resource type="CapsuleMesh" id="Mesh4"]
-radius = 0.05
-height = 0.3
-radial_segments = 10
-rings = 4
-material = SubResource("M_Glow")
-
-[sub_resource type="SphereMesh" id="Mesh5"]
-radius = 0.16
-height = 0.32
-radial_segments = 12
-rings = 6
-material = SubResource("M_Glow")
-
-[sub_resource type="BoxMesh" id="Mesh6"]
-size = Vector3(0.07, 0.4, 0.04)
-material = SubResource("M_Glow")
-
-[sub_resource type="BoxMesh" id="Mesh7"]
-size = Vector3(0.06, 0.06, 0.02)
-material = SubResource("M_Tooth")
-
-[sub_resource type="SphereMesh" id="Mesh8"]
-radius = 0.035
-height = 0.07
-radial_segments = 12
-rings = 6
-material = SubResource("M_Eye")
 
 [node name="UprightBunny" type="CharacterBody3D"]
 collision_layer = 4
@@ -108,7 +33,7 @@ StrikerPullback = Vector3(0, 0.03, 0.15)
 StrikerThrust = Vector3(0, -0.06, -0.3)
 
 [node name="BodyShape" type="CollisionShape3D" parent="."]
-position = Vector3(0, 0.8, 0)
+position = Vector3(0, 0.65, 0)
 shape = SubResource("BodyShape")
 
 [node name="HeadWeakSpot" type="CollisionShape3D" parent="."]
@@ -122,70 +47,10 @@ FollowPath = NodePath("../Visual/Striker/Head")
 position = Vector3(0, 1.48, -0.06)
 
 [node name="Body" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0.85, 0.02)
-scale = Vector3(1, 1.55, 0.9)
-mesh = SubResource("Mesh0")
-
-[node name="Belly" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0.8, -0.12)
-scale = Vector3(1, 1.5, 0.6)
-mesh = SubResource("Mesh1")
-
-[node name="HaunchL" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.15, 0.3, 0.05)
-scale = Vector3(0.9, 1.2, 1.2)
-mesh = SubResource("Mesh2")
-
-[node name="FootL" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.15, 0.04, -0.08)
-mesh = SubResource("Mesh3")
-
-[node name="PawL" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.21, 1.05, -0.18)
-rotation = Vector3(0.5236, 0, 0)
-mesh = SubResource("Mesh4")
-
-[node name="HaunchR" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.15, 0.3, 0.05)
-scale = Vector3(0.9, 1.2, 1.2)
-mesh = SubResource("Mesh2")
-
-[node name="FootR" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.15, 0.04, -0.08)
-mesh = SubResource("Mesh3")
-
-[node name="PawR" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.21, 1.05, -0.18)
-rotation = Vector3(0.5236, 0, 0)
-mesh = SubResource("Mesh4")
+mesh = ExtResource("mesh_Body")
 
 [node name="Head" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(0, 0, 0)
-mesh = SubResource("Mesh5")
-
-[node name="EarL" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(-0.07, 0.32, 0.04)
-rotation = Vector3(0, 0, 0.1745)
-mesh = SubResource("Mesh6")
-
-[node name="EarR" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(0.07, 0.32, 0.04)
-rotation = Vector3(0, 0, -0.1745)
-mesh = SubResource("Mesh6")
-
-[node name="Teeth" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(0, -0.08, -0.15)
-mesh = SubResource("Mesh7")
-
-[node name="EyeLeft" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(-0.07, 0.04, -0.14)
-cast_shadow = 0
-mesh = SubResource("Mesh8")
-
-[node name="EyeRight" type="MeshInstance3D" parent="Visual/Striker"]
-position = Vector3(0.07, 0.04, -0.14)
-cast_shadow = 0
-mesh = SubResource("Mesh8")
+mesh = ExtResource("mesh_Head")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")

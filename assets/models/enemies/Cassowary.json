@@ -1,0 +1,149 @@
+{
+	"name": "Cassowary",
+	"materials": {
+		"M_Feather": {
+			"color": [
+				0.08,
+				0.08,
+				0.09
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Neck": {
+			"color": [
+				0.15,
+				0.4,
+				0.8
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Wattle": {
+			"color": [
+				0.85,
+				0.12,
+				0.1
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Casque": {
+			"color": [
+				0.45,
+				0.35,
+				0.2
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Leg": {
+			"color": [
+				0.35,
+				0.33,
+				0.25
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Glow": {
+			"color": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"emission": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"energy": 1.5,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"emission": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"energy": 3.0,
+			"unshaded": true
+		}
+	},
+	"nodes": [
+		{
+			"name": "Striker",
+			"parent": "Visual",
+			"position": [
+				0.17000000178813934,
+				0.3799999952316284,
+				0.11999999731779099
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Feather",
+				"M_Neck",
+				"M_Wattle",
+				"M_Leg"
+			],
+			"verts_blender": 1022,
+			"tris": 1855,
+			"cast_shadow": true
+		},
+		{
+			"name": "Leg",
+			"parent": "Visual/Striker",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Feather",
+				"M_Leg",
+				"M_Glow"
+			],
+			"verts_blender": 233,
+			"tris": 423,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.76,
+				-0.3
+			],
+			"materials": [
+				"M_Neck",
+				"M_Casque",
+				"M_Leg",
+				"M_Eye"
+			],
+			"verts_blender": 405,
+			"tris": 786,
+			"cast_shadow": true
+		}
+	]
+}

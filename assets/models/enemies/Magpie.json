@@ -1,0 +1,96 @@
+{
+	"name": "Magpie",
+	"materials": {
+		"M_Black": {
+			"color": [
+				0.05,
+				0.05,
+				0.06
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_White": {
+			"color": [
+				0.92,
+				0.92,
+				0.9
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Beak": {
+			"color": [
+				0.7,
+				0.72,
+				0.75
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				1.0,
+				0.12,
+				0.05
+			],
+			"emission": [
+				1.0,
+				0.12,
+				0.05
+			],
+			"energy": 3.0,
+			"unshaded": true
+		}
+	},
+	"nodes": [
+		{
+			"name": "Striker",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				2.380000114440918,
+				-0.30000001192092896
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Black",
+				"M_White",
+				"M_Beak"
+			],
+			"verts_blender": 975,
+			"tris": 1756,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual/Striker",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Black",
+				"M_Beak",
+				"M_Eye"
+			],
+			"verts_blender": 283,
+			"tris": 538,
+			"cast_shadow": true
+		}
+	]
+}

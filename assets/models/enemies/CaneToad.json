@@ -1,0 +1,90 @@
+{
+	"name": "CaneToad",
+	"materials": {
+		"M_Skin": {
+			"color": [
+				0.45,
+				0.4,
+				0.22
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Belly": {
+			"color": [
+				0.75,
+				0.7,
+				0.5
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Wart": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 2.0,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				1.0,
+				0.75,
+				0.1
+			],
+			"emission": [
+				1.0,
+				0.75,
+				0.1
+			],
+			"energy": 2.0,
+			"unshaded": true
+		}
+	},
+	"nodes": [],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Skin",
+				"M_Belly",
+				"M_Wart"
+			],
+			"verts_blender": 1369,
+			"tris": 2618,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.27,
+				-0.22
+			],
+			"materials": [
+				"M_Skin",
+				"M_Belly",
+				"M_Eye"
+			],
+			"verts_blender": 524,
+			"tris": 1024,
+			"cast_shadow": true
+		}
+	]
+}

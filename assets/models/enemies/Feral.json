@@ -1,0 +1,137 @@
+{
+	"name": "Feral",
+	"materials": {
+		"M_Skin": {
+			"color": [
+				0.5,
+				0.6,
+				0.42
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Singlet": {
+			"color": [
+				0.2,
+				0.32,
+				0.6
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Stubbies": {
+			"color": [
+				0.55,
+				0.45,
+				0.3
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Boot": {
+			"color": [
+				0.2,
+				0.15,
+				0.1
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				0.6,
+				1.0,
+				0.3
+			],
+			"emission": [
+				0.6,
+				1.0,
+				0.3
+			],
+			"energy": 3.0,
+			"unshaded": true
+		},
+		"M_Boil": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 1.5,
+			"unshaded": false
+		}
+	},
+	"nodes": [
+		{
+			"name": "Striker",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.25,
+				-0.05000000074505806
+			]
+		}
+	],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Skin",
+				"M_Singlet",
+				"M_Stubbies",
+				"M_Boot",
+				"M_Boil"
+			],
+			"verts_blender": 974,
+			"tris": 1800,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				1.58,
+				-0.05
+			],
+			"materials": [
+				"M_Skin",
+				"M_Boot",
+				"M_Eye"
+			],
+			"verts_blender": 508,
+			"tris": 972,
+			"cast_shadow": true
+		},
+		{
+			"name": "Arms",
+			"parent": "Visual/Striker",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Skin"
+			],
+			"verts_blender": 366,
+			"tris": 680,
+			"cast_shadow": true
+		}
+	]
+}

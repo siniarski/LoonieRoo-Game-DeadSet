@@ -1,0 +1,101 @@
+{
+	"name": "Dingo",
+	"materials": {
+		"M_Fur": {
+			"color": [
+				0.82,
+				0.58,
+				0.3
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Pale": {
+			"color": [
+				0.92,
+				0.82,
+				0.62
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		},
+		"M_Glow": {
+			"color": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"emission": [
+				0.35,
+				0.95,
+				0.3
+			],
+			"energy": 1.4,
+			"unshaded": false
+		},
+		"M_Eye": {
+			"color": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"emission": [
+				0.7,
+				1.0,
+				0.3
+			],
+			"energy": 3.0,
+			"unshaded": true
+		},
+		"M_Nose": {
+			"color": [
+				0.1,
+				0.08,
+				0.07
+			],
+			"emission": null,
+			"energy": 0.0,
+			"unshaded": false
+		}
+	},
+	"nodes": [],
+	"parts": [
+		{
+			"name": "Body",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"materials": [
+				"M_Fur",
+				"M_Pale",
+				"M_Glow"
+			],
+			"verts_blender": 1127,
+			"tris": 2058,
+			"cast_shadow": true
+		},
+		{
+			"name": "Head",
+			"parent": "Visual",
+			"position": [
+				0.0,
+				0.76,
+				-0.45
+			],
+			"materials": [
+				"M_Fur",
+				"M_Pale",
+				"M_Eye",
+				"M_Nose"
+			],
+			"verts_blender": 492,
+			"tris": 938,
+			"cast_shadow": true
+		}
+	]
+}
