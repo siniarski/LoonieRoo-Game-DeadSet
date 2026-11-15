@@ -11,6 +11,12 @@ public partial class CelStyle : Resource
 {
 	[Export] public string DisplayName { get; set; } = "Style";
 
+	/// <summary>
+	/// Optional second style this one shifts towards. StyleApplier.Dusk (0..1) picks the blend:
+	/// 0 is this style, 1 is the target. Lets later waves get darker without a second code path.
+	/// </summary>
+	[Export] public CelStyle DuskTarget { get; set; }
+
 	[ExportGroup("World")]
 	/// <summary>Replaces the WorldEnvironment's environment (sky, ambient, glow, tonemap).</summary>
 	[Export] public Environment Environment { get; set; }
@@ -44,6 +50,11 @@ public partial class CelStyle : Resource
 
 	/// <summary>Extra brightness multiplier for enemy surfaces (below 1 pushes them towards silhouettes).</summary>
 	[Export] public float EnemyValue { get; set; } = 1f;
+
+	/// <summary>Self-lighting on enemy surfaces: keeps their shadow side from going muddy up close.</summary>
+	[Export] public float EnemySelfLight { get; set; }
+	/// <summary>Self-lighting on the player's weapon: keeps the nail gun orange in shadow.</summary>
+	[Export] public float WeaponSelfLight { get; set; }
 
 	[ExportGroup("Light bands")]
 	[Export(PropertyHint.Range, "2,3")] public int Bands { get; set; } = 2;
@@ -97,6 +108,9 @@ public partial class CelStyle : Resource
 	/// <summary>Outline world geometry too (cover, walls), not only characters and the weapon.</summary>
 	[Export] public bool HullOnWorld { get; set; } = true;
 
+	/// <summary>Outline the player's weapon.</summary>
+	[Export] public bool HullOnWeapon { get; set; } = true;
+
 	[ExportGroup("Ink lines (screen space)")]
 	[Export] public bool EdgesEnabled { get; set; }
 	[Export] public Color InkColor { get; set; } = new(0.05f, 0.03f, 0.02f);
@@ -121,4 +135,81 @@ public partial class CelStyle : Resource
 	[Export] public float Vignette { get; set; }
 	/// <summary>Smooths the ink and outline edges, which MSAA does not reach.</summary>
 	[Export] public bool Fxaa { get; set; }
+
+	/// <summary>
+	/// A new style part-way between two others. Numbers, colours and angles are interpolated;
+	/// switches and counts come from whichever side is nearer. Sky and environment blend too.
+	/// </summary>
+	public static CelStyle Blend(CelStyle from, CelStyle to, float t)
+	{
+		t = Mathf.Clamp(t, 0f, 1f);
+		var result = new CelStyle();
+		foreach (System.Reflection.PropertyInfo property in typeof(CelStyle).GetProperties(
+			System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
+		{
+			if (!property.CanWrite || property.Name == nameof(DuskTarget))
+				continue;
+			object a = property.GetValue(from);
+			object b = property.GetValue(to);
+			object value = a switch
+			{
+				float x => Mathf.Lerp(x, (float)b, t),
+				Color x => x.Lerp((Color)b, t),
+				Vector3 x => x.Lerp((Vector3)b, t),
+				Environment x => BlendEnvironment(x, (Environment)b, t),
+				_ => t < 0.5f ? a : b,
+			};
+			property.SetValue(result, value);
+		}
+		result.DisplayName = from.DisplayName;
+		return result;
+	}
+
+	private static Environment BlendEnvironment(Environment from, Environment to, float t)
+	{
+		if (from == null || to == null)
+			return t < 0.5f ? from : to;
+
+		var result = (Environment)from.Duplicate();
+		result.AmbientLightColor = from.AmbientLightColor.Lerp(to.AmbientLightColor, t);
+		result.AmbientLightEnergy = Mathf.Lerp(from.AmbientLightEnergy, to.AmbientLightEnergy, t);
+		result.GlowIntensity = Mathf.Lerp(from.GlowIntensity, to.GlowIntensity, t);
+		result.GlowBloom = Mathf.Lerp(from.GlowBloom, to.GlowBloom, t);
+		result.GlowHdrThreshold = Mathf.Lerp(from.GlowHdrThreshold, to.GlowHdrThreshold, t);
+
+		if (from.Sky?.SkyMaterial is ShaderMaterial skyFrom && to.Sky?.SkyMaterial is ShaderMaterial skyTo && skyFrom.Shader != null)
+		{
+			var material = (ShaderMaterial)skyFrom.Duplicate();
+			foreach (Godot.Collections.Dictionary uniform in skyFrom.Shader.GetShaderUniformList())
+			{
+				string name = uniform["name"].AsString();
+				Variant a = skyFrom.GetShaderParameter(name);
+				Variant b = skyTo.GetShaderParameter(name);
+				if (a.VariantType != b.VariantType)
+					continue;
+				switch (a.VariantType)
+				{
+					case Variant.Type.Float:
+					case Variant.Type.Int:
+						material.SetShaderParameter(name, Mathf.Lerp(a.AsSingle(), b.AsSingle(), t));
+						break;
+					case Variant.Type.Color:
+						material.SetShaderParameter(name, a.AsColor().Lerp(b.AsColor(), t));
+						break;
+					case Variant.Type.Vector3:
+						material.SetShaderParameter(name, a.AsVector3().Lerp(b.AsVector3(), t));
+						break;
+					case Variant.Type.Nil:
+						break;
+					default:
+						material.SetShaderParameter(name, t < 0.5f ? a : b);
+						break;
+				}
+			}
+			var sky = (Sky)from.Sky.Duplicate();
+			sky.SkyMaterial = material;
+			result.Sky = sky;
+		}
+		return result;
+	}
 }

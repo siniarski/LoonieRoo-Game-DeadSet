@@ -11,6 +11,9 @@ uniform float emission_energy = 0.0;
 /// letting it clip towards yellow-white. Very bright glows still wash out a little, so a
 /// flare-up (the wombat's wind-up) reads as a flare-up.
 uniform float glow_keep_hue = 1.0;
+/// Adds this much of the surface colour as its own light, so the shadow side keeps its hue
+/// (the orange nail gun, enemy bodies) instead of sinking into the ambient colour.
+uniform float self_light = 0.0;
 /// 1 = the source was unshaded (eyes, muzzle flash): draw the flat colour, ignore lights.
 uniform float unshaded = 0.0;
 uniform sampler2D albedo_tex : source_color, hint_default_white, filter_linear_mipmap, repeat_enable;
@@ -102,7 +105,7 @@ void fragment() {
 		float over = peak - 1.0;
 		glow = mix(glow / peak, vec3(1.0), clamp(over * 0.2, 0.0, 0.6)) * (1.0 + over * 0.5);
 	}
-	glow += albedo.rgb * unshaded;
+	glow += albedo.rgb * unshaded + base * self_light * (1.0 - unshaded);
 
 	// View-space rim, biased to faces that look up or sideways (sky light), not down.
 	float fres = 1.0 - clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0);

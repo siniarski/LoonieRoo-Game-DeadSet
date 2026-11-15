@@ -1,11 +1,14 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://art_previews/StylePreview.cs" id="1_preview"]
 [ext_resource type="Resource" path="res://art_previews/styles/A_ClassicToon.tres" id="2_a"]
 [ext_resource type="Resource" path="res://art_previews/styles/B_InkedComic.tres" id="3_b"]
 [ext_resource type="Resource" path="res://art_previews/styles/C_NeonDusk.tres" id="4_c"]
 [ext_resource type="Resource" path="res://art_previews/styles/D_OutbackPoster.tres" id="5_d"]
+[ext_resource type="Resource" path="res://art_previews/styles/E1_PosterNeonThreat.tres" id="6_e1"]
+[ext_resource type="Resource" path="res://art_previews/styles/E2_NeonPosterDusk.tres" id="7_e2"]
+[ext_resource type="Resource" path="res://art_previews/styles/E3_DuskShift.tres" id="8_e3"]
 
 [node name="StylePreview" type="Node"]
 script = ExtResource("1_preview")
-Styles = [ExtResource("2_a"), ExtResource("3_b"), ExtResource("4_c"), ExtResource("5_d")]
+Styles = [ExtResource("2_a"), ExtResource("3_b"), ExtResource("4_c"), ExtResource("5_d"), ExtResource("6_e1"), ExtResource("7_e2"), ExtResource("8_e3")]

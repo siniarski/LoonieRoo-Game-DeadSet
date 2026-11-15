@@ -19,7 +19,30 @@ public partial class StyleApplier : Node
 	/// <summary>Applied on ready, if set.</summary>
 	[Export] public CelStyle InitialStyle { get; set; }
 
+	/// <summary>The style in effect. For a style with a DuskTarget this is the blend at the current Dusk.</summary>
 	public CelStyle Current { get; private set; }
+
+	/// <summary>
+	/// 0..1 shift towards the applied style's DuskTarget (ignored by styles without one).
+	/// Meant to be driven from game flow, e.g. raised a step per wave. Each change rebuilds the
+	/// styled materials, so step it per wave or every few seconds, not every frame.
+	/// </summary>
+	public float Dusk
+	{
+		get => _dusk;
+		set
+		{
+			value = Mathf.Clamp(value, 0f, 1f);
+			if (Mathf.IsEqualApprox(value, _dusk))
+				return;
+			_dusk = value;
+			if (_baseStyle?.DuskTarget != null)
+				Apply(_baseStyle);
+		}
+	}
+
+	private float _dusk;
+	private CelStyle _baseStyle;
 
 	private sealed class Saved
 	{
@@ -83,6 +106,8 @@ public partial class StyleApplier : Node
 		Clear();
 		if (style == null)
 			return;
+		_baseStyle = style;
+		style = style.DuskTarget != null ? CelStyle.Blend(style, style.DuskTarget, _dusk) : style;
 		Current = style;
 
 		ApplyWorld(style);
@@ -97,6 +122,7 @@ public partial class StyleApplier : Node
 		if (Current == null)
 			return;
 		Current = null;
+		_baseStyle = null;
 
 		foreach ((GeometryInstance3D node, Saved saved) in _saved)
 		{
@@ -264,7 +290,8 @@ public partial class StyleApplier : Node
 		// 0 world, 1 enemy, 2 the player's weapon.
 		int kind = IsEnemyPart(node) ? 1 : IsWeaponPart(node) ? 2 : 0;
 		int shape = ShapeOf(node);
-		bool hull = Current.HullEnabled && (kind != 0 || Current.HullOnWorld) && !IsSlab(node);
+		bool hull = Current.HullEnabled && !IsSlab(node)
+			&& (kind == 1 || (kind == 2 ? Current.HullOnWeapon : Current.HullOnWorld));
 		var saved = new Saved { Override = node.MaterialOverride };
 
 		if (node.MaterialOverride != null)
@@ -353,6 +380,7 @@ public partial class StyleApplier : Node
 		toon.SetShaderParameter("band_softness", s.BandSoftness);
 		toon.SetShaderParameter("rim_color", s.RimColor);
 		toon.SetShaderParameter("rim_strength", rim);
+		toon.SetShaderParameter("self_light", enemy ? s.EnemySelfLight : kind == 2 ? s.WeaponSelfLight : 0f);
 		toon.SetShaderParameter("rim_width", s.RimWidth);
 		toon.SetShaderParameter("shadow_pattern", s.ShadowPattern);
 		toon.SetShaderParameter("pattern_scale", s.PatternScale);

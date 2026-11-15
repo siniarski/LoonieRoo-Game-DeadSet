@@ -9,11 +9,13 @@ namespace Deadset.ArtPreviews;
 /// <summary>
 /// Screenshot tool for the art directions: poses the same shots in every style, saves a PNG of
 /// each, measures frame time and builds side-by-side comparison sheets.
-/// Run: godot --path . res://art_previews/StyleCapture.tscn -- out=C:/some/folder [styles=0,A,C] [shots=1,2,3,4] [perf] [sheets]
+/// Run: godot --path . res://art_previews/StyleCapture.tscn -- out=C:/some/folder [styles=0,A,C,E1,E3_05] [shots=1,2,3,4] [perf] [sheets] [hybridsheets]
 /// </summary>
 public partial class StyleCapture : Node
 {
-	private static readonly string[] StyleKeys = { "0", "A", "B", "C", "D" };
+	private static readonly string[] StyleKeys = { "0", "A", "B", "C", "D", "E1", "E2", "E3_0", "E3_05", "E3_1" };
+	/// <summary>StyleApplier.Dusk for each entry (only E3 reacts to it).</summary>
+	private static readonly float[] StyleDusk = { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0.5f, 1f };
 	private static readonly string[] StyleFiles =
 	{
 		null,
@@ -21,9 +23,17 @@ public partial class StyleCapture : Node
 		"res://art_previews/styles/B_InkedComic.tres",
 		"res://art_previews/styles/C_NeonDusk.tres",
 		"res://art_previews/styles/D_OutbackPoster.tres",
+		"res://art_previews/styles/E1_PosterNeonThreat.tres",
+		"res://art_previews/styles/E2_NeonPosterDusk.tres",
+		"res://art_previews/styles/E3_DuskShift.tres",
+		"res://art_previews/styles/E3_DuskShift.tres",
+		"res://art_previews/styles/E3_DuskShift.tres",
 	};
 	private static readonly string[] StyleLabels =
-		{ "Current look (baseline)", "A  Classic toon", "B  Inked comic", "C  Neon-mutant dusk", "D  Flat outback poster" };
+	{
+		"Current look (baseline)", "A  Classic toon", "B  Inked comic", "C  Neon-mutant dusk", "D  Flat outback poster",
+		"E1  Poster + neon threat", "E2  Neon poster dusk", "E3  Dusk shift at 0", "E3  Dusk shift at 0.5", "E3  Dusk shift at 1",
+	};
 	private static readonly string[] ShotNames = { "", "1_arena", "2_flock", "3_lineup", "4_windup_sparks" };
 
 	private Node3D _main;
@@ -34,7 +44,8 @@ public partial class StyleCapture : Node
 
 	public override async void _Ready()
 	{
-		var styles = new List<string>(StyleKeys);
+		var styles = new List<string> { "0", "A", "B", "C", "D" };
+		bool hybridSheets = false;
 		var shots = new List<int> { 1, 2, 3, 4 };
 		bool perf = false;
 		bool sheets = false;
@@ -55,6 +66,8 @@ public partial class StyleCapture : Node
 				perf = true;
 			else if (arg == "sheets")
 				sheets = true;
+			else if (arg == "hybridsheets")
+				hybridSheets = true;
 		}
 		DirAccess.MakeDirRecursiveAbsolute(_out);
 
@@ -87,6 +100,7 @@ public partial class StyleCapture : Node
 				int index = System.Array.IndexOf(StyleKeys, key);
 				if (index < 0)
 					continue;
+				_applier.Dusk = StyleDusk[index];
 				_applier.Apply(StyleFiles[index] == null ? null : GD.Load<CelStyle>(StyleFiles[index]));
 				string path = $"{_out}/{ShotNames[shot]}_{key}.png";
 				if (shot == 4)
@@ -116,7 +130,13 @@ public partial class StyleCapture : Node
 
 		if (sheets)
 			for (int shot = 1; shot <= 3; shot++)
-				await BuildSheet(shot);
+				await BuildSheet($"sheet_{ShotNames[shot]}", shot, new[] { "0", "A", "B", "C", "D" }, 3);
+		if (hybridSheets)
+		{
+			for (int shot = 1; shot <= 3; shot++)
+				await BuildSheet($"sheet_hybrids_{ShotNames[shot]}", shot, new[] { "C", "D", "E1", "E2", "E3_05" }, 3);
+			await BuildSheet("sheet_E3_progression_2_flock", 2, new[] { "E3_0", "E3_05", "E3_1" }, 3);
+		}
 
 		GetTree().Quit();
 	}
@@ -253,18 +273,18 @@ public partial class StyleCapture : Node
 
 	// ---- Comparison sheets --------------------------------------------------------------
 
-	/// <summary>One PNG per shot type: baseline plus A-D in a 3x2 grid, each tile labelled.</summary>
-	private async Task BuildSheet(int shot)
+	/// <summary>One PNG for a shot type: the given styles in a labelled grid.</summary>
+	private async Task BuildSheet(string name, int shot, string[] keys, int columns)
 	{
 		const int tileW = 960, tileH = 540, labelH = 46, pad = 10;
-		const int columns = 3, rows = 2;
+		int rows = (keys.Length + columns - 1) / columns;
 		int cellH = tileH + labelH;
 		var sheet = Image.CreateEmpty(columns * tileW + (columns + 1) * pad, rows * cellH + (rows + 1) * pad, false, Image.Format.Rgba8);
 		sheet.Fill(new Color(0.09f, 0.08f, 0.08f));
 
-		for (int i = 0; i < StyleKeys.Length; i++)
+		for (int i = 0; i < keys.Length; i++)
 		{
-			string path = $"{_out}/{ShotNames[shot]}_{StyleKeys[i]}.png";
+			string path = $"{_out}/{ShotNames[shot]}_{keys[i]}.png";
 			if (!FileAccess.FileExists(path))
 				continue;
 			Image tile = Image.LoadFromFile(path);
@@ -272,11 +292,11 @@ public partial class StyleCapture : Node
 			tile.Resize(tileW, tileH, Image.Interpolation.Lanczos);
 			int x = pad + (i % columns) * (tileW + pad);
 			int y = pad + (i / columns) * (cellH + pad);
-			Image label = await RenderLabel(StyleLabels[i], tileW, labelH);
+			Image label = await RenderLabel(StyleLabels[System.Array.IndexOf(StyleKeys, keys[i])], tileW, labelH);
 			sheet.BlitRect(label, new Rect2I(0, 0, tileW, labelH), new Vector2I(x, y));
 			sheet.BlitRect(tile, new Rect2I(0, 0, tileW, tileH), new Vector2I(x, y + labelH));
 		}
-		string outPath = $"{_out}/sheet_{ShotNames[shot]}.png";
+		string outPath = $"{_out}/{name}.png";
 		sheet.SavePng(outPath);
 		GD.Print("Saved ", outPath);
 	}

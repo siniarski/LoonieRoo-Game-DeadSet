@@ -5,18 +5,20 @@ using Godot.Collections;
 namespace Deadset.ArtPreviews;
 
 /// <summary>
-/// The real game with switchable art directions: 1-4 pick a direction, 0 returns to the current look.
+/// The real game with switchable art directions: 1-7 pick a direction, 0 returns to the current look.
+/// Minus and equals step the dusk shift of a style that has one (E3).
 /// Nothing in the game scenes is changed; StyleApplier restyles the running tree.
 /// F2 / F3 / F4 spawn an emu pack, a wombat and kangaroos, to look at them without waiting for a wave.
 /// Optional test run: godot --path . res://art_previews/StylePreview.tscn -- style=2 shot=C:/out.png delay=10
 /// </summary>
 public partial class StylePreview : Node
 {
-	/// <summary>One per key, in order 1, 2, 3, 4.</summary>
+	/// <summary>One per key, in order 1, 2, 3, ...</summary>
 	[Export] public Array<CelStyle> Styles { get; set; } = new();
 
 	// Survives "have another go", which reloads this scene.
 	private static int _selected;
+	private static float _dusk;
 
 	private StyleApplier _applier;
 	private TestSpawner _spawner;
@@ -58,6 +60,8 @@ public partial class StylePreview : Node
 		{
 			if (arg.StartsWith("style="))
 				_selected = int.Parse(arg[6..]);
+			else if (arg.StartsWith("dusk="))
+				_dusk = float.Parse(arg[5..], System.Globalization.CultureInfo.InvariantCulture);
 			else if (arg.StartsWith("shot="))
 				shot = arg[5..];
 			else if (arg.StartsWith("delay="))
@@ -80,6 +84,11 @@ public partial class StylePreview : Node
 			case Key.Key2: Select(2); break;
 			case Key.Key3: Select(3); break;
 			case Key.Key4: Select(4); break;
+			case Key.Key5: Select(5); break;
+			case Key.Key6: Select(6); break;
+			case Key.Key7: Select(7); break;
+			case Key.Minus: _dusk = Mathf.Max(_dusk - 0.1f, 0f); Select(_selected); break;
+			case Key.Equal: _dusk = Mathf.Min(_dusk + 0.1f, 1f); Select(_selected); break;
 			case Key.F2: _spawner.SpawnPack(0); break;    // emus
 			case Key.F3: _spawner.SpawnPack(10); break;   // wombat
 			case Key.F4: _spawner.SpawnPack(4); break;    // kangaroos
@@ -92,8 +101,12 @@ public partial class StylePreview : Node
 	{
 		_selected = Mathf.Clamp(index, 0, Styles.Count);
 		CelStyle style = _selected == 0 ? null : Styles[_selected - 1];
+		_applier.Dusk = _dusk;
 		_applier.Apply(style);
-		_label.Text = $"{(style == null ? "0  Current look" : style.DisplayName)}\n[1-4] art directions   [0] current look   [F2/F3/F4] spawn emus / wombat / kangaroos";
+		string name = style == null ? "0  Current look" : style.DisplayName;
+		if (style?.DuskTarget != null)
+			name += $"   dusk {_dusk:0.0}  [-] [=]";
+		_label.Text = $"{name}\n[1-7] art directions   [0] current look   [F2/F3/F4] spawn emus / wombat / kangaroos";
 	}
 
 	/// <summary>Lets the game run for a while, saves one screenshot and quits. Leaves the mouse alone.</summary>
