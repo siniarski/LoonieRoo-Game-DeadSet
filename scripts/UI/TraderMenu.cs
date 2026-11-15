@@ -89,6 +89,7 @@ public partial class TraderMenu : CanvasLayer
 	private void BuildUi()
 	{
 		_root = new Control { MouseFilter = Control.MouseFilterEnum.Stop };
+		_root.AddToGroup("modal_ui");
 		_root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 		AddChild(_root);
 

@@ -46,6 +46,8 @@ public partial class Nail : Node3D
 	[Export] public Color RicochetSparkColor { get; set; } = new(0.6f, 0.9f, 1f);
 	/// <summary>How far a chain jump looks for its next enemy, in metres.</summary>
 	[Export] public float ChainRange { get; set; } = 6f;
+	/// <summary>Share of damage kept on each chain jump.</summary>
+	[Export(PropertyHint.Range, "0,1")] public float ChainDamageKeep { get; set; } = 0.5f;
 	[Export] public Color ChainSparkColor { get; set; } = new(0.75f, 0.5f, 1f);
 	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 5;  // world + enemies
 	[Export] public Color WallSparkColor { get; set; } = new(1f, 0.7f, 0.3f);
@@ -214,7 +216,7 @@ public partial class Nail : Node3D
 			return false;
 
 		_chainLeft--;
-		_damage *= _pierceKeep;
+		_damage *= ChainDamageKeep;
 		_direction = (bestAim - point).Normalized();
 		_velocity = _direction * _velocity.Length();
 		_remainingRange = ChainRange * 1.5f;

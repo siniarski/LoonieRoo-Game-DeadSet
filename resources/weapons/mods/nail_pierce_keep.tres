@@ -6,9 +6,9 @@
 script = ExtResource("1_mod")
 Id = "nail_pierce_keep"
 DisplayName = "Tempered Tips"
-Description = "Each level: nails keep 15% more damage after each enemy they pass through."
+Description = "Each level: nails keep 10% more damage after each enemy they pass through."
 Stat = 1
-Value = 0.15
-MaxLevel = 3
-Price = 90
+Value = 0.1
+MaxLevel = 2
+Price = 150
 PriceGrowth = 1.5

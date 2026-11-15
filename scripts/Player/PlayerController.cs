@@ -105,6 +105,15 @@ public partial class PlayerController : CharacterBody3D
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 	}
 
+	/// <summary>True while a screen in the "modal_ui" group (the trader) is showing.</summary>
+	private bool IsMenuOpen()
+	{
+		foreach (Node node in GetTree().GetNodesInGroup("modal_ui"))
+			if (node is CanvasItem { Visible: true } item && item.IsVisibleInTree())
+				return true;
+		return false;
+	}
+
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		if (@event.IsActionPressed("release_mouse"))
@@ -117,7 +126,10 @@ public partial class PlayerController : CharacterBody3D
 		if (Input.MouseMode != Input.MouseModeEnum.Captured)
 		{
 			// Click back into the window to resume. Swallow the click so it never fires a weapon.
-			if (@event is InputEventMouseButton { Pressed: true })
+			// Only real clicks (not the scroll wheel), and never while a menu is up.
+			if (@event is InputEventMouseButton { Pressed: true } click
+				&& click.ButtonIndex is MouseButton.Left or MouseButton.Right
+				&& !IsMenuOpen())
 			{
 				Input.MouseMode = Input.MouseModeEnum.Captured;
 				GetViewport().SetInputAsHandled();

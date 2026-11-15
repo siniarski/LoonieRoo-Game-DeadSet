@@ -6,9 +6,9 @@
 script = ExtResource("1_mod")
 Id = "nail_chain"
 DisplayName = "Ricochet Coil"
-Description = "Each level: a nail that stops in an enemy jumps once more to the nearest enemy nearby."
+Description = "A nail that stops in an enemy jumps to the nearest enemy nearby, at half damage."
 Stat = 2
 Value = 1
-MaxLevel = 2
-Price = 160
+MaxLevel = 1
+Price = 300
 PriceGrowth = 1.75
