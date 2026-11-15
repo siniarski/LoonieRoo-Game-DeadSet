@@ -412,7 +412,7 @@ public partial class Wombat : Enemy
 	/// <summary>One hit per charge: the charge ends here and it skids on past.</summary>
 	private void HitPlayer()
 	{
-		TargetHealth.ApplyDamage(ChargeDamage);
+		TargetHealth.ApplyDamage(ChargeDamage, GlobalPosition);
 		if (Target is CharacterBody3D body)
 		{
 			// Set rather than add, so several wombats hitting at once can't stack the player

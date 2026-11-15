@@ -238,6 +238,12 @@ public partial class Hud : CanvasLayer
 		}
 
 		_playerHealth = health;
+		if (health.GetParent() is Node3D body)
+		{
+			var indicator = new DamageDirectionIndicator { Name = "DamageDirection" };
+			AddChild(indicator);
+			indicator.Bind(body, health);
+		}
 		health.Damaged += OnPlayerDamaged;
 		health.HealthReset += OnPlayerHealthReset;
 		health.Healed += (_, _) => UpdateHealth();

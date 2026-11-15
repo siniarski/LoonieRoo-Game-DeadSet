@@ -43,7 +43,10 @@ public partial class MeleeAttack : Node
 		if (target == null || target.IsDead)
 			return false;
 
-		target.ApplyDamage(Damage);
+		if (GetParent() is Node3D attacker)
+			target.ApplyDamage(Damage, attacker.GlobalPosition);
+		else
+			target.ApplyDamage(Damage);
 		EmitSignal(SignalName.AttackLanded, Damage);
 		return true;
 	}

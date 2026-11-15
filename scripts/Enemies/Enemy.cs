@@ -29,6 +29,12 @@ public abstract partial class Enemy : CharacterBody3D
 	[Export] public EnemyCue DeathCue { get; set; } = EnemyCue.None;
 	/// <summary>Height of the body centre, where death effects play.</summary>
 	[Export] public float EffectHeight { get; set; } = 0.3f;
+	/// <summary>Speed the body is knocked away from the player on death (0 = it just topples).</summary>
+	[Export] public float CorpseKnockSpeed { get; set; } = 4.5f;
+	[Export] public float CorpseUpSpeed { get; set; } = 3f;
+	/// <summary>Seconds the body lies still before sinking, and how long the sink takes.</summary>
+	[Export] public float CorpseHold { get; set; } = 0.5f;
+	[Export] public float CorpseSink { get; set; } = 0.6f;
 
 	/// <summary>Ignores gravity and keeps its height (birds). Still paths along the ground navmesh.</summary>
 	[Export] public bool Flying { get; set; }
@@ -372,6 +378,10 @@ public abstract partial class Enemy : CharacterBody3D
 		ImpactEffects.SpawnSparks(parent, center, Vector3.Up, DeathSparkColor, DeathSparkAmount);
 		if (DeathSound != null)
 			PlaceholderSfx.PlayAt(parent, DeathSound, center, -6f, 0.15f);
+
+		Vector3 away = IsInstanceValid(Target) ? GlobalPosition - Target.GlobalPosition : -GlobalBasis.Z;
+		float groundY = Flying ? 0f : GlobalPosition.Y;
+		Corpse.Spawn(parent, Visual, GlobalPosition, groundY, away, CorpseKnockSpeed, CorpseUpSpeed, CorpseHold, CorpseSink);
 
 		QueueFree();
 	}

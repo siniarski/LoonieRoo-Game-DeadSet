@@ -24,6 +24,11 @@ public partial class HealthComponent : Node
 	/// <summary>Health was restored. Amount is what was actually gained.</summary>
 	[Signal] public delegate void HealedEventHandler(float amount, float current);
 	[Signal] public delegate void ArmourChangedEventHandler(float armour, float maxArmour);
+	/// <summary>
+	/// A hit that came from somewhere (an enemy's position), emitted right after Damaged.
+	/// The HUD uses it to point at whoever is hurting you.
+	/// </summary>
+	[Signal] public delegate void HitFromEventHandler(Vector3 sourcePosition, float amount);
 
 	[Export] public float MaxHealth { get; set; } = 100f;
 	[Export] public float MaxArmour { get; set; } = 100f;
@@ -49,8 +54,13 @@ public partial class HealthComponent : Node
 
 	public void RemoveDamageModifier(Func<float, float> modifier) => _damageModifiers.Remove(modifier);
 
+	/// <summary>Applies damage from a known position (an enemy). Returns true if this hit was the killing blow.</summary>
+	public bool ApplyDamage(float amount, Vector3 sourcePosition) => ApplyDamage(amount, sourcePosition, true);
+
 	/// <summary>Applies damage. Returns true if this hit was the killing blow.</summary>
-	public bool ApplyDamage(float amount)
+	public bool ApplyDamage(float amount) => ApplyDamage(amount, Vector3.Zero, false);
+
+	private bool ApplyDamage(float amount, Vector3 sourcePosition, bool hasSource)
 	{
 		if (IsDead || amount <= 0f)
 			return false;
@@ -71,6 +81,8 @@ public partial class HealthComponent : Node
 
 		Current = Mathf.Max(0f, Current - toHealth);
 		EmitSignal(SignalName.Damaged, amount, Current);
+		if (hasSource)
+			EmitSignal(SignalName.HitFrom, sourcePosition, amount);
 
 		if (!IsDead)
 			return false;
