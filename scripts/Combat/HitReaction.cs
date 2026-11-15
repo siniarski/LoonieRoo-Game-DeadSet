@@ -35,6 +35,8 @@ public partial class HitReaction : Node
 		_restScale = _visual.Scale;
 		CollectMeshes(_visual);
 		GetNode<HealthComponent>(HealthPath).Damaged += OnDamaged;
+		// Idle until something is hit.
+		SetProcess(false);
 	}
 
 	private void CollectMeshes(Node node)
@@ -50,6 +52,7 @@ public partial class HitReaction : Node
 		_flashTimer = FlashTime;
 		_squash = 1f;
 		SetFlash(true);
+		SetProcess(true);
 	}
 
 	private void SetFlash(bool on)
@@ -73,10 +76,15 @@ public partial class HitReaction : Node
 			_squash *= Mathf.Exp(-SquashRecoverSpeed * dt);
 			_visual.Scale = _restScale * Vector3.One.Lerp(SquashScale, _squash);
 		}
-		else if (_squash > 0f)
+		else
 		{
-			_squash = 0f;
-			_visual.Scale = _restScale;
+			if (_squash > 0f)
+			{
+				_squash = 0f;
+				_visual.Scale = _restScale;
+			}
+			if (_flashTimer <= 0f)
+				SetProcess(false);
 		}
 	}
 }

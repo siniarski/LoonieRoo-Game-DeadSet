@@ -15,6 +15,13 @@ public static class PlaceholderSfx
 	private const float Tau = MathF.PI * 2f;
 	private static readonly Random Rng = new(1234);
 
+	/// <summary>
+	/// Most copies of one sound playing at once through PlayAt. Past that, extra copies are
+	/// dropped: a horde pecking in unison adds nothing audible, only players to mix.
+	/// </summary>
+	public static int MaxVoicesPerSound { get; set; } = 8;
+	private static readonly System.Collections.Generic.Dictionary<AudioStream, int> Voices = new();
+
 	private static AudioStreamWav _nailShot;
 	private static AudioStreamWav _nailImpact;
 	private static AudioStreamWav _hitTick;
@@ -92,6 +99,13 @@ public static class PlaceholderSfx
 	/// <summary>Plays a one-shot positional sound that frees itself when done.</summary>
 	public static void PlayAt(Node parent, AudioStream stream, Vector3 position, float volumeDb = 0f, float pitchJitter = 0.08f)
 	{
+		if (stream == null)
+			return;
+		Voices.TryGetValue(stream, out int playing);
+		if (playing >= MaxVoicesPerSound)
+			return;
+		Voices[stream] = playing + 1;
+
 		var player = new AudioStreamPlayer3D
 		{
 			Stream = stream,
@@ -102,6 +116,8 @@ public static class PlaceholderSfx
 		parent.AddChild(player);
 		player.GlobalPosition = position;
 		player.Finished += player.QueueFree;
+		// Counted down when it leaves the tree, so a scene reload mid-sound can't leak voices.
+		player.TreeExiting += () => Voices[stream] = Math.Max(0, Voices[stream] - 1);
 		player.Play();
 	}
 

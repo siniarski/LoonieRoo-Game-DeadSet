@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Deadset.Combat;
 using Deadset.Core;
+using Deadset.Enemies;
 using Godot;
 
 namespace Deadset.Waves;
@@ -21,6 +22,11 @@ public partial class WaveDirector : Node
 	[Export] public float ScatterRadius { get; set; } = 1.8f;
 	/// <summary>Enemies below this height fell out of the world and are removed.</summary>
 	[Export] public float KillHeight { get; set; } = -20f;
+	/// <summary>
+	/// Most enemies created in one physics tick. A big pack trickles in over a few ticks
+	/// instead of landing in a single frame, which would hitch.
+	/// </summary>
+	[Export] public int MaxSpawnsPerTick { get; set; } = 3;
 
 	public Phase CurrentPhase { get; private set; } = Phase.Stopped;
 	/// <summary>The wave in progress, or the next one during a countdown or break. Starts at 1.</summary>
@@ -37,12 +43,23 @@ public partial class WaveDirector : Node
 		public float Order;
 	}
 
+	private struct PendingSpawn
+	{
+		public PackedScene Scene;
+		public Vector3 Position;
+	}
+
 	private readonly List<Pack> _queue = new();
+	/// <summary>Enemies of packs already released, waiting their turn to be created.</summary>
+	private readonly Queue<PendingSpawn> _pending = new();
 	private readonly HashSet<Node3D> _alive = new();
+	private readonly List<Node3D> _fallen = new();
+	private readonly List<Node3D> _farPoints = new();
 	private int _queuedCount;
 	private int _maxAlive;
 	private float _packInterval;
 	private float _packTimer;
+	private float _cullTimer;
 	private Node3D _player;
 
 	public override void _Ready()
@@ -124,6 +141,7 @@ public partial class WaveDirector : Node
 	private void BuildQueue(int waveNumber)
 	{
 		_queue.Clear();
+		_pending.Clear();
 		_queuedCount = 0;
 
 		int index = Mathf.Min(waveNumber - 1, Waves.Waves.Count - 1);
@@ -155,12 +173,17 @@ public partial class WaveDirector : Node
 
 	private void UpdateWave(float dt)
 	{
-		CullFallen();
+		_cullTimer -= dt;
+		if (_cullTimer <= 0f)
+		{
+			_cullTimer = 0.5f;
+			CullFallen();
+		}
 
 		_packTimer -= dt;
 		if (_queue.Count > 0 && _packTimer <= 0f)
 		{
-			int room = _maxAlive - _alive.Count;
+			int room = _maxAlive - _alive.Count - _pending.Count;
 			if (room > 0)
 			{
 				Pack pack = _queue[0];
@@ -174,7 +197,9 @@ public partial class WaveDirector : Node
 			}
 		}
 
-		if (_queue.Count == 0 && _alive.Count == 0)
+		SpawnPending();
+
+		if (_queue.Count == 0 && _pending.Count == 0 && _alive.Count == 0)
 			ClearWave();
 	}
 
@@ -185,21 +210,47 @@ public partial class WaveDirector : Node
 		StartCountdown(Waves.BreakDuration, isBreak: true);
 	}
 
+	/// <summary>Releases a pack: picks its spawn point and queues its enemies for creation.</summary>
 	private void SpawnPack(PackedScene scene, int count)
 	{
 		Node3D point = PickSpawnPoint();
 		if (point == null)
+		{
+			// Nowhere to put them: drop the pack rather than stall the wave.
+			_queuedCount -= count;
 			return;
+		}
 
-		Node parent = GetTree().CurrentScene;
+		Vector3 centre = point.GlobalPosition;
 		float radius = ScatterRadius * Mathf.Sqrt(Mathf.Max(count, 1) / 4f);
 		for (int i = 0; i < count; i++)
 		{
-			var enemy = scene.Instantiate<Node3D>();
 			float angle = GD.Randf() * Mathf.Tau;
 			float r = Mathf.Sqrt(GD.Randf()) * radius;
+			_pending.Enqueue(new PendingSpawn
+			{
+				Scene = scene,
+				// A big pack scatters wide: keep everyone inside the walls and out of cover.
+				Position = NavGrid.SnapToGround(centre + new Vector3(Mathf.Cos(angle) * r, 0.1f, Mathf.Sin(angle) * r)),
+			});
+		}
+	}
+
+	/// <summary>Creates a few of the queued enemies each tick.</summary>
+	private void SpawnPending()
+	{
+		if (_pending.Count == 0)
+			return;
+
+		Node parent = GetTree().CurrentScene;
+		for (int i = Mathf.Max(MaxSpawnsPerTick, 1); i > 0 && _pending.Count > 0; i--)
+		{
+			PendingSpawn spawn = _pending.Dequeue();
+			var enemy = spawn.Scene.Instantiate<Node3D>();
+			// Place it before it enters the tree, so it never spends a frame at the origin.
+			enemy.Position = spawn.Position;
 			parent.AddChild(enemy);
-			enemy.GlobalPosition = point.GlobalPosition + new Vector3(Mathf.Cos(angle) * r, 0.1f, Mathf.Sin(angle) * r);
+			enemy.GlobalPosition = spawn.Position;
 			_alive.Add(enemy);
 			_queuedCount--;
 			enemy.TreeExiting += () => _alive.Remove(enemy);
@@ -212,7 +263,8 @@ public partial class WaveDirector : Node
 		if (points.Count == 0)
 			return null;
 
-		var far = new List<Node3D>();
+		List<Node3D> far = _farPoints;
+		far.Clear();
 		Node3D farthest = null;
 		float farthestDistance = -1f;
 		foreach (Node node in points)
@@ -236,15 +288,13 @@ public partial class WaveDirector : Node
 
 	private void CullFallen()
 	{
-		List<Node3D> fallen = null;
+		_fallen.Clear();
 		foreach (Node3D enemy in _alive)
 		{
 			if (!IsInstanceValid(enemy) || enemy.GlobalPosition.Y < KillHeight)
-				(fallen ??= new List<Node3D>()).Add(enemy);
+				_fallen.Add(enemy);
 		}
-		if (fallen == null)
-			return;
-		foreach (Node3D enemy in fallen)
+		foreach (Node3D enemy in _fallen)
 		{
 			_alive.Remove(enemy);
 			if (IsInstanceValid(enemy))

@@ -1,10 +1,12 @@
+using Deadset.Enemies;
 using Godot;
 
 namespace Deadset.World;
 
 /// <summary>
 /// Bakes the arena's navigation mesh at startup from the geometry under this node,
-/// so editing the arena never leaves a stale navmesh behind.
+/// so editing the arena never leaves a stale navmesh behind. The baked mesh also feeds
+/// the enemies' shared flow field (NavGrid).
 /// </summary>
 public partial class NavigationBaker : NavigationRegion3D
 {
@@ -15,6 +17,9 @@ public partial class NavigationBaker : NavigationRegion3D
 		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 
 		BakeNavigationMesh(onThread: false);
+		NavGrid.Build(NavigationMesh, GlobalTransform);
 		GD.Print($"Navigation baked: {NavigationMesh.GetPolygonCount()} polygons.");
 	}
+
+	public override void _ExitTree() => NavGrid.Clear();
 }

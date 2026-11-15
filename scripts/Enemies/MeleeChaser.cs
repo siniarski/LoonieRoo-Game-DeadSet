@@ -50,6 +50,9 @@ public partial class MeleeChaser : Enemy
 	private State _state = State.Chase;
 	private float _stateTimer;
 	private float _bobPhase;
+	private float _flatSpeed;
+	private Vector3 _visualOffset;
+	private Vector3 _strikerOffset;
 
 	public override void _Ready()
 	{
@@ -71,7 +74,15 @@ public partial class MeleeChaser : Enemy
 		float dt = (float)delta;
 		if (Health.IsDead)
 			return;
+		BeginTick();
+		Tick(dt);
+		EndTick();
+		Vector3 velocity = Velocity;
+		_flatSpeed = Mathf.Sqrt(velocity.X * velocity.X + velocity.Z * velocity.Z);
+	}
 
+	private void Tick(float dt)
+	{
 		if (!HasLiveTarget)
 		{
 			_state = State.Chase;
@@ -79,7 +90,7 @@ public partial class MeleeChaser : Enemy
 			return;
 		}
 
-		Vector3 toTarget = Target.GlobalPosition - GlobalPosition;
+		Vector3 toTarget = TargetPosition - BodyPosition;
 		toTarget.Y = 0f;
 		float distance = toTarget.Length();
 		Vector3 toTargetDir = toTarget / Mathf.Max(distance, 0.001f);
@@ -98,14 +109,14 @@ public partial class MeleeChaser : Enemy
 
 			case State.Recover:
 				_stateTimer -= dt;
-				bool landed = !lunging || Flying || IsOnFloor();
+				bool landed = !lunging || Flying || Grounded;
 				if (_stateTimer <= 0f && landed)
 					_state = State.Chase;
-				Steer(Vector3.Zero, dt, allowSteering: !lunging || IsOnFloor());
+				Steer(Vector3.Zero, dt, allowSteering: !lunging || Grounded);
 				return;
 		}
 
-		if (distance <= Stats.AttackRange && _melee.IsReady && (Flying || IsOnFloor()))
+		if (distance <= Stats.AttackRange && _melee.IsReady && (Flying || Grounded))
 		{
 			StartWindup(toTargetDir);
 			Steer(Vector3.Zero, dt, allowSteering: !lunging);
@@ -147,7 +158,7 @@ public partial class MeleeChaser : Enemy
 		{
 			AudioStream sound = PlaceholderSfx.ForCue(AttackCue);
 			if (sound != null)
-				PlaceholderSfx.PlayAt(GetParent(), sound, GlobalPosition + Vector3.Up * EffectHeight, -6f);
+				PlaceholderSfx.PlayAt(GetParent(), sound, BodyPosition + Vector3.Up * EffectHeight, -6f);
 		}
 	}
 
@@ -160,7 +171,7 @@ public partial class MeleeChaser : Enemy
 
 	private void AnimateGait(float dt)
 	{
-		float speed = new Vector2(Velocity.X, Velocity.Z).Length();
+		float speed = _flatSpeed;
 		Vector3 offset = Vector3.Zero;
 
 		if (Flying)
@@ -168,7 +179,7 @@ public partial class MeleeChaser : Enemy
 			_bobPhase += dt * 2.5f;
 			offset.Y = Mathf.Sin(_bobPhase) * HoverBob;
 		}
-		else if (_state == State.Chase && IsOnFloor())
+		else if (_state == State.Chase && Grounded)
 		{
 			_bobPhase += speed * BobFrequency * Mathf.Pi * dt;
 			float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);
@@ -176,6 +187,10 @@ public partial class MeleeChaser : Enemy
 			offset.Y = wave * BobHeight * amount;
 		}
 
+		// Only touch the node when it actually moves: every write re-sends the whole model to the renderer.
+		if (offset.DistanceSquaredTo(_visualOffset) < 1e-6f)
+			return;
+		_visualOffset = offset;
 		Visual.Position = _visualRest + offset;
 	}
 
@@ -200,6 +215,9 @@ public partial class MeleeChaser : Enemy
 				: StrikerThrust.Lerp(Vector3.Zero, Mathf.Clamp((elapsed - jabTime) / Mathf.Max(RecoverTime - jabTime, 0.01f), 0f, 1f));
 		}
 
+		if (offset.DistanceSquaredTo(_strikerOffset) < 1e-6f)
+			return;
+		_strikerOffset = offset;
 		_striker.Position = _strikerRest + offset;
 	}
 }

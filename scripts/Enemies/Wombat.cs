@@ -139,6 +139,8 @@ public partial class Wombat : Enemy
 	private float _chargeTravelled;
 	private float _bobPhase;
 	private float _glowEnergy;
+	private float _glowShown = float.MinValue;
+	private Vector3 _pawOffset;
 
 	public override void _Ready()
 	{
@@ -187,7 +189,13 @@ public partial class Wombat : Enemy
 		float dt = (float)delta;
 		if (Health.IsDead)
 			return;
+		BeginTick();
+		Tick(dt);
+		EndTick();
+	}
 
+	private void Tick(float dt)
+	{
 		_stateTime += dt;
 		if (_chargeCooldownTimer > 0f && _state == State.Chase)
 			_chargeCooldownTimer -= dt;
@@ -200,7 +208,7 @@ public partial class Wombat : Enemy
 			return;
 		}
 
-		Vector3 toTarget = Target.GlobalPosition - GlobalPosition;
+		Vector3 toTarget = TargetPosition - BodyPosition;
 		toTarget.Y = 0f;
 		float distance = toTarget.Length();
 		Vector3 toTargetDir = distance > 0.001f ? toTarget / distance : -Visual.GlobalBasis.Z;
@@ -243,7 +251,7 @@ public partial class Wombat : Enemy
 
 	private void Chase(float dt, float distance, Vector3 toTargetDir)
 	{
-		bool grounded = IsOnFloor();
+		bool grounded = Grounded;
 
 		if (grounded && _chargeCooldownTimer <= 0f
 			&& distance >= ChargeMinDistance && distance <= ChargeMaxDistance && CanSeeTarget())
@@ -317,7 +325,7 @@ public partial class Wombat : Enemy
 		Velocity = velocity;
 
 		Vector3 before = GlobalPosition;
-		MoveAndSlide();
+		Move();
 		Vector3 moved = GlobalPosition - before;
 		moved.Y = 0f;
 		_chargeTravelled += moved.Length();
@@ -414,7 +422,7 @@ public partial class Wombat : Enemy
 		if (!IsOnFloor())
 			velocity.Y -= Gravity * dt;
 		Velocity = velocity;
-		MoveAndSlide();
+		Move();
 	}
 
 	private bool CanSeeTarget()
@@ -537,12 +545,19 @@ public partial class Wombat : Enemy
 
 		if (_headPivot != null)
 			_headPivot.Position = _headPivot.Position.Lerp(_headRest + new Vector3(0f, -headDrop, -headThrust), blend);
-		if (_paw != null)
+		// The paw and the glow sit still most of the time: only write them when they change.
+		if (_paw != null && pawOffset.DistanceSquaredTo(_pawOffset) > 1e-8f)
+		{
+			_pawOffset = pawOffset;
 			_paw.Position = _pawRest + pawOffset;
+		}
 
 		if (_glowMaterial != null)
 		{
 			_glowEnergy = Mathf.Lerp(_glowEnergy, glowTarget, 1f - Mathf.Exp(-18f * dt));
+			if (Mathf.Abs(_glowEnergy - _glowShown) < 0.002f)
+				return;
+			_glowShown = _glowEnergy;
 			_glowMaterial.EmissionEnergyMultiplier = _glowEnergy;
 			// Emission alone can't go darker than the lit colour, so fade the colour too when dimmed.
 			float dim = Mathf.Clamp(_glowEnergy / Mathf.Max(GlowIdleEnergy, 0.01f), 0.25f, 1f);

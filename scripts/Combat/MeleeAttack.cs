@@ -18,13 +18,24 @@ public partial class MeleeAttack : Node
 
 	private float _cooldownTimer;
 
-	public override void _PhysicsProcess(double delta)
+	public override void _Ready()
 	{
-		if (_cooldownTimer > 0f)
-			_cooldownTimer -= (float)delta;
+		// Only ticks while cooling down.
+		SetPhysicsProcess(_cooldownTimer > 0f);
 	}
 
-	public void StartCooldown() => _cooldownTimer = Cooldown;
+	public override void _PhysicsProcess(double delta)
+	{
+		_cooldownTimer -= (float)delta;
+		if (_cooldownTimer <= 0f)
+			SetPhysicsProcess(false);
+	}
+
+	public void StartCooldown()
+	{
+		_cooldownTimer = Cooldown;
+		SetPhysicsProcess(_cooldownTimer > 0f);
+	}
 
 	/// <summary>Deals damage to the target. Returns false if there was nothing alive to hit.</summary>
 	public bool ApplyTo(HealthComponent target)
