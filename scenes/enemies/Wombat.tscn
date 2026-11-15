@@ -68,8 +68,3 @@ script = ExtResource("4_hit")
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_melee")
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_desired_distance = 0.8
-target_desired_distance = 0.8
-height = 1.6
-radius = 0.6

@@ -385,7 +385,16 @@ public partial class Wombat : Enemy
 	{
 		TargetHealth.ApplyDamage(ChargeDamage);
 		if (Target is CharacterBody3D body)
-			body.Velocity += _chargeDirection * KnockbackSpeed + Vector3.Up * KnockbackUpSpeed;
+		{
+			// Set rather than add, so several wombats hitting at once can't stack the player
+			// into orbit: the strongest single shove wins.
+			Vector3 v = body.Velocity;
+			Vector3 horizontal = new(v.X, 0f, v.Z);
+			float along = horizontal.Dot(_chargeDirection);
+			if (along < KnockbackSpeed)
+				horizontal += _chargeDirection * (KnockbackSpeed - along);
+			body.Velocity = new Vector3(horizontal.X, Mathf.Max(v.Y, KnockbackUpSpeed), horizontal.Z);
+		}
 		PlayCue(EnemyCue.Thump, 2f);
 		EndCharge(State.Skid, MissRecoverTime);
 	}
