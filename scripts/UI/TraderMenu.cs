@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Deadset.Core;
 using Deadset.Economy;
 using Deadset.Upgrades;
 using Deadset.Waves;
@@ -14,13 +15,14 @@ namespace Deadset.UI;
 public partial class TraderMenu : CanvasLayer
 {
 	[Export] public Color Accent { get; set; } = new(1f, 0.55f, 0.2f);
-	[Export] public Color PanelColor { get; set; } = new(0.09f, 0.07f, 0.06f, 0.94f);
+	[Export] public Color PanelColor { get; set; } = new(0.09f, 0.07f, 0.06f, 1f);
 	[Export] public Key ToggleKey { get; set; } = Key.B;
 
 	private Trader _trader;
 	private Control _root;
 	private Label _title;
 	private Label _status;
+	private Label _summary;
 	private Label _cash;
 	private Button _fillNails;
 	private Button _buyMagazine;
@@ -112,6 +114,9 @@ public partial class TraderMenu : CanvasLayer
 		_cash = MakeLabel("$0", 40, new Color(0.55f, 1f, 0.45f));
 		header.AddChild(_cash);
 
+		_summary = MakeLabel("", 20, new Color(1f, 0.85f, 0.6f));
+		outer.AddChild(_summary);
+
 		var body = new HBoxContainer();
 		body.AddThemeConstantOverride("separation", 28);
 		body.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
@@ -157,8 +162,9 @@ public partial class TraderMenu : CanvasLayer
 			int index = i;
 			var card = new Button
 			{
-				CustomMinimumSize = new Vector2(230, 300),
+				CustomMinimumSize = new Vector2(230, 210),
 				SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+				SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
 				FocusMode = Control.FocusModeEnum.None,
 				ClipText = false,
 			};
@@ -204,6 +210,17 @@ public partial class TraderMenu : CanvasLayer
 
 		int cash = _trader.Wallet?.Cash ?? 0;
 		_cash.Text = $"${cash}";
+
+		if (GetTree().GetFirstNodeInGroup("run_stats") is RunStats stats && stats.LastWave.Wave > 0)
+		{
+			RunStats.WaveSummary w = stats.LastWave;
+			_summary.Text = $"WAVE {w.Wave} DONE   ·   {w.Kills} kills   ·   {Mathf.RoundToInt(w.HeadshotPercent)}% headshots   ·   +${w.CashEarned}   ·   "
+				+ $"{Mathf.FloorToInt(w.Seconds / 60f)}:{Mathf.FloorToInt(w.Seconds % 60f):00}   ·   took {Mathf.RoundToInt(w.DamageTaken)} dmg";
+		}
+		else
+		{
+			_summary.Text = "";
+		}
 
 		var director = GetTree().GetFirstNodeInGroup("wave_director") as WaveDirector;
 		_title.Text = director != null ? $"TRADER  ·  WAVE {director.WaveNumber} NEXT" : "TRADER";

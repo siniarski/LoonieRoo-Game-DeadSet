@@ -4,7 +4,7 @@
 
 [sub_resource type="Gradient" id="VignetteGradient"]
 offsets = PackedFloat32Array(0.4, 1)
-colors = PackedColorArray(0.85, 0, 0, 0, 0.85, 0, 0, 0.9)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.9)
 
 [sub_resource type="GradientTexture2D" id="VignetteTexture"]
 gradient = SubResource("VignetteGradient")

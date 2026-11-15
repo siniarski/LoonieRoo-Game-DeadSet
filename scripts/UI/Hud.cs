@@ -43,6 +43,13 @@ public partial class Hud : CanvasLayer
 	/// <summary>Damage that produces a full-strength flash.</summary>
 	[Export] public float DamageForFullFlash { get; set; } = 25f;
 	[Export] public float DamageFlashFadeSpeed { get; set; } = 3f;
+	[Export] public Color HealthDamageTint { get; set; } = new(0.85f, 0f, 0f);
+	/// <summary>Edge flash colour when armour soaked the whole hit.</summary>
+	[Export] public Color ArmourDamageTint { get; set; } = new(0.3f, 0.6f, 1f);
+
+	[ExportGroup("Dash")]
+	[Export] public Color DashReadyColor { get; set; } = new(0.6f, 0.9f, 1f, 0.9f);
+	[Export] public Color DashCoolingColor { get; set; } = new(1f, 1f, 1f, 0.35f);
 
 	[ExportGroup("Waves")]
 	[Export] public float AnnouncementTime { get; set; } = 2.2f;
@@ -72,6 +79,13 @@ public partial class Hud : CanvasLayer
 	private Weapon _weapon;
 	private HealthComponent _playerHealth;
 	private float _damageFlash;
+	private Color _damageTint;
+	private float _lastHealth = -1f;
+	private PlayerController _controller;
+	private Control _dashBar;
+	private ColorRect _dashFill;
+	private float _dashReadyPulse;
+	private bool _dashWasReady = true;
 	private float _bloom;
 	private float _hitmarkerTimer;
 	private bool _lastHitWasKill;
@@ -93,6 +107,8 @@ public partial class Hud : CanvasLayer
 		_healthLabel = GetNode<Label>("Health");
 		_healthFill = GetNode<ColorRect>("HealthBar/Fill");
 		_damageVignette = GetNode<Control>("DamageVignette");
+		_damageTint = HealthDamageTint;
+		BuildDashBar();
 		_diedLabel = GetNode<Label>("Died");
 		_cashLabel = GetNode<Label>("Cash");
 		_cashPopup = GetNode<Label>("CashPopup");
@@ -169,6 +185,7 @@ public partial class Hud : CanvasLayer
 	private void BindToPlayer()
 	{
 		Node player = GetTree().GetFirstNodeInGroup("player");
+		_controller = player as PlayerController;
 		BindHealth(HealthComponent.FindOn(player));
 		BindWallet(Wallet.FindOn(player));
 
@@ -231,8 +248,11 @@ public partial class Hud : CanvasLayer
 
 	private void OnPlayerDamaged(float amount, float remaining)
 	{
+		// Armour soaked it all if health didn't move: flash blue instead of red.
+		bool armourOnly = _lastHealth >= 0f && Mathf.IsEqualApprox(remaining, _lastHealth);
+		_damageTint = armourOnly ? ArmourDamageTint : HealthDamageTint;
 		float flash = DamageFlashBase + (1f - DamageFlashBase) * Mathf.Clamp(amount / DamageForFullFlash, 0f, 1f);
-		_damageFlash = Mathf.Max(_damageFlash, flash);
+		_damageFlash = Mathf.Max(_damageFlash, armourOnly ? flash * 0.7f : flash);
 		UpdateHealth();
 	}
 
@@ -245,6 +265,7 @@ public partial class Hud : CanvasLayer
 	private void UpdateHealth()
 	{
 		float fraction = _playerHealth.Current / _playerHealth.MaxHealth;
+		_lastHealth = _playerHealth.Current;
 		_healthLabel.Text = Mathf.CeilToInt(_playerHealth.Current).ToString();
 		Color color = fraction <= LowHealthFraction ? LowHealthColor : HealthColor;
 		_healthLabel.Modulate = color;
@@ -305,7 +326,9 @@ public partial class Hud : CanvasLayer
 		// Stays fully red while dead.
 		bool dead = _playerHealth != null && _playerHealth.IsDead;
 		_damageFlash = dead ? 1f : Mathf.Max(0f, _damageFlash - DamageFlashFadeSpeed * dt);
-		_damageVignette.Modulate = new Color(1f, 1f, 1f, _damageFlash);
+		Color tint = dead ? HealthDamageTint : _damageTint;
+		_damageVignette.Modulate = new Color(tint, _damageFlash);
+		UpdateDashBar(dt);
 
 		// Iron sights replace the crosshair while aiming.
 		float aim = _weapon?.AimBlend ?? 0f;
@@ -329,6 +352,44 @@ public partial class Hud : CanvasLayer
 		_reloadLabel.Visible = reloading;
 		if (reloading)
 			_reloadLabel.Text = $"RELOADING {Mathf.RoundToInt(_weapon.ReloadProgress * 100f)}%";
+	}
+
+	private void BuildDashBar()
+	{
+		_dashBar = new Control { MouseFilter = Control.MouseFilterEnum.Ignore, Visible = false };
+		_dashBar.SetAnchorsPreset(Control.LayoutPreset.Center);
+		_dashBar.OffsetLeft = -28; _dashBar.OffsetRight = 28; _dashBar.OffsetTop = 30; _dashBar.OffsetBottom = 34;
+		var background = new ColorRect { Color = new Color(0f, 0f, 0f, 0.4f), MouseFilter = Control.MouseFilterEnum.Ignore };
+		background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+		_dashBar.AddChild(background);
+		_dashFill = new ColorRect { MouseFilter = Control.MouseFilterEnum.Ignore };
+		_dashFill.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+		_dashBar.AddChild(_dashFill);
+		AddChild(_dashBar);
+	}
+
+	private void UpdateDashBar(float dt)
+	{
+		if (_controller == null || !_controller.DashUnlocked)
+		{
+			_dashBar.Visible = false;
+			return;
+		}
+		_dashBar.Visible = true;
+		float remaining = _controller.DashCooldownRemaining;
+		bool ready = remaining <= 0f;
+		if (ready && !_dashWasReady)
+			_dashReadyPulse = 1f;
+		_dashWasReady = ready;
+		_dashReadyPulse = Mathf.Max(0f, _dashReadyPulse - dt * 4f);
+
+		float fraction = ready ? 1f : 1f - remaining / Mathf.Max(_controller.DashCooldown, 0.01f);
+		_dashFill.AnchorRight = fraction;
+		_dashFill.Color = ready ? DashReadyColor : DashCoolingColor;
+		_dashBar.Scale = Vector2.One * (1f + 0.5f * _dashReadyPulse);
+		_dashBar.PivotOffset = _dashBar.Size * 0.5f;
+		// Fade out when ready and idle, so it doesn't clutter the crosshair.
+		_dashBar.Modulate = new Color(1f, 1f, 1f, ready ? 0.35f + 0.65f * _dashReadyPulse : 1f);
 	}
 
 	private void LayoutCrosshair(float gap)
