@@ -1,0 +1,81 @@
+[gd_resource type="Resource" script_class="CelStyle" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://art_previews/CelStyle.cs" id="1_style"]
+[ext_resource type="Shader" path="res://art_previews/shaders/cel_sky.gdshader" id="2_sky"]
+
+[sub_resource type="ShaderMaterial" id="SkyMat"]
+shader = ExtResource("2_sky")
+shader_parameter/top_color = Color(0.07, 0.04, 0.2, 1)
+shader_parameter/mid_color = Color(0.5, 0.12, 0.42, 1)
+shader_parameter/horizon_color = Color(1, 0.42, 0.18, 1)
+shader_parameter/ground_color = Color(0.12, 0.05, 0.14, 1)
+shader_parameter/gradient_height = 0.7
+shader_parameter/mid_point = 0.28
+shader_parameter/sun_color = Color(1, 0.35, 0.2, 1)
+shader_parameter/sun_size = 0.11
+shader_parameter/sun_energy = 2.2
+shader_parameter/sun_halo = 0.6
+shader_parameter/ridge_height = 0.12
+shader_parameter/ridge_color = Color(0.09, 0.03, 0.16, 1)
+shader_parameter/ridge_far_color = Color(0.3, 0.08, 0.3, 1)
+shader_parameter/stars = 1
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+reflected_light_source = 1
+ambient_light_color = Color(0.5, 0.36, 0.9, 1)
+ambient_light_energy = 1
+tonemap_mode = 0
+glow_enabled = true
+glow_intensity = 1.1
+glow_bloom = 0.1
+glow_hdr_threshold = 0.7
+
+[resource]
+script = ExtResource("1_style")
+Environment = SubResource("Env")
+DisplayName = "C  Neon-mutant dusk"
+SunColor = Color(1, 0.66, 0.5, 1)
+SunEnergy = 1.1
+OverrideSunRotation = true
+SunRotationDegrees = Vector3(-14, -150, 0)
+Saturation = 1.1
+Value = 1
+MinValue = 0.2
+EmissionBoost = 1.15
+UnshadedBoost = 2
+TextureAmount = 1
+TextureScale = 0.45
+TextureSteps = 3
+Bands = 2
+LitThreshold = 0.12
+BandSoftness = 0.08
+RimColor = Color(1, 0.5, 0.75, 1)
+RimStrength = 0.6
+RimWidth = 0.4
+FogMax = 0.5
+FogColor = Color(0.4, 0.17, 0.5, 1)
+FogStart = 6
+FogEnd = 50
+HullEnabled = true
+HullColor = Color(0.6, 0.3, 0.9, 1)
+HullSurfaceTint = 0.25
+UseEnemyHullColor = true
+EnemyHullColor = Color(0.2, 0.9, 0.35, 1)
+HullGlowFromEmission = true
+HullGlowEnergy = 1.5
+HullWidth = 2.2
+HullThinDistance = 10
+HullMinWidth = 1.2
+GradeEnabled = true
+GradeContrast = 1.06
+ShadowTint = Color(0.42, 0.3, 0.7, 1)
+HighlightTint = Color(0.7, 0.55, 0.4, 1)
+TintAmount = 0.35
+BlackLift = 0.03
+Vignette = 0.25
