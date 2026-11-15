@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="LowHealthResistanceUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/LowHealthResistanceUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "smoko_shield"
+DisplayName = "Smoko Shield"
+Description = "Take 40% less damage while under 35% health."
+AccentColor = Color(0.45, 0.75, 1, 1)
+MaxStacks = 1
+HealthThreshold = 0.35
+DamageMultiplier = 0.6

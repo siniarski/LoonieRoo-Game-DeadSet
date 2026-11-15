@@ -24,7 +24,22 @@ public abstract partial class Weapon : Node3D
 	public int ReserveAmmo { get; private set; }
 	public bool IsReloading { get; private set; }
 	/// <summary>0 at reload start, 1 when done. 0 when not reloading.</summary>
-	public float ReloadProgress => IsReloading ? 1f - _reloadTimer / Stats.ReloadTime : 0f;
+	public float ReloadProgress => IsReloading ? 1f - _reloadTimer / _reloadDuration : 0f;
+	/// <summary>How many more rounds fit in the reserve.</summary>
+	public int ReserveSpace => Mathf.Max(0, Stats.MaxReserve - ReserveAmmo);
+
+	// Runtime modifiers (upgrades and the like). The shared Stats resource is never changed.
+	/// <summary>Scales reload time. Below 1 = faster reloads.</summary>
+	public float ReloadTimeMultiplier { get; set; } = 1f;
+	/// <summary>Scales shots per second.</summary>
+	public float FireRateMultiplier { get; set; } = 1f;
+	/// <summary>Scales damage per shot.</summary>
+	public float DamageMultiplier { get; set; } = 1f;
+	/// <summary>How many times each shot bounces off the world before sticking.</summary>
+	public int ExtraRicochets { get; set; }
+
+	/// <summary>Reload time after modifiers, in seconds.</summary>
+	public float EffectiveReloadTime => Stats.ReloadTime * ReloadTimeMultiplier;
 
 	/// <summary>True while aim is held and the weapon can aim (not reloading).</summary>
 	public bool IsAiming => _aimHeld && !IsReloading;
@@ -44,6 +59,7 @@ public abstract partial class Weapon : Node3D
 	private bool _aimHeld;
 	private float _cooldown;
 	private float _reloadTimer;
+	private float _reloadDuration = 1f;
 
 	public override void _Ready()
 	{
@@ -66,8 +82,16 @@ public abstract partial class Weapon : Node3D
 			return;
 
 		IsReloading = true;
-		_reloadTimer = Stats.ReloadTime;
-		EmitSignal(SignalName.ReloadStarted, Stats.ReloadTime);
+		_reloadDuration = Mathf.Max(EffectiveReloadTime, 0.01f);
+		_reloadTimer = _reloadDuration;
+		EmitSignal(SignalName.ReloadStarted, _reloadDuration);
+	}
+
+	/// <summary>Adds rounds to the reserve, clamped to Stats.MaxReserve.</summary>
+	public void AddReserveAmmo(int amount)
+	{
+		ReserveAmmo = Mathf.Clamp(ReserveAmmo + amount, 0, Stats.MaxReserve);
+		EmitSignal(SignalName.AmmoChanged, AmmoInMagazine, ReserveAmmo);
 	}
 
 	/// <summary>Called by this weapon's projectiles when they damage something.</summary>
@@ -118,7 +142,7 @@ public abstract partial class Weapon : Node3D
 
 		// Carry over at most one frame of leftover time so the fire rate stays accurate
 		// without letting a long idle period bank up a burst of instant shots.
-		_cooldown = Mathf.Max(_cooldown, -dt) + 1f / Stats.FireRate;
+		_cooldown = Mathf.Max(_cooldown, -dt) + 1f / (Stats.FireRate * FireRateMultiplier);
 	}
 
 	private void FinishReload()

@@ -18,6 +18,10 @@
 
 [ext_resource type="Script" path="res://scripts/Waves/WaveDirector.cs" id="5_director"]
 [ext_resource type="Resource" path="res://resources/waves/DefaultWaves.tres" id="6_waves"]
+[ext_resource type="Script" path="res://scripts/Core/RunStats.cs" id="7_runstats"]
+[ext_resource type="Script" path="res://scripts/UI/GameOverScreen.cs" id="8_gameover"]
+[ext_resource type="Script" path="res://scripts/Economy/Trader.cs" id="9_trader"]
+[ext_resource type="Script" path="res://scripts/UI/TraderMenu.cs" id="10_tradermenu"]
 
 [node name="Main" type="Node3D"]
 
@@ -37,3 +41,15 @@ PackSizes = Array[int]([8, 8, 6, 8, 2, 1, 4, 6, 2, 3, 1])
 [node name="WaveDirector" type="Node" parent="."]
 script = ExtResource("5_director")
 Waves = ExtResource("6_waves")
+
+[node name="RunStats" type="Node" parent="."]
+script = ExtResource("7_runstats")
+
+[node name="GameOverScreen" type="CanvasLayer" parent="."]
+script = ExtResource("8_gameover")
+
+[node name="Trader" type="Node" parent="."]
+script = ExtResource("9_trader")
+
+[node name="TraderMenu" type="CanvasLayer" parent="."]
+script = ExtResource("10_tradermenu")

@@ -1,5 +1,6 @@
 using Deadset.Combat;
 using Deadset.Core;
+using Deadset.Economy;
 using Deadset.Player;
 using Deadset.Waves;
 using Deadset.Weapons;
@@ -57,6 +58,12 @@ public partial class Hud : CanvasLayer
 	private ColorRect _healthFill;
 	private Control _damageVignette;
 	private Label _diedLabel;
+	private Label _cashLabel;
+	private Label _cashPopup;
+	private ColorRect _armourFill;
+	private Control _armourBar;
+	private float _cashPopupTimer;
+	private int _cashPopupTotal;
 	private Label _waveInfo;
 	private Label _announcement;
 	private WaveDirector _director;
@@ -87,6 +94,12 @@ public partial class Hud : CanvasLayer
 		_healthFill = GetNode<ColorRect>("HealthBar/Fill");
 		_damageVignette = GetNode<Control>("DamageVignette");
 		_diedLabel = GetNode<Label>("Died");
+		_cashLabel = GetNode<Label>("Cash");
+		_cashPopup = GetNode<Label>("CashPopup");
+		_cashPopup.Modulate = Colors.Transparent;
+		_armourBar = GetNode<Control>("ArmourBar");
+		_armourFill = GetNode<ColorRect>("ArmourBar/Fill");
+		_armourBar.Visible = false;
 		_waveInfo = GetNode<Label>("WaveInfo");
 		_announcement = GetNode<Label>("Announcement");
 		_announcement.Modulate = Colors.Transparent;
@@ -157,6 +170,7 @@ public partial class Hud : CanvasLayer
 	{
 		Node player = GetTree().GetFirstNodeInGroup("player");
 		BindHealth(HealthComponent.FindOn(player));
+		BindWallet(Wallet.FindOn(player));
 
 		var input = player?.GetNodeOrNull<PlayerWeaponInput>("WeaponInput");
 		if (input == null)
@@ -170,6 +184,34 @@ public partial class Hud : CanvasLayer
 			SetWeapon(input.EquippedWeapon);
 	}
 
+	private void BindWallet(Wallet wallet)
+	{
+		if (wallet == null)
+		{
+			_cashLabel.Visible = false;
+			return;
+		}
+		_cashLabel.Text = $"${wallet.Cash}";
+		wallet.CashChanged += OnCashChanged;
+	}
+
+	private void OnCashChanged(int cash, int delta)
+	{
+		_cashLabel.Text = $"${cash}";
+		if (delta <= 0)
+			return;
+		// Kills in quick succession add up into one popup.
+		_cashPopupTotal = _cashPopupTimer > 0f ? _cashPopupTotal + delta : delta;
+		_cashPopupTimer = 1.2f;
+		_cashPopup.Text = $"+{_cashPopupTotal}";
+	}
+
+	private void OnArmourChanged(float armour, float maxArmour)
+	{
+		_armourBar.Visible = armour > 0f;
+		_armourFill.AnchorRight = maxArmour > 0f ? armour / maxArmour : 0f;
+	}
+
 	private void BindHealth(HealthComponent health)
 	{
 		if (health == null)
@@ -180,8 +222,10 @@ public partial class Hud : CanvasLayer
 
 		_playerHealth = health;
 		health.Damaged += OnPlayerDamaged;
-		health.Died += () => _diedLabel.Visible = true;
 		health.HealthReset += OnPlayerHealthReset;
+		health.Healed += (_, _) => UpdateHealth();
+		health.ArmourChanged += OnArmourChanged;
+		OnArmourChanged(health.Armour, health.MaxArmour);
 		UpdateHealth();
 	}
 
@@ -248,6 +292,12 @@ public partial class Hud : CanvasLayer
 		float dt = (float)delta;
 
 		UpdateWaveInfo(dt);
+
+		if (_cashPopupTimer > 0f)
+		{
+			_cashPopupTimer -= dt;
+			_cashPopup.Modulate = new Color(1f, 1f, 1f, Mathf.Clamp(_cashPopupTimer / 0.4f, 0f, 1f));
+		}
 
 		_bloom *= Mathf.Exp(-BloomRecoverySpeed * dt);
 		LayoutCrosshair(CrosshairGap + _bloom);

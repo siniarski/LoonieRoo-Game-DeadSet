@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EventHealUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/EventHealUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "hot_chips_and_gravy"
+DisplayName = "Hot Chips & Gravy"
+Description = "Heal 35 health every time a wave ends."
+AccentColor = Color(0.95, 0.7, 0.25, 1)
+MaxStacks = 1
+Trigger = 0
+HealAmount = 35.0

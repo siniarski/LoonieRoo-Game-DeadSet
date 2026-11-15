@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatModifierUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/StatModifierUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "oi_watch_it"
+DisplayName = "Oi! Watch It!"
+Description = "Press Q to dash out of the way."
+AccentColor = Color(1, 0.45, 0.35, 1)
+MaxStacks = 1
+Stat = 6
+Value = 1.0

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatModifierUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/StatModifierUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "thongs_off"
+DisplayName = "Thongs Off"
+Description = "Sprint 18% faster. Can be taken twice."
+AccentColor = Color(1, 0.9, 0.35, 1)
+MaxStacks = 2
+Stat = 0
+Value = 1.18

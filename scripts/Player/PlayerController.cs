@@ -1,3 +1,4 @@
+using Deadset.Effects;
 using Godot;
 
 namespace Deadset.Player;
@@ -20,6 +21,19 @@ public partial class PlayerController : CharacterBody3D
 
 	/// <summary>Move speed multiplier while aiming down sights. Sprint is blocked while aiming.</summary>
 	[Export(PropertyHint.Range, "0.1,1")] public float AimMoveSpeedMultiplier { get; set; } = 0.6f;
+
+	[ExportGroup("Dash")]
+	/// <summary>Horizontal speed during the dash burst (m/s).</summary>
+	[Export] public float DashSpeed { get; set; } = 14f;
+	/// <summary>Seconds the burst lasts.</summary>
+	[Export] public float DashDuration { get; set; } = 0.18f;
+	/// <summary>Seconds before the dash can be used again.</summary>
+	[Export] public float DashCooldown { get; set; } = 2.5f;
+	/// <summary>Degrees of FOV added at the start of a dash. It eases back out.</summary>
+	[Export] public float DashFovPunch { get; set; } = 12f;
+	/// <summary>How quickly the FOV punch fades. Higher = shorter.</summary>
+	[Export] public float DashFovRecoverySpeed { get; set; } = 7f;
+	[Export] public float DashVolumeDb { get; set; } = -6f;
 
 	[ExportGroup("Jump")]
 	/// <summary>Peak jump height in metres. 1.25 clears a 1 m crate.</summary>
@@ -46,6 +60,19 @@ public partial class PlayerController : CharacterBody3D
 	/// <summary>FOV ease speed when zooming in or out of the sights. Higher = snappier.</summary>
 	[Export] public float AimFovLerpSpeed { get; set; } = 18f;
 
+	/// <summary>A dash just started. Cooldown is how long until the next one.</summary>
+	[Signal] public delegate void DashedEventHandler(float cooldown);
+
+	// Runtime modifiers. Set from outside (upgrades); the exported base numbers never change.
+	public float WalkSpeedMultiplier { get; set; } = 1f;
+	public float SprintSpeedMultiplier { get; set; } = 1f;
+	/// <summary>The dash does nothing until something unlocks it.</summary>
+	public bool DashUnlocked { get; set; }
+
+	public bool IsDashing => _dashTimer > 0f;
+	/// <summary>Seconds until the dash is ready again (0 = ready).</summary>
+	public float DashCooldownRemaining => Mathf.Max(_dashCooldownTimer, 0f);
+
 	/// <summary>True while sprint is held and the player is moving forward.</summary>
 	public bool IsSprinting { get; private set; }
 
@@ -59,12 +86,21 @@ public partial class PlayerController : CharacterBody3D
 	private float _gravity;
 	private float _coyoteTimer;
 	private float _jumpBufferTimer;
+	private float _fov;
+	private float _fovPunch;
+	private float _dashTimer;
+	private float _dashCooldownTimer;
+	private Vector3 _dashVelocity;
+	private AudioStreamPlayer _dashSfx;
 
 	public override void _Ready()
 	{
 		_head = GetNode<Node3D>("Head");
 		_camera = GetNode<Camera3D>("Head/Camera3D");
 		_camera.Fov = BaseFov;
+		_fov = BaseFov;
+		_dashSfx = new AudioStreamPlayer { Stream = PlaceholderSfx.DashWhoosh, VolumeDb = DashVolumeDb };
+		AddChild(_dashSfx);
 		_gravity = (float)ProjectSettings.GetSetting("physics/3d/default_gravity");
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 	}
@@ -93,7 +129,7 @@ public partial class PlayerController : CharacterBody3D
 		{
 			float sensitivity = MouseSensitivity;
 			if (ScaleSensitivityWithFov)
-				sensitivity *= _camera.Fov / BaseFov;
+				sensitivity *= _fov / BaseFov;
 
 			RotateY(-motion.Relative.X * sensitivity);
 			float maxPitch = Mathf.DegToRad(MaxPitchDegrees);
@@ -101,6 +137,31 @@ public partial class PlayerController : CharacterBody3D
 			headRot.X = Mathf.Clamp(headRot.X - motion.Relative.Y * sensitivity, -maxPitch, maxPitch);
 			_head.Rotation = headRot;
 		}
+	}
+
+	/// <summary>
+	/// Starts a dash in the held move direction (forward if none). Returns false if the
+	/// dash is locked, on cooldown or already under way.
+	/// </summary>
+	public bool TryDash()
+	{
+		if (!DashUnlocked || _dashCooldownTimer > 0f || IsDashing)
+			return false;
+
+		Vector2 input = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
+		Vector3 direction = Transform.Basis * new Vector3(input.X, 0f, input.Y);
+		direction.Y = 0f;
+		if (direction.LengthSquared() < 0.01f)
+			direction = -Transform.Basis.Z;
+
+		_dashVelocity = direction.Normalized() * DashSpeed;
+		_dashTimer = DashDuration;
+		_dashCooldownTimer = DashCooldown;
+		_fovPunch = DashFovPunch;
+		_dashSfx.PitchScale = (float)GD.RandRange(0.95, 1.08);
+		_dashSfx.Play();
+		EmitSignal(SignalName.Dashed, DashCooldown);
+		return true;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -135,7 +196,7 @@ public partial class PlayerController : CharacterBody3D
 
 		// Sprint only when pushing forward, so backpedalling stays slow.
 		IsSprinting = Input.IsActionPressed("sprint") && input.Y < -0.1f && !IsAiming;
-		float targetSpeed = IsSprinting ? SprintSpeed : WalkSpeed;
+		float targetSpeed = IsSprinting ? SprintSpeed * SprintSpeedMultiplier : WalkSpeed * WalkSpeedMultiplier;
 		if (IsAiming)
 			targetSpeed *= AimMoveSpeedMultiplier;
 
@@ -153,6 +214,19 @@ public partial class PlayerController : CharacterBody3D
 			horizontal = horizontal.MoveToward(wishDir * targetSpeed, AirAcceleration * dt);
 		}
 
+		// Dash: a short burst that overrides normal movement, then hands back at sprint pace
+		// so it can't be chained into a huge leap.
+		_dashCooldownTimer -= dt;
+		if (Input.IsActionJustPressed("dash"))
+			TryDash();
+		if (IsDashing)
+		{
+			_dashTimer -= dt;
+			horizontal = _dashVelocity;
+			if (!IsDashing)
+				horizontal = horizontal.LimitLength(SprintSpeed * SprintSpeedMultiplier);
+		}
+
 		velocity.X = horizontal.X;
 		velocity.Z = horizontal.Z;
 		Velocity = velocity;
@@ -163,15 +237,19 @@ public partial class PlayerController : CharacterBody3D
 	{
 		// FOV kick only once actually moving faster than a walk, not just when Shift is held.
 		float horizontalSpeed = new Vector2(Velocity.X, Velocity.Z).Length();
-		bool fastEnough = horizontalSpeed > WalkSpeed + 0.5f;
+		bool fastEnough = horizontalSpeed > WalkSpeed * WalkSpeedMultiplier + 0.5f;
 		float targetFov = IsSprinting && fastEnough ? SprintFov : BaseFov;
 		float speed = FovLerpSpeed;
-		bool zooming = IsAiming || _camera.Fov < BaseFov - 0.5f;
+		bool zooming = IsAiming || _fov < BaseFov - 0.5f;
 		if (IsAiming)
 			targetFov = AimFov;
 		if (zooming)
 			speed = AimFovLerpSpeed;
 		float weight = 1f - Mathf.Exp(-speed * (float)delta);
-		_camera.Fov = Mathf.Lerp(_camera.Fov, targetFov, weight);
+		_fov = Mathf.Lerp(_fov, targetFov, weight);
+
+		// The dash punch rides on top, so it never fights the sprint or aim easing.
+		_fovPunch *= Mathf.Exp(-DashFovRecoverySpeed * (float)delta);
+		_camera.Fov = _fov + _fovPunch;
 	}
 }

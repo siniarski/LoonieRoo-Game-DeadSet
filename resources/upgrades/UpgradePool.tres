@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradePool" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/UpgradePool.cs" id="s_pool"]
+[ext_resource type="Script" path="res://scripts/Upgrades/UpgradeDefinition.cs" id="s_def"]
+[ext_resource type="Resource" path="res://resources/upgrades/SmokoShield.tres" id="u_SmokoShield"]
+[ext_resource type="Resource" path="res://resources/upgrades/HotChipsAndGravy.tres" id="u_HotChipsAndGravy"]
+[ext_resource type="Resource" path="res://resources/upgrades/QuickLoader.tres" id="u_QuickLoader"]
+[ext_resource type="Resource" path="res://resources/upgrades/BouncingShot.tres" id="u_BouncingShot"]
+[ext_resource type="Resource" path="res://resources/upgrades/OiWatchIt.tres" id="u_OiWatchIt"]
+[ext_resource type="Resource" path="res://resources/upgrades/ThongsOff.tres" id="u_ThongsOff"]
+
+[resource]
+script = ExtResource("s_pool")
+Upgrades = Array[ExtResource("s_def")]([ExtResource("u_SmokoShield"), ExtResource("u_HotChipsAndGravy"), ExtResource("u_QuickLoader"), ExtResource("u_BouncingShot"), ExtResource("u_OiWatchIt"), ExtResource("u_ThongsOff")])

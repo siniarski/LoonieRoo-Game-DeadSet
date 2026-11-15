@@ -24,6 +24,8 @@ public partial class Nail : Node3D
 		public Vector3 VisualStart;
 		public Weapon Source;
 		public Rid Exclude;
+		/// <summary>How many times the nail bounces off the world before sticking.</summary>
+		public int Ricochets;
 	}
 
 	[Export] public float StuckLifetime { get; set; } = 4f;
@@ -31,6 +33,11 @@ public partial class Nail : Node3D
 	[Export] public float VisualConvergeTime { get; set; } = 0.06f;
 	/// <summary>How deep a stuck nail sits in the surface, in metres.</summary>
 	[Export] public float EmbedDepth { get; set; } = 0.1f;
+	/// <summary>Share of its speed a nail keeps after a ricochet.</summary>
+	[Export(PropertyHint.Range, "0.1,1")] public float RicochetSpeedKeep { get; set; } = 0.8f;
+	/// <summary>Share of its remaining range a nail keeps after a ricochet.</summary>
+	[Export(PropertyHint.Range, "0.05,1")] public float RicochetRangeKeep { get; set; } = 0.4f;
+	[Export] public Color RicochetSparkColor { get; set; } = new(0.6f, 0.9f, 1f);
 	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask { get; set; } = 5;  // world + enemies
 	[Export] public Color WallSparkColor { get; set; } = new(1f, 0.7f, 0.3f);
 	[Export] public Color FleshSparkColor { get; set; } = new(1f, 1f, 0.85f);
@@ -41,6 +48,7 @@ public partial class Nail : Node3D
 	private Vector3 _direction;
 	private float _damage;
 	private float _remainingRange;
+	private int _ricochetsLeft;
 	private Weapon _source;
 	private Array<Rid> _exclude;
 	private Vector3 _visualOffset;
@@ -59,6 +67,7 @@ public partial class Nail : Node3D
 		_velocity = _direction * p.Speed;
 		_damage = p.Damage;
 		_remainingRange = p.MaxRange;
+		_ricochetsLeft = p.Ricochets;
 		_source = p.Source;
 		_exclude = new Array<Rid>();
 		if (p.Exclude.IsValid)
@@ -132,6 +141,12 @@ public partial class Nail : Node3D
 			return;
 		}
 
+		if (_ricochetsLeft > 0)
+		{
+			Ricochet(point, normal, effectsParent);
+			return;
+		}
+
 		// Hit the world: stick in, leaving the back half of the nail poking out.
 		_stuck = true;
 		_stuckTimer = StuckLifetime;
@@ -139,5 +154,24 @@ public partial class Nail : Node3D
 		_mesh.Position = Vector3.Zero;
 		ImpactEffects.SpawnSparks(effectsParent, point, normal, WallSparkColor, 8);
 		PlaceholderSfx.PlayAt(effectsParent, PlaceholderSfx.NailImpact, point, -10f);
+	}
+
+	/// <summary>Bounce off a world surface: reflect, lose some speed and range, carry on.</summary>
+	private void Ricochet(Vector3 point, Vector3 normal, Node effectsParent)
+	{
+		_ricochetsLeft--;
+		_direction = _direction.Bounce(normal).Normalized();
+		_velocity = _direction * _velocity.Length() * RicochetSpeedKeep;
+		_remainingRange *= RicochetRangeKeep;
+
+		// Lift off the surface a touch so the next ray doesn't start inside it.
+		GlobalPosition = point + normal * 0.02f;
+		Vector3 up = Mathf.Abs(_direction.Y) > 0.99f ? Vector3.Right : Vector3.Up;
+		LookAt(GlobalPosition + _direction, up);
+		_visualOffset = Vector3.Zero;
+		_mesh.Position = Vector3.Zero;
+
+		ImpactEffects.SpawnSparks(effectsParent, point, normal, RicochetSparkColor, 10);
+		PlaceholderSfx.PlayAt(effectsParent, PlaceholderSfx.Ricochet, point, -8f, 0.15f);
 	}
 }

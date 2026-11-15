@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatModifierUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/StatModifierUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "quick_loader"
+DisplayName = "Quick Loader"
+Description = "Reload 35% faster."
+AccentColor = Color(0.55, 0.9, 0.45, 1)
+MaxStacks = 1
+Stat = 2
+Value = 0.65

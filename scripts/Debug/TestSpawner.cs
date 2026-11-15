@@ -6,7 +6,7 @@ namespace Deadset.Debug;
 /// <summary>
 /// DEBUG: keys 1-0 and minus spawn a pack of the
 /// matching enemy at a random spawn point, so enemy types can be compared side by side.
-/// Shows a small key legend in the top-left corner.
+/// F1 toggles a small key legend in the top-left corner.
 /// </summary>
 public partial class TestSpawner : Node
 {
@@ -19,6 +19,11 @@ public partial class TestSpawner : Node
 	[Export] public float InitialDelay { get; set; } = 1.5f;
 	/// <summary>Enemies scatter within this radius around the spawn point.</summary>
 	[Export] public float ScatterRadius { get; set; } = 1.6f;
+
+	/// <summary>Show the key legend at start. F1 toggles it.</summary>
+	[Export] public bool ShowLegend { get; set; }
+
+	private CanvasLayer _legend;
 
 	private static readonly Key[] Keys =
 		{ Key.Key1, Key.Key2, Key.Key3, Key.Key4, Key.Key5, Key.Key6, Key.Key7, Key.Key8, Key.Key9, Key.Key0, Key.Minus };
@@ -34,6 +39,11 @@ public partial class TestSpawner : Node
 	{
 		if (@event is not InputEventKey { Pressed: true, Echo: false } key)
 			return;
+		if (key.PhysicalKeycode == Key.F1 && _legend != null)
+		{
+			_legend.Visible = !_legend.Visible;
+			return;
+		}
 		int index = System.Array.IndexOf(Keys, key.PhysicalKeycode);
 		if (index >= 0 && index < EnemyScenes.Count)
 			SpawnPack(index);
@@ -72,7 +82,8 @@ public partial class TestSpawner : Node
 			lines.Append($"{key}  {name} x{PackSize(i)}\n");
 		}
 
-		var layer = new CanvasLayer { Layer = 5 };
+		var layer = new CanvasLayer { Layer = 5, Visible = ShowLegend };
+		_legend = layer;
 		var label = new Label
 		{
 			Text = lines.ToString(),

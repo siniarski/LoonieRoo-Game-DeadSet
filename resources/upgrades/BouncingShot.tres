@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatModifierUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Upgrades/StatModifierUpgrade.cs" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+Id = "bouncing_shot"
+DisplayName = "Bouncing Shot"
+Description = "Nails ricochet once off walls and floors."
+AccentColor = Color(0.6, 0.9, 1, 1)
+MaxStacks = 1
+Stat = 5
+Value = 1.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Player/PlayerController.cs" id="1_ctrl"]
 [ext_resource type="Script" path="res://scripts/Player/CameraRecoil.cs" id="2_recoil"]
@@ -6,7 +6,9 @@
 [ext_resource type="PackedScene" path="res://scenes/weapons/NailGun.tscn" id="4_nailgun"]
 [ext_resource type="Script" path="res://scripts/Combat/HealthComponent.cs" id="5_health"]
 [ext_resource type="Script" path="res://scripts/Player/PlayerDamageFeedback.cs" id="6_feedback"]
-[ext_resource type="Script" path="res://scripts/Debug/PlayerTestRespawn.cs" id="7_respawn"]
+[ext_resource type="Script" path="res://scripts/Economy/Wallet.cs" id="7_wallet"]
+[ext_resource type="Script" path="res://scripts/Upgrades/PlayerUpgrades.cs" id="8_upgrades"]
+[ext_resource type="Resource" path="res://resources/upgrades/UpgradePool.tres" id="9_pool"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -41,5 +43,9 @@ MaxHealth = 100.0
 [node name="DamageFeedback" type="Node" parent="."]
 script = ExtResource("6_feedback")
 
-[node name="TestRespawn" type="Node" parent="."]
-script = ExtResource("7_respawn")
+[node name="Wallet" type="Node" parent="."]
+script = ExtResource("7_wallet")
+
+[node name="Upgrades" type="Node" parent="."]
+script = ExtResource("8_upgrades")
+Pool = ExtResource("9_pool")

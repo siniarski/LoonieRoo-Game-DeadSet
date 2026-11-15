@@ -31,6 +31,8 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _squawk;
 	private static AudioStreamWav _grunt;
 	private static AudioStreamWav _croak;
+	private static AudioStreamWav _dashWhoosh;
+	private static AudioStreamWav _ricochet;
 
 	/// <summary>Short rising chirp when a Glow Bunny pops.</summary>
 	public static AudioStreamWav BunnySqueak => _bunnySqueak ??= Build(0.14f, t => Sweep(t, 900f, 2200f, 20f) * MathF.Exp(-t * 22f) * 0.5f);
@@ -76,6 +78,11 @@ public static class PlaceholderSfx
 	public static AudioStreamWav ReloadStart => _reloadStart ??= Build(0.09f, ReloadStartSample());
 	public static AudioStreamWav ReloadEnd => _reloadEnd ??= Build(0.14f, t => Clack(t, 900f) + Clack(t - 0.06f, 1200f) * 1.2f);
 	public static AudioStreamWav DryFire => _dryFire ??= Build(0.05f, t => Sine(2400f, t) * MathF.Exp(-t * 160f) * 0.5f + Noise() * MathF.Exp(-t * 220f) * 0.3f);
+
+	/// <summary>Airy swell of wind for the dash.</summary>
+	public static AudioStreamWav DashWhoosh => _dashWhoosh ??= Build(0.3f, DashWhooshSample());
+	/// <summary>Bright falling "pew" of a nail glancing off a surface.</summary>
+	public static AudioStreamWav Ricochet => _ricochet ??= Build(0.2f, t => (Sweep(t, 3600f, 1500f, 14f) * 0.5f + Noise() * MathF.Exp(-t * 120f) * 0.4f) * MathF.Exp(-t * 16f));
 
 	/// <summary>Plays a one-shot positional sound that frees itself when done.</summary>
 	public static void PlayAt(Node parent, AudioStream stream, Vector3 position, float volumeDb = 0f, float pitchJitter = 0.08f)
@@ -123,6 +130,18 @@ public static class PlaceholderSfx
 		{
 			lowPassed += (Noise() - lowPassed) * 0.4f;
 			return lowPassed * MathF.Exp(-t * 80f) * 0.9f + Sine(520f, t) * MathF.Exp(-t * 70f) * 0.5f;
+		};
+	}
+
+	private static Func<float, float> DashWhooshSample()
+	{
+		float lowPassed = 0f;
+		return t =>
+		{
+			// Noise through a filter that opens then closes, with a quick swell.
+			float swell = MathF.Sin(MathF.PI * Math.Clamp(t / 0.3f, 0f, 1f));
+			lowPassed += (Noise() - lowPassed) * (0.05f + 0.45f * swell);
+			return lowPassed * swell * 1.6f + Sweep(t, 90f, 50f, 8f) * MathF.Exp(-t * 18f) * 0.5f;
 		};
 	}
 
