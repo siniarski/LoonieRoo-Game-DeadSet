@@ -81,7 +81,8 @@ Done: 1. setup, arena and movement; 2. nail gun; 3. emus and health; 4. wave dir
 
 Next:
 
-8. A bigger, more interesting arena (lanes, chokepoints, cover loops).
+- **Priority, not done yet:** the repo has no remote. Create a private GitHub repo, add it as `origin` and push `main` and `prototype-loop`. Until then nothing is backed up off this machine.
+8. ~~A bigger, more interesting arena~~ (done: the Bore Yard). Follow-up: lanes are easy to funnel; see "playtest 3" in `ideas.md`.
 9. A tuning pass on waves, cash and prices with all three weapons.
 
 ## Working style
