@@ -3,7 +3,7 @@ using Godot;
 
 namespace Deadset.Effects;
 
-public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak }
+public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak, Growl }
 
 /// <summary>
 /// Placeholder sound effects synthesised in code, so the prototype needs no audio imports.
@@ -31,6 +31,7 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _squawk;
 	private static AudioStreamWav _grunt;
 	private static AudioStreamWav _croak;
+	private static AudioStreamWav _growl;
 	private static AudioStreamWav _dashWhoosh;
 	private static AudioStreamWav _ricochet;
 
@@ -54,6 +55,9 @@ public static class PlaceholderSfx
 	/// <summary>Wet toad croak.</summary>
 	public static AudioStreamWav Croak => _croak ??= Build(0.2f, t => Sine(130f, t) * (0.5f + 0.5f * Sine(28f, t)) * MathF.Exp(-t * 10f));
 
+	/// <summary>Rising growl with dirt-scrape noise: the wombat's charge tell.</summary>
+	public static AudioStreamWav Growl => _growl ??= Build(0.75f, GrowlSample());
+
 	/// <summary>Placeholder sound for each enemy cue, picked in the enemy scene's inspector.</summary>
 	public static AudioStream ForCue(EnemyCue cue) => cue switch
 	{
@@ -64,6 +68,7 @@ public static class PlaceholderSfx
 		EnemyCue.Squawk => Squawk,
 		EnemyCue.Grunt => Grunt,
 		EnemyCue.Croak => Croak,
+		EnemyCue.Growl => Growl,
 		_ => null,
 	};
 
@@ -142,6 +147,19 @@ public static class PlaceholderSfx
 			float swell = MathF.Sin(MathF.PI * Math.Clamp(t / 0.3f, 0f, 1f));
 			lowPassed += (Noise() - lowPassed) * (0.05f + 0.45f * swell);
 			return lowPassed * swell * 1.6f + Sweep(t, 90f, 50f, 8f) * MathF.Exp(-t * 18f) * 0.5f;
+		};
+	}
+
+	private static Func<float, float> GrowlSample()
+	{
+		float lowPassed = 0f;
+		return t =>
+		{
+			lowPassed += (Noise() - lowPassed) * 0.12f;
+			float swell = MathF.Min(t / 0.6f, 1f);
+			float rumble = Sweep(t, 70f, 150f, 3f) * (0.6f + 0.4f * Sine(23f, t));
+			float scrape = lowPassed * (0.5f + 0.5f * MathF.Max(0f, Sine(5f, t)));
+			return (rumble * 0.8f + scrape * 1.2f) * swell * (t > 0.68f ? MathF.Exp(-(t - 0.68f) * 40f) : 1f);
 		};
 	}
 

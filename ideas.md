@@ -21,3 +21,12 @@ They exist so we can compare look and aim feel. Play them, then decide which to 
 | 0 | Magpie | ~2.4 m, flying | Overhead special | Swooping dive |
 
 The wombat (charger) stays in the scope as Milestone 5 and isn't in this roster.
+
+## Polish ideas from the long build session (not built)
+
+- **Dash cooldown indicator** on the HUD (the dash itself is in, on Q, once you own Oi! Watch It!).
+- **Armour-only hits** could flash blue instead of red, so you can tell armour soaked it.
+- **Wombat:** a dust trail during the charge; screen shake when it slams into cover nearby.
+- **Trader cards** are taller than they need to be; could show an icon or the owned-upgrade list.
+- **Headshot kill pop:** the head bursts off (extra sparks and a different sound) for that KF feel.
+- **Wave-end summary** in the break: kills, headshot %, cash earned that wave.

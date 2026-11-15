@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Wombat"
-Bounty = 50
+Bounty = 35
 MaxHealth = 300
 MoveSpeed = 4
 Acceleration = 18

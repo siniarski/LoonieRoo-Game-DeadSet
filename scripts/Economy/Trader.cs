@@ -21,9 +21,9 @@ public partial class Trader : Node
 
 	[ExportGroup("Prices")]
 	/// <summary>Cash per nail. Fractions round up per purchase.</summary>
-	[Export] public float PricePerNail { get; set; } = 0.5f;
+	[Export] public float PricePerNail { get; set; } = 0.6f;
 	/// <summary>Cash per point of armour.</summary>
-	[Export] public float PricePerArmour { get; set; } = 1.5f;
+	[Export] public float PricePerArmour { get; set; } = 2f;
 	/// <summary>Armour points per small armour purchase.</summary>
 	[Export] public int ArmourStep { get; set; } = 25;
 

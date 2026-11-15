@@ -36,7 +36,9 @@ public partial class Wombat : Enemy
 	[Export(PropertyHint.Range, "0,1")] public float TrackFraction { get; set; } = 0.7f;
 	/// <summary>How fast it turns toward the player while tracking.</summary>
 	[Export] public float WindupTurnSpeed { get; set; } = 9f;
-	[Export] public EnemyCue WindupCue { get; set; } = EnemyCue.Grunt;
+	[Export] public EnemyCue WindupCue { get; set; } = EnemyCue.Growl;
+	/// <summary>Played the moment the charge direction locks: the "move now" cue.</summary>
+	[Export] public EnemyCue LockCue { get; set; } = EnemyCue.Grunt;
 
 	[ExportGroup("Charge")]
 	[Export] public float ChargeSpeed { get; set; } = 14f;
@@ -287,7 +289,7 @@ public partial class Wombat : Enemy
 				// Lock: from here on it is committed, and the player can step out of the line.
 				_directionLocked = true;
 				FaceDirection(_chargeDirection, 1f, 100f);
-				PlayCue(WindupCue, 0f);
+				PlayCue(LockCue, 0f);
 			}
 		}
 
