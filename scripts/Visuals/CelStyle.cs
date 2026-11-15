@@ -39,6 +39,11 @@ public partial class CelStyle : Resource
 	[Export] public float GlowAlbedo { get; set; }
 	/// <summary>Bright glows keep their hue instead of clipping towards yellow-white.</summary>
 	[Export] public bool GlowKeepHue { get; set; } = true;
+	/// <summary>Enemy glows dim to this fraction up close (1 = never), so a crowd in your face doesn't bloom over everything.</summary>
+	[Export] public float NearGlowMin { get; set; } = 1f;
+	/// <summary>Enemy glows are fully dimmed inside this distance (metres) and full strength beyond NearGlowEnd.</summary>
+	[Export] public float NearGlowStart { get; set; } = 1.5f;
+	[Export] public float NearGlowEnd { get; set; } = 6f;
 	/// <summary>Brightness of unshaded parts (eyes, muzzle flash). Above 1 they bloom.</summary>
 	[Export] public float UnshadedBoost { get; set; } = 1f;
 	/// <summary>Unshaded parts (eyes) swell by this many metres per metre of distance beyond 6 m, to stay visible at range.</summary>

@@ -53,6 +53,12 @@ uniform float fog_max = 0.0;
 uniform float fog_bands = 0.0;
 /// How much glowing parts cut through the fog (keeps heads readable at range).
 uniform float fog_glow_cut = 0.7;
+/// Glowing parts dim to this fraction of their strength up close (1 = never dim), so a
+/// crowd of glowing heads in your face doesn't bloom over everything. Enemies only.
+uniform float near_glow_min = 1.0;
+/// Full dimming inside this distance in metres, full strength beyond near_glow_end.
+uniform float near_glow_start = 1.5;
+uniform float near_glow_end = 6.0;
 
 varying vec3 world_pos;
 varying vec3 world_normal;
@@ -108,7 +114,8 @@ void fragment() {
 	ROUGHNESS = (emission_energy + unshaded) > 0.01 ? 0.1 : 1.0;
 	METALLIC = 0.0;
 
-	vec3 glow = emission * emission_energy;
+	float near = mix(near_glow_min, 1.0, smoothstep(near_glow_start, near_glow_end, length(VERTEX)));
+	vec3 glow = emission * emission_energy * near;
 	float peak = max(glow.r, max(glow.g, glow.b));
 	if (glow_keep_hue > 0.5 && peak > 1.0) {
 		float over = peak - 1.0;

@@ -429,6 +429,9 @@ public partial class StyleApplier : Node
 			albedo = new Color(albedo.R * s.GlowAlbedo, albedo.G * s.GlowAlbedo, albedo.B * s.GlowAlbedo, albedo.A);
 		toon.SetShaderParameter("albedo", albedo);
 		toon.SetShaderParameter("glow_keep_hue", s.GlowKeepHue ? 1f : 0f);
+		toon.SetShaderParameter("near_glow_min", entry.Enemy ? s.NearGlowMin : 1f);
+		toon.SetShaderParameter("near_glow_start", s.NearGlowStart);
+		toon.SetShaderParameter("near_glow_end", s.NearGlowEnd);
 		toon.SetShaderParameter("unshaded", unshaded ? 1f : 0f);
 		toon.SetShaderParameter("emission", source.EmissionEnabled ? source.Emission : Colors.Black);
 		toon.SetShaderParameter("emission_energy",
