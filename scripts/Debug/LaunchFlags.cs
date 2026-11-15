@@ -29,6 +29,7 @@ namespace Deadset.Debug;
 /// --sim=LOADOUT      a simulated player plays the run and logs "SIM" lines (nail, rivet, cutter)
 /// --simspeed=N       game speed for --sim runs (default 1)
 /// --simwaves=N       --sim quits after this wave (default 10)
+/// --check[=A,B]      run the automated checks (SelfCheck) and quit with the failure count
 ///
 /// Unknown flags are reported in the console and ignored.
 /// </summary>
@@ -61,6 +62,7 @@ public partial class LaunchFlags : Node
 		int wave = 0;
 		string simLoadout = null;
 		int simWaves = 10;
+		string check = null;
 		bool openTrader = false;
 
 		foreach (string raw in args)
@@ -105,6 +107,9 @@ public partial class LaunchFlags : Node
 				case "simspeed":
 					Engine.TimeScale = Mathf.Clamp(value.ToFloat(), 0.1f, 8f);
 					break;
+				case "check":
+					check = value;
+					break;
 				case "simwaves":
 					simWaves = Mathf.Max(1, value.ToInt());
 					break;
@@ -118,6 +123,9 @@ public partial class LaunchFlags : Node
 					break;
 			}
 		}
+
+		if (check != null)
+			AddChild(new SelfCheck { Name = "SelfCheck", Which = check });
 
 		if (simLoadout != null)
 			AddChild(new SimPlayer { Name = "SimPlayer", Loadout = simLoadout, MaxWaves = simWaves });
