@@ -23,6 +23,8 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 | `--at=SPOT` | Start at `alley`, `shed`, `tank`, `north`, `south` or `start` |
 | `--god` | Take no damage |
 | `--nowaves` | No waves: an empty arena for `--spawn` tests |
+| `--sim=nail\|rivet\|cutter` | A bot plays the run and prints `SIM` lines (tuning data); watch it or add `--simspeed=3` |
+| `--simwaves=N` | The bot quits after wave N (default 10) |
 
 ## Unplayed
 

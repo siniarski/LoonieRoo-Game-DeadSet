@@ -1,0 +1,86 @@
+== cutter1.txt
+SIM start loadout=cutter aimError=0.22 reaction=0.35
+SIM wave 1 cleared 17s | kills 12 | headshots 100% | took 0 dmg, hp 100 armour 0 | shots 91 | earned $96, cash $156 | nails 5+96
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 20 armour, upgrade Bouncing Shot, | nails 5+384
+SIM wave 2 cleared 24s | kills 20 | headshots 69% | took 0 dmg, hp 100 armour 20 | shots 115 | earned $160, cash $160 | nails 18+256
+SIM  trader before wave 3: spent $159, left $1 | 192 nails, 30 armour, upgrade Thongs Off, | nails 18+480
+SIM wave 3 cleared 33s | kills 30 | headshots 61% | took 15 dmg, hp 100 armour 39 | shots 167 | earned $288, cash $289 | nails 11+320
+SIM  trader before wave 4: spent $266, left $23 | 160 nails, 11 armour, nail_mag L1, upgrade Quick Loader, | nails 19+480
+SIM wave 4 cleared 38s | kills 42 | headshots 80% | took 48 dmg, hp 100 armour 52 | shots 236 | earned $418, cash $441 | nails 23+240
+SIM  trader before wave 5: spent $440, left $1 | 240 nails, BOUGHT Brushcutter, upgrade Oi! Watch It!, | nails 23+480
+SIM wave 5 cleared 39s | kills 61 | headshots 24% | took 80 dmg, hp 94 armour 0 | shots 203 | earned $655, cash $656 | nails 29+320
+SIM  trader before wave 6: spent $564, left $92 | 160 nails, 50 armour, cutter_reach L1, cutter_targets L1, cutter_rate L1, upgrade Hot Chips & Gravy, | nails 29+480
+SIM wave 6 cleared 41s | kills 81 | headshots 21% | took 30 dmg, hp 100 armour 70 | shots 224 | earned $835, cash $927 | nails 12+320
+SIM  trader before wave 7: spent $884, left $43 | 160 nails, cutter_damage L1, cutter_reach L2, cutter_targets L2, cutter_rate L2, cutter_damage L2, upgrade Smoko Shield, | nails 12+480
+SIM wave 7 cleared 49s | kills 124 | headshots 16% | took 56 dmg, hp 100 armour 44 | shots 268 | earned $1365, cash $1408 | nails 0+280
+SIM  trader before wave 8: spent $1172, left $236 | 200 nails, 6 armour, cutter_reach L3, cutter_targets L3, cutter_rate L3, cutter_damage L3, upgrade Thongs Off, | nails 0+480
+SIM end: died on wave 8 (514 kills), 0.5 game minutes, loadout cutter
+== cutter2.txt
+SIM start loadout=cutter aimError=0.22 reaction=0.35
+SIM wave 1 cleared 13s | kills 12 | headshots 100% | took 0 dmg, hp 100 armour 0 | shots 70 | earned $96, cash $156 | nails 26+96
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 20 armour, upgrade Hot Chips & Gravy, | nails 26+384
+SIM wave 2 cleared 19s | kills 20 | headshots 83% | took 0 dmg, hp 100 armour 20 | shots 108 | earned $160, cash $160 | nails 14+288
+SIM  trader before wave 3: spent $159, left $1 | 192 nails, 30 armour, upgrade Quick Loader, | nails 14+480
+SIM wave 3 cleared 31s | kills 30 | headshots 65% | took 3 dmg, hp 100 armour 58 | shots 172 | earned $288, cash $289 | nails 2+320
+SIM  trader before wave 4: spent $228, left $61 | 160 nails, nail_mag L1, upgrade Smoko Shield, | nails 10+480
+SIM wave 4 cleared 40s | kills 42 | headshots 56% | took 46 dmg, hp 100 armour 54 | shots 233 | earned $418, cash $479 | nails 17+240
+SIM  trader before wave 5: spent $478, left $1 | 240 nails, BOUGHT Brushcutter, upgrade Bouncing Shot, | nails 17+480
+SIM wave 5 cleared 42s | kills 61 | headshots 21% | took 93 dmg, hp 100 armour 2 | shots 228 | earned $655, cash $656 | nails 32+280
+SIM  trader before wave 6: spent $576, left $80 | 200 nails, 48 armour, cutter_reach L1, cutter_targets L1, cutter_rate L1, upgrade Thongs Off, | nails 32+480
+SIM wave 6 cleared 41s | kills 81 | headshots 19% | took 100 dmg, hp 100 armour 0 | shots 237 | earned $835, cash $915 | nails 5+320
+SIM  trader before wave 7: spent $834, left $81 | 160 nails, 50 armour, cutter_damage L1, cutter_reach L2, cutter_targets L2, cutter_rate L2, upgrade Thongs Off, | nails 5+480
+SIM wave 7 cleared 49s | kills 124 | headshots 17% | took 104 dmg, hp 100 armour 0 | shots 256 | earned $1365, cash $1446 | nails 9+280
+SIM  trader before wave 8: spent $1446, left $0 | 200 nails, 50 armour, cutter_damage L2, cutter_reach L3, cutter_targets L3, cutter_rate L3, cutter_damage L3, upgrade Oi! Watch It!, | nails 9+480
+SIM wave 8 cleared 54s | kills 155 | headshots 20% | took 60 dmg, hp 100 armour 38 | shots 303 | earned $1690, cash $1690 | nails 1+240
+SIM  trader before wave 9: spent $220, left $1470 | 240 nails, 12 armour, | nails 1+480
+SIM wave 9 cleared 73s | kills 193 | headshots 22% | took 165 dmg, hp 70 armour 0 | shots 406 | earned $2128, cash $3598 | nails 30+120
+SIM  trader before wave 10: spent $344, left $3254 | 240 nails, 50 armour, | nails 30+480
+SIM end: died on wave 10 (883 kills), 0.8 game minutes, loadout cutter
+== nail1.txt
+SIM start loadout=nail aimError=0.22 reaction=0.35
+SIM wave 1 cleared 21s | kills 12 | headshots 85% | took 9 dmg, hp 91 armour 0 | shots 119 | earned $96, cash $156 | nails 9+64
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 17 armour, upgrade Smoko Shield, | nails 9+368
+SIM wave 2 cleared 28s | kills 20 | headshots 79% | took 51 dmg, hp 57 armour 0 | shots 153 | earned $160, cash $160 | nails 16+208
+SIM  trader before wave 3: spent $160, left $0 | 192 nails, 33 armour, upgrade Thongs Off, | nails 16+442
+SIM end: died on wave 3 (59 kills), 0.1 game minutes, loadout nail
+== nail2.txt
+SIM start loadout=nail aimError=0.22 reaction=0.35
+SIM wave 1 cleared 15s | kills 12 | headshots 100% | took 0 dmg, hp 100 armour 0 | shots 87 | earned $96, cash $156 | nails 9+96
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 20 armour, upgrade Hot Chips & Gravy, | nails 9+384
+SIM wave 2 cleared 26s | kills 20 | headshots 79% | took 24 dmg, hp 100 armour 0 | shots 140 | earned $160, cash $160 | nails 29+224
+SIM  trader before wave 3: spent $160, left $0 | 192 nails, 35 armour, upgrade Thongs Off, | nails 29+448
+SIM wave 3 cleared 29s | kills 30 | headshots 58% | took 21 dmg, hp 100 armour 14 | shots 160 | earned $288, cash $288 | nails 29+288
+SIM  trader before wave 4: spent $249, left $39 | 192 nails, 36 armour, upgrade Oi! Watch It!, | nails 29+480
+SIM wave 4 cleared 39s | kills 42 | headshots 62% | took 99 dmg, hp 100 armour 1 | shots 219 | earned $418, cash $457 | nails 2+288
+SIM  trader before wave 5: spent $455, left $2 | 192 nails, 49 armour, nail_mag L1, nail_rate L1, upgrade Smoko Shield, | nails 10+480
+SIM wave 5 cleared 49s | kills 61 | headshots 50% | took 96 dmg, hp 100 armour 4 | shots 301 | earned $655, cash $657 | nails 29+160
+SIM  trader before wave 6: spent $590, left $67 | 240 nails, 46 armour, nail_mag L2, nail_pierce_keep L1, upgrade Thongs Off, | nails 39+480
+SIM end: died on wave 6 (236 kills), 0.4 game minutes, loadout nail
+== rivet1.txt
+SIM start loadout=rivet aimError=0.22 reaction=0.35
+SIM wave 1 cleared 16s | kills 12 | headshots 100% | took 0 dmg, hp 100 armour 0 | shots 87 | earned $96, cash $156 | nails 9+96
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 20 armour, upgrade Smoko Shield, | nails 9+384
+SIM wave 2 cleared 25s | kills 20 | headshots 76% | took 0 dmg, hp 100 armour 20 | shots 128 | earned $160, cash $160 | nails 9+256
+SIM  trader before wave 3: spent $159, left $1 | 192 nails, 30 armour, upgrade Hot Chips & Gravy, | nails 9+480
+SIM wave 3 cleared 31s | kills 30 | headshots 64% | took 21 dmg, hp 100 armour 33 | shots 160 | earned $288, cash $289 | nails 9+320
+SIM  trader before wave 4: spent $278, left $11 | 160 nails, 17 armour, nail_mag L1, upgrade Bouncing Shot, | nails 17+480
+SIM wave 4 cleared 37s | kills 42 | headshots 75% | took 0 dmg, hp 100 armour 100 | shots 200 | earned $418, cash $429 | nails 17+280
+SIM  trader before wave 5: spent $428, left $1 | 200 nails, BOUGHT Rivet Gun, upgrade Quick Loader, | nails 17+480 rivets 8+72
+SIM wave 5 cleared 56s | kills 61 | headshots 39% | took 57 dmg, hp 100 armour 43 | shots 144 | earned $655, cash $656 | nails 33+400 rivets 0+0
+SIM  trader before wave 6: spent $620, left $36 | 80 nails, 48 rivets, 7 armour, rivet_reload L1, rivet_keep L1, rivet_damage L1, upgrade Oi! Watch It!, | nails 33+480 rivets 0+96
+SIM end: died on wave 6 (241 kills), 0.4 game minutes, loadout rivet
+== rivet2.txt
+SIM start loadout=rivet aimError=0.22 reaction=0.35
+SIM wave 1 cleared 22s | kills 12 | headshots 92% | took 0 dmg, hp 100 armour 0 | shots 126 | earned $96, cash $156 | nails 2+64
+SIM  trader before wave 2: spent $156, left $0 | 192 nails, 17 armour, upgrade Quick Loader, | nails 2+368
+SIM wave 2 cleared 28s | kills 20 | headshots 79% | took 0 dmg, hp 100 armour 17 | shots 164 | earned $160, cash $160 | nails 30+176
+SIM  trader before wave 3: spent $160, left $0 | 192 nails, 30 armour, upgrade Hot Chips & Gravy, | nails 30+424
+SIM wave 3 cleared 26s | kills 30 | headshots 89% | took 0 dmg, hp 100 armour 47 | shots 152 | earned $288, cash $288 | nails 6+296
+SIM  trader before wave 4: spent $260, left $28 | 184 nails, 3 armour, nail_mag L1, upgrade Bouncing Shot, | nails 14+480
+SIM wave 4 cleared 40s | kills 42 | headshots 71% | took 21 dmg, hp 100 armour 79 | shots 240 | earned $418, cash $446 | nails 14+240
+SIM  trader before wave 5: spent $446, left $0 | 240 nails, BOUGHT Rivet Gun, upgrade Thongs Off, | nails 14+480 rivets 8+73
+SIM wave 5 cleared 46s | kills 61 | headshots 56% | took 141 dmg, hp 73 armour 0 | shots 90 | earned $655, cash $655 | nails 5+480 rivets 0+0
+SIM  trader before wave 6: spent $654, left $1 | 48 rivets, 50 armour, rivet_reload L1, rivet_keep L1, rivet_damage L1, upgrade Thongs Off, | nails 5+480 rivets 0+96
+SIM end: died on wave 6 (241 kills), 0.4 game minutes, loadout rivet
+
+[exited with code 0]

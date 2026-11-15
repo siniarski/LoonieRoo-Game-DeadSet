@@ -26,6 +26,9 @@ namespace Deadset.Debug;
 /// --at=SPOT          start at a named spot in the arena (alley, shed, tank, north, south)
 /// --god              can't die
 /// --nowaves          no wave director: an empty arena for --spawn tests
+/// --sim=LOADOUT      a simulated player plays the run and logs "SIM" lines (nail, rivet, cutter)
+/// --simspeed=N       game speed for --sim runs (default 1)
+/// --simwaves=N       --sim quits after this wave (default 10)
 ///
 /// Unknown flags are reported in the console and ignored.
 /// </summary>
@@ -56,6 +59,8 @@ public partial class LaunchFlags : Node
 		var director = GetTree().GetFirstNodeInGroup("wave_director") as WaveDirector;
 		var spawns = new List<(string enemy, int count)>();
 		int wave = 0;
+		string simLoadout = null;
+		int simWaves = 10;
 		bool openTrader = false;
 
 		foreach (string raw in args)
@@ -94,6 +99,15 @@ public partial class LaunchFlags : Node
 					if (HealthComponent.FindOn(player) is { } health)
 						health.AddDamageModifier(_ => 0f);
 					break;
+				case "sim":
+					simLoadout = string.IsNullOrEmpty(value) ? "nail" : value.ToLowerInvariant();
+					break;
+				case "simspeed":
+					Engine.TimeScale = Mathf.Clamp(value.ToFloat(), 0.1f, 8f);
+					break;
+				case "simwaves":
+					simWaves = Mathf.Max(1, value.ToInt());
+					break;
 				case "nowaves":
 					director?.Stop();
 					director?.QueueFree();
@@ -104,6 +118,9 @@ public partial class LaunchFlags : Node
 					break;
 			}
 		}
+
+		if (simLoadout != null)
+			AddChild(new SimPlayer { Name = "SimPlayer", Loadout = simLoadout, MaxWaves = simWaves });
 
 		if (director != null && (wave > 0 || openTrader))
 			director.JumpTo(Mathf.Max(wave, 1), openTrader, JumpCountdown);
