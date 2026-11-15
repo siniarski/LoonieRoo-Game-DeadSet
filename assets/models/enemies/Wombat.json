@@ -95,12 +95,58 @@
 				0.0
 			],
 			"materials": [
-				"M_Fur",
+				"M_Fur"
+			],
+			"verts_blender": 462,
+			"tris": 920,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegFR",
+			"parent": "Visual",
+			"position": [
+				0.4,
+				0.62,
+				-0.42
+			],
+			"materials": [
 				"M_Dark",
 				"M_Pale"
 			],
-			"verts_blender": 798,
-			"tris": 1496,
+			"verts_blender": 112,
+			"tris": 192,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegBL",
+			"parent": "Visual",
+			"position": [
+				-0.4,
+				0.62,
+				0.56
+			],
+			"materials": [
+				"M_Dark",
+				"M_Pale"
+			],
+			"verts_blender": 112,
+			"tris": 192,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegBR",
+			"parent": "Visual",
+			"position": [
+				0.4,
+				0.62,
+				0.56
+			],
+			"materials": [
+				"M_Dark",
+				"M_Pale"
+			],
+			"verts_blender": 112,
+			"tris": 192,
 			"cast_shadow": true
 		},
 		{
@@ -108,7 +154,7 @@
 			"parent": "Visual/Paw",
 			"position": [
 				0.0,
-				0.0,
+				0.62,
 				0.0
 			],
 			"materials": [

@@ -62,8 +62,8 @@
 			"parent": "Visual",
 			"position": [
 				0.0,
-				1.5199999809265137,
-				-0.25999999046325684
+				1.0800000429153442,
+				-0.20000000298023224
 			]
 		}
 	],
@@ -80,8 +80,38 @@
 				"M_Feather",
 				"M_Dark"
 			],
-			"verts_blender": 1043,
-			"tris": 1844,
+			"verts_blender": 823,
+			"tris": 1468,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegL",
+			"parent": "Visual",
+			"position": [
+				-0.15,
+				0.47,
+				0.26
+			],
+			"materials": [
+				"M_Dark"
+			],
+			"verts_blender": 110,
+			"tris": 188,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegR",
+			"parent": "Visual",
+			"position": [
+				0.15,
+				0.47,
+				0.26
+			],
+			"materials": [
+				"M_Dark"
+			],
+			"verts_blender": 110,
+			"tris": 188,
 			"cast_shadow": true
 		},
 		{
@@ -89,8 +119,8 @@
 			"parent": "Visual/Striker",
 			"position": [
 				0.0,
-				0.1,
-				-0.05
+				0.54,
+				-0.11
 			],
 			"materials": [
 				"M_Dark",

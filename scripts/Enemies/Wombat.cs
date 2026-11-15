@@ -83,6 +83,18 @@ public partial class Wombat : Enemy
 	[Export] public NodePath HeadPivotPath { get; set; } = "Visual/HeadPivot";
 	[Export] public NodePath PawPath { get; set; } = "Visual/Paw";
 	[Export] public NodePath GlowPath { get; set; } = "Visual/Glow";
+	/// <summary>Leg nodes that swing forward first (one diagonal pair). Each pivots at its own origin and rests unrotated.</summary>
+	[Export] public Godot.Collections.Array<NodePath> LegsA { get; set; } = new();
+	/// <summary>The other diagonal pair: swings the opposite way.</summary>
+	[Export] public Godot.Collections.Array<NodePath> LegsB { get; set; } = new();
+	/// <summary>Leg swing either side of rest at full walking speed, in radians.</summary>
+	[Export] public float LegSwingAngle { get; set; } = 0.4f;
+	/// <summary>Leg swing while charging, in radians.</summary>
+	[Export] public float ChargeLegSwingAngle { get; set; } = 0.65f;
+	/// <summary>Legs are left alone when the target is further away than this, in metres.</summary>
+	[Export] public float LegSwingRange { get; set; } = 25f;
+	/// <summary>How fast the legs come back to rest when it stops, in radians per second.</summary>
+	[Export] public float LegSettleSpeed { get; set; } = 9f;
 	/// <summary>Bob height while walking, in metres.</summary>
 	[Export] public float BobHeight { get; set; } = 0.05f;
 	/// <summary>Bobs per metre travelled.</summary>
@@ -129,6 +141,10 @@ public partial class Wombat : Enemy
 	private Vector3 _visualRest;
 	private Vector3 _headRest;
 	private Vector3 _pawRest;
+	private Node3D[] _legsA = System.Array.Empty<Node3D>();
+	private Node3D[] _legsB = System.Array.Empty<Node3D>();
+	private float _legAngle;
+	private float _legShown;
 
 	private State _state = State.Chase;
 	private float _stateTimer;
@@ -157,10 +173,23 @@ public partial class Wombat : Enemy
 			_headRest = _headPivot.Position;
 		if (_paw != null)
 			_pawRest = _paw.Position;
+		_legsA = ResolveLegs(LegsA);
+		_legsB = ResolveLegs(LegsB);
 
 		SetUpGlow();
 		_chargeCooldownTimer = FirstChargeDelay;
 		_bobPhase = GD.Randf() * Mathf.Tau;
+	}
+
+	private Node3D[] ResolveLegs(Godot.Collections.Array<NodePath> paths)
+	{
+		if (paths == null || paths.Count == 0)
+			return System.Array.Empty<Node3D>();
+		var legs = new List<Node3D>(paths.Count);
+		foreach (NodePath path in paths)
+			if (GetNodeOrNull<Node3D>(path) is { } leg)
+				legs.Add(leg);
+		return legs.ToArray();
 	}
 
 	/// <summary>Gives this wombat its own glow material, so brightening one leaves the others alone.</summary>
@@ -466,6 +495,7 @@ public partial class Wombat : Enemy
 		float headThrust = 0f;           // + = forwards
 		Vector3 pawOffset = Vector3.Zero;
 		float glowTarget = GlowIdleEnergy;
+		float legTarget = 0f;
 
 		switch (_state)
 		{
@@ -475,6 +505,7 @@ public partial class Wombat : Enemy
 				float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);
 				offset.Y = (Mathf.Sin(_bobPhase) * 0.5f + 0.5f) * BobHeight * amount;
 				roll = Mathf.Sin(_bobPhase * 0.5f) * 0.04f * amount;
+				legTarget = Mathf.Sin(_bobPhase * 0.5f) * LegSwingAngle * amount;
 				break;
 
 			case State.Windup:
@@ -506,6 +537,7 @@ public partial class Wombat : Enemy
 				headDrop = HeadLowerDistance;
 				glowTarget = GlowChargeEnergy;
 				offset.Y = Mathf.Abs(Mathf.Sin(_stateTime * 22f)) * 0.06f;
+				legTarget = Mathf.Sin(_stateTime * 22f) * ChargeLegSwingAngle;
 				break;
 
 			case State.Skid:
@@ -561,6 +593,8 @@ public partial class Wombat : Enemy
 			_paw.Position = _pawRest + pawOffset;
 		}
 
+		AnimateLegs(legTarget, dt);
+
 		if (_glowMaterial != null)
 		{
 			_glowEnergy = Mathf.Lerp(_glowEnergy, glowTarget, 1f - Mathf.Exp(-18f * dt));
@@ -572,5 +606,32 @@ public partial class Wombat : Enemy
 			float dim = Mathf.Clamp(_glowEnergy / Mathf.Max(GlowIdleEnergy, 0.01f), 0.25f, 1f);
 			_glowMaterial.AlbedoColor = _glowBaseColor * new Color(dim, dim, dim);
 		}
+	}
+
+	/// <summary>Swings the legs in diagonal pairs: one angle per frame, group B mirrored.</summary>
+	private void AnimateLegs(float target, float dt)
+	{
+		if (_legsA.Length == 0 && _legsB.Length == 0)
+			return;
+		if (target == 0f && _legAngle == 0f)
+			return;
+
+		float dx = TargetPosition.X - BodyPosition.X, dz = TargetPosition.Z - BodyPosition.Z;
+		if (dx * dx + dz * dz > LegSwingRange * LegSwingRange)
+			return;
+
+		// The charge gallop is quick: let the legs keep up with it.
+		float rate = _state == State.Charge ? 40f : LegSettleSpeed;
+		_legAngle = Mathf.MoveToward(_legAngle, target, rate * dt);
+		if (Mathf.Abs(_legAngle - _legShown) < 0.01f && _legAngle != 0f)
+			return;
+		_legShown = _legAngle;
+
+		var a = new Vector3(_legAngle, 0f, 0f);
+		var b = new Vector3(-_legAngle, 0f, 0f);
+		foreach (Node3D leg in _legsA)
+			leg.Rotation = a;
+		foreach (Node3D leg in _legsB)
+			leg.Rotation = b;
 	}
 }

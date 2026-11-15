@@ -1,6 +1,7 @@
 """Dingo: the low, fast lunger. Lean dog with a ridge of glowing mutation spines down its back.
 
-Parts: Body (torso, legs, tail, spines), Head (WeakSpot follows it).
+Parts: Body (torso, tail, spines), LegFL, LegFR, LegBL, LegBR (trot in diagonal pairs),
+Head (WeakSpot follows it).
 """
 import os
 import sys
@@ -45,22 +46,17 @@ body.loft([((0, 0.60, 0.52), 0.05, 0.05), ((0, 0.62, 0.68), 0.075, 0.075), ((0, 
 body.loft([((0, 0.75, 0.96), 0.056, 0.056), ((0, 0.80, 1.05), 0.03, 0.03)], "M_Pale", seg=10,
           caps=("none", "round"))
 
-for s in (-1, 1):
-    # Front leg: reaching forward a little. Pale socks.
+# Legs: one part each, pivoting at the shoulder or hip, so they can trot in diagonal pairs.
+for s, side in ((-1, "L"), (1, "R")):
     x = s * 0.115
-    dz = -0.05 if s < 0 else 0.03
-    body.loft([((x, 0.55, -0.17), 0.075, 0.10), ((x, 0.36, -0.19 + dz * 0.5), 0.05, 0.058),
-               ((x, 0.20, -0.2 + dz), 0.04, 0.045)], "M_Fur", seg=8, sub=2, caps=("none", "none"))
-    body.loft([((x, 0.20, -0.2 + dz), 0.042, 0.047), ((x, 0.07, -0.21 + dz), 0.042, 0.045),
-               ((x, 0.035, -0.26 + dz), 0.05, 0.035)], "M_Pale", seg=8, caps=("none", "round"))
-    # Hind leg: haunch, hock, paw.
+    front = m.part("LegF" + side, "Visual", (x, 0.52, -0.17))
+    front.loft([((x, 0.55, -0.17), 0.075, 0.10), ((x, 0.36, -0.19), 0.05, 0.058), ((x, 0.20, -0.2), 0.04, 0.045),
+                ((x, 0.07, -0.21), 0.042, 0.045), ((x, 0.035, -0.26), 0.05, 0.035)], "M_Fur", seg=8, sub=2)
     x = s * 0.125
-    dz = 0.04 if s < 0 else -0.03
-    body.ball((x, 0.50, 0.40), (0.075, 0.17, 0.14), "M_Fur", seg=10, rings=6, rot=(18, 0, 0))
-    body.loft([((x, 0.40, 0.42 + dz), 0.058, 0.07), ((x, 0.25, 0.53 + dz), 0.042, 0.048),
-               ((x, 0.17, 0.52 + dz), 0.038, 0.042)], "M_Fur", seg=8, sub=2, caps=("none", "none"))
-    body.loft([((x, 0.17, 0.52 + dz), 0.04, 0.044), ((x, 0.06, 0.47 + dz), 0.04, 0.043),
-               ((x, 0.035, 0.42 + dz), 0.05, 0.035)], "M_Pale", seg=8, caps=("none", "round"))
+    hind = m.part("LegB" + side, "Visual", (x, 0.52, 0.40))
+    hind.ball((x, 0.50, 0.40), (0.075, 0.17, 0.14), "M_Fur", seg=10, rings=6, rot=(18, 0, 0))
+    hind.loft([((x, 0.40, 0.42), 0.058, 0.07), ((x, 0.25, 0.53), 0.042, 0.048), ((x, 0.17, 0.52), 0.038, 0.042),
+               ((x, 0.06, 0.47), 0.04, 0.043), ((x, 0.035, 0.42), 0.05, 0.035)], "M_Fur", seg=8, sub=2)
 
 # ---- Head ---------------------------------------------------------------------------------
 head = m.part("Head", "Visual", HEAD)

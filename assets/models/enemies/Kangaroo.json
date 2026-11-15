@@ -62,8 +62,8 @@
 			"parent": "Visual",
 			"position": [
 				0.0,
-				1.2000000476837158,
-				-0.20000000298023224
+				1.3200000524520874,
+				-0.05999999865889549
 			]
 		}
 	],
@@ -79,11 +79,40 @@
 			"materials": [
 				"M_Fur",
 				"M_Pale",
-				"M_Dark",
 				"M_Glow"
 			],
-			"verts_blender": 1430,
-			"tris": 2772,
+			"verts_blender": 912,
+			"tris": 1772,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegL",
+			"parent": "Visual",
+			"position": [
+				-0.21,
+				0.62,
+				0.16
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 266,
+			"tris": 520,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegR",
+			"parent": "Visual",
+			"position": [
+				0.21,
+				0.62,
+				0.16
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 266,
+			"tris": 520,
 			"cast_shadow": true
 		},
 		{

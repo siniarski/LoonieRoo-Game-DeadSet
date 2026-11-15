@@ -75,8 +75,68 @@
 				"M_Pale",
 				"M_Glow"
 			],
-			"verts_blender": 1127,
-			"tris": 2058,
+			"verts_blender": 699,
+			"tris": 1314,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegFL",
+			"parent": "Visual",
+			"position": [
+				-0.115,
+				0.52,
+				-0.17
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 106,
+			"tris": 208,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegBL",
+			"parent": "Visual",
+			"position": [
+				-0.125,
+				0.52,
+				0.4
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 158,
+			"tris": 308,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegFR",
+			"parent": "Visual",
+			"position": [
+				0.115,
+				0.52,
+				-0.17
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 106,
+			"tris": 208,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegBR",
+			"parent": "Visual",
+			"position": [
+				0.125,
+				0.52,
+				0.4
+			],
+			"materials": [
+				"M_Fur"
+			],
+			"verts_blender": 158,
+			"tris": 308,
 			"cast_shadow": true
 		},
 		{

@@ -1,6 +1,7 @@
 """Kangaroo: the boxer. Upright, heavy haunches, tail as a third leg, mutated glowing fists.
 
-Parts: Body (torso, legs, tail), Head (WeakSpot follows it), Striker/Arms (MeleeChaser punches with them).
+Parts: Body (torso, tail), LegL, LegR (trail back in the hop), Head (WeakSpot follows it),
+Striker/Arms (MeleeChaser punches with them).
 """
 import os
 import sys
@@ -16,7 +17,8 @@ m.material("M_Glow", (0.35, 0.95, 0.3), emission=(0.35, 0.95, 0.3), energy=1.5)
 m.material("M_Eye", (1.0, 0.12, 0.05), unshaded=True)
 
 HEAD = V(0, 1.65, -0.08)
-STRIKER = V(0, 1.2, -0.2)
+# The striker pivots at the shoulders, so a pitch swings the fists up into the punch.
+STRIKER = V(0, 1.32, -0.06)
 m.node("Striker", "Visual", STRIKER)
 
 # ---- Body ---------------------------------------------------------------------------------
@@ -54,15 +56,16 @@ body.loft([
     ((0, 0.07, 1.36), 0.035, 0.035),
 ], "M_Fur", seg=12, sub=3, caps=("none", "round"))
 
-for s in (-1, 1):
+# Legs: haunch, shank and the long foot, one part each, pivoting at the hip so they can
+# trail back together in the hop.
+for s, name in ((-1, "LegL"), (1, "LegR")):
     x = s * 0.21
-    # Haunch, shank, and the long foot.
-    body.ball((x, 0.52, 0.16), (0.15, 0.28, 0.25), "M_Fur", seg=12, rings=8, rot=(-24, 0, 0))
-    body.loft([((x, 0.40, -0.02), 0.085, 0.10), ((x, 0.24, 0.10), 0.065, 0.075), ((x, 0.10, 0.2), 0.06, 0.065)],
-              "M_Fur", seg=8, sub=2)
-    body.loft([((x, 0.07, 0.26), 0.06, 0.055), ((x, 0.06, 0.0), 0.075, 0.05), ((x, 0.05, -0.26), 0.07, 0.042),
-               ((x, 0.04, -0.4), 0.045, 0.03)], "M_Fur", seg=8, sub=2, power=2.4)
-    body.spike((x, 0.045, -0.38), (x, 0.02, -0.53), 0.035, 0.028, "M_Dark", seg=4, mid=0.5, bulge=1.2)
+    leg = m.part(name, "Visual", (x, 0.62, 0.16))
+    leg.ball((x, 0.52, 0.16), (0.15, 0.28, 0.25), "M_Fur", seg=12, rings=8, rot=(-24, 0, 0))
+    leg.loft([((x, 0.40, -0.02), 0.085, 0.10), ((x, 0.24, 0.10), 0.065, 0.075), ((x, 0.10, 0.2), 0.06, 0.065)],
+             "M_Fur", seg=8, sub=2)
+    leg.loft([((x, 0.07, 0.26), 0.06, 0.055), ((x, 0.06, 0.0), 0.075, 0.05), ((x, 0.05, -0.26), 0.07, 0.042),
+              ((x, 0.04, -0.4), 0.045, 0.03), ((x, 0.03, -0.5), 0.02, 0.015)], "M_Fur", seg=8, sub=2, power=2.4)
 
 # ---- Head ---------------------------------------------------------------------------------
 head = m.part("Head", "Visual", HEAD)

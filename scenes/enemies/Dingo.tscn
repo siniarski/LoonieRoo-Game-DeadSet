@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/Enemies/MeleeChaser.cs" id="1_chaser"]
 [ext_resource type="Resource" path="res://resources/enemies/Dingo.tres" id="2_stats"]
@@ -7,6 +7,10 @@
 [ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
 [ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/Body.res" id="mesh_Body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/LegFL.res" id="mesh_LegFL"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/LegBL.res" id="mesh_LegBL"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/LegFR.res" id="mesh_LegFR"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/LegBR.res" id="mesh_LegBR"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Dingo/Head.res" id="mesh_Head"]
 
 [sub_resource type="CapsuleShape3D" id="BodyShape"]
@@ -31,6 +35,9 @@ LungeUpSpeed = 1.5
 BobHeight = 0.04
 BobFrequency = 0.8
 StrikerPath = NodePath("")
+LegsA = [NodePath("Visual/LegFL"), NodePath("Visual/LegBR")]
+LegsB = [NodePath("Visual/LegFR"), NodePath("Visual/LegBL")]
+LegSwingAngle = 0.6
 
 [node name="BodyShape" type="CollisionShape3D" parent="."]
 position = Vector3(0, 0.45, 0)
@@ -46,6 +53,22 @@ FollowPath = NodePath("../Visual/Head")
 [node name="Body" type="MeshInstance3D" parent="Visual"]
 mesh = ExtResource("mesh_Body")
 
+[node name="LegFL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.115, 0.52, -0.17)
+mesh = ExtResource("mesh_LegFL")
+
+[node name="LegBL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.125, 0.52, 0.4)
+mesh = ExtResource("mesh_LegBL")
+
+[node name="LegFR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.115, 0.52, -0.17)
+mesh = ExtResource("mesh_LegFR")
+
+[node name="LegBR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.125, 0.52, 0.4)
+mesh = ExtResource("mesh_LegBR")
+
 [node name="Head" type="MeshInstance3D" parent="Visual"]
 position = Vector3(0, 0.76, -0.45)
 mesh = ExtResource("mesh_Head")
@@ -58,4 +81,3 @@ script = ExtResource("4_hit")
 
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_melee")
-

@@ -1,7 +1,7 @@
 """Cassowary: the kicker. Tall black bird, blue neck, red wattles, horn casque, glowing dagger claw.
 
-Parts: Body (body, neck, left leg), Head (WeakSpot follows it),
-Striker/Leg (the right leg: MeleeChaser kicks with it).
+Parts: Body, LegL (shank and foot: swings with the run), Head (WeakSpot follows it),
+Striker/Leg (the right shank and foot: swings with the run, and MeleeChaser kicks with it).
 """
 import os
 import sys
@@ -19,7 +19,8 @@ m.material("M_Glow", (0.7, 1.0, 0.3), emission=(0.7, 1.0, 0.3), energy=1.5)
 m.material("M_Eye", (0.7, 1.0, 0.3), emission=(0.7, 1.0, 0.3), energy=3.0, unshaded=True)
 
 HEAD = V(0, 1.76, -0.3)
-STRIKER = V(0.17, 0.38, 0.12)
+# The striker pivots at the joint of the kicking leg, so a pitch swings the foot up and out.
+STRIKER = V(0.17, 0.50, 0.22)
 m.node("Striker", "Visual", STRIKER)
 
 # ---- Body ---------------------------------------------------------------------------------
@@ -60,11 +61,16 @@ for x, y, z in ((-0.15, 1.27, -0.26), (0.15, 1.27, -0.26), (0, 1.33, -0.16), (0,
                seg=4, mid=0.5, bulge=1.25)
 
 
-def leg(part, s, glow_claw):
+KNEE_Y, KNEE_Z = 0.50, 0.22
+
+
+def leg(s, name, parent, glow_claw):
+    """Drumstick on the body; shank and foot as their own part, pivoting at the joint under the plumage."""
     x = s * 0.17
-    hip, ankle, foot = V(x, 0.95, 0.14), V(x, 0.50, 0.22), V(x, 0.06, 0.08)
-    part.loft([(hip, 0.14, 0.15), (hip.lerp(ankle, 0.45), 0.125, 0.14), (hip.lerp(ankle, 0.8), 0.085, 0.09),
+    hip, ankle, foot = V(x, 0.95, 0.14), V(x, KNEE_Y, KNEE_Z), V(x, 0.06, 0.08)
+    body.loft([(hip, 0.14, 0.15), (hip.lerp(ankle, 0.45), 0.125, 0.14), (hip.lerp(ankle, 0.8), 0.085, 0.09),
                (ankle, 0.062, 0.066)], "M_Feather", seg=10, sub=2, caps=("round", "round"))
+    part = m.part(name, parent, ankle)
     part.ball(ankle + V(0, -0.02, 0.01), (0.085, 0.09, 0.09), "M_Leg", seg=8, rings=5)
     part.loft([(ankle, 0.066, 0.07), (ankle.lerp(foot, 0.5), 0.058, 0.062), (foot + V(0, 0.03, 0), 0.06, 0.064),
                (foot + V(0, -0.025, -0.03), 0.075, 0.048)], "M_Leg", seg=8, caps=("none", "round"))
@@ -77,9 +83,8 @@ def leg(part, s, glow_claw):
                "M_Glow" if glow_claw else "M_Leg", seg=5, mid=0.5, bulge=1.15)
 
 
-leg(body, -1, False)
-kick = m.part("Leg", "Visual/Striker", STRIKER)
-leg(kick, 1, True)
+leg(-1, "LegL", "Visual", False)
+leg(1, "Leg", "Visual/Striker", True)
 
 # ---- Head ---------------------------------------------------------------------------------
 head = m.part("Head", "Visual", HEAD)

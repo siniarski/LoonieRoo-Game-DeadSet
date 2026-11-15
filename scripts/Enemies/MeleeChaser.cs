@@ -30,6 +30,10 @@ public partial class MeleeChaser : Enemy
 	[Export] public Vector3 StrikerPullback { get; set; } = new(0f, 0.06f, 0.25f);
 	/// <summary>Local offset the striker jabs out to when the hit lands.</summary>
 	[Export] public Vector3 StrikerThrust { get; set; } = new(0f, -0.04f, -0.4f);
+	/// <summary>Pitch added to the striker at the end of the wind-up, in radians (+ = tips back, lifting its far end).</summary>
+	[Export] public float StrikerPullbackPitch { get; set; }
+	/// <summary>Pitch added to the striker when the hit lands, in radians (- = tips forward and down).</summary>
+	[Export] public float StrikerThrustPitch { get; set; }
 
 	[ExportGroup("Gait")]
 	/// <summary>Bob height while running, in metres. Keep it small on common enemies so heads stay level.</summary>
@@ -40,6 +44,18 @@ public partial class MeleeChaser : Enemy
 	[Export] public bool Hops { get; set; }
 	/// <summary>Idle hover bob for flyers, in metres.</summary>
 	[Export] public float HoverBob { get; set; } = 0.12f;
+
+	[ExportGroup("Legs")]
+	/// <summary>Leg nodes that swing forward first. Each pivots at its own origin (the hip) and rests unrotated.</summary>
+	[Export] public Godot.Collections.Array<NodePath> LegsA { get; set; } = new();
+	/// <summary>Leg nodes that swing the opposite way (the other leg, or the other diagonal pair).</summary>
+	[Export] public Godot.Collections.Array<NodePath> LegsB { get; set; } = new();
+	/// <summary>Swing either side of rest at full speed, in radians. With Hops, how far both legs trail back at the top of the hop.</summary>
+	[Export] public float LegSwingAngle { get; set; } = 0.55f;
+	/// <summary>Legs are left alone when the target is further away than this, in metres.</summary>
+	[Export] public float LegSwingRange { get; set; } = 25f;
+	/// <summary>How fast the legs come back to rest when it stops, in radians per second.</summary>
+	[Export] public float LegSettleSpeed { get; set; } = 9f;
 
 	private enum State { Chase, Windup, Recover }
 
@@ -53,6 +69,13 @@ public partial class MeleeChaser : Enemy
 	private float _flatSpeed;
 	private Vector3 _visualOffset;
 	private Vector3 _strikerOffset;
+	private Vector3 _strikerRestRotation;
+	private float _strikerPitch;
+	private Node3D[] _legsA = System.Array.Empty<Node3D>();
+	private Node3D[] _legsB = System.Array.Empty<Node3D>();
+	private float _gaitAmount;
+	private float _legAngle;
+	private float _legShown;
 
 	public override void _Ready()
 	{
@@ -64,9 +87,25 @@ public partial class MeleeChaser : Enemy
 
 		_striker = StrikerPath == null || StrikerPath.IsEmpty ? null : GetNodeOrNull<Node3D>(StrikerPath);
 		if (_striker != null)
+		{
 			_strikerRest = _striker.Position;
+			_strikerRestRotation = _striker.Rotation;
+		}
+		_legsA = ResolveLegs(LegsA);
+		_legsB = ResolveLegs(LegsB);
 		_visualRest = Visual.Position;
 		_bobPhase = GD.Randf() * Mathf.Tau;
+	}
+
+	private Node3D[] ResolveLegs(Godot.Collections.Array<NodePath> paths)
+	{
+		if (paths == null || paths.Count == 0)
+			return System.Array.Empty<Node3D>();
+		var legs = new System.Collections.Generic.List<Node3D>(paths.Count);
+		foreach (NodePath path in paths)
+			if (GetNodeOrNull<Node3D>(path) is { } leg)
+				legs.Add(leg);
+		return legs.ToArray();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -166,6 +205,7 @@ public partial class MeleeChaser : Enemy
 	{
 		float dt = (float)delta;
 		AnimateGait(dt);
+		AnimateLegs(dt);
 		AnimateStriker();
 	}
 
@@ -173,6 +213,7 @@ public partial class MeleeChaser : Enemy
 	{
 		float speed = _flatSpeed;
 		Vector3 offset = Vector3.Zero;
+		_gaitAmount = 0f;
 
 		if (Flying)
 		{
@@ -185,6 +226,7 @@ public partial class MeleeChaser : Enemy
 			float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);
 			float wave = Hops ? Mathf.Abs(Mathf.Sin(_bobPhase)) : Mathf.Sin(_bobPhase) * 0.5f + 0.5f;
 			offset.Y = wave * BobHeight * amount;
+			_gaitAmount = amount;
 		}
 
 		// Only touch the node when it actually moves: every write re-sends the whole model to the renderer.
@@ -194,25 +236,77 @@ public partial class MeleeChaser : Enemy
 		Visual.Position = _visualRest + offset;
 	}
 
+	/// <summary>
+	/// Swings the legs with the run: one angle per enemy per frame, shared by every leg
+	/// (group B mirrored). A stride is two bobs, so the feet keep time with the body.
+	/// Hoppers push both legs back together as they leave the ground.
+	/// </summary>
+	private void AnimateLegs(float dt)
+	{
+		if (_legsA.Length == 0 && _legsB.Length == 0)
+			return;
+
+		float target = 0f;
+		if (_gaitAmount > 0f)
+			target = (Hops ? -Mathf.Abs(Mathf.Sin(_bobPhase)) : Mathf.Sin(_bobPhase * 0.5f)) * LegSwingAngle * _gaitAmount;
+		if (target == 0f && _legAngle == 0f)
+			return;   // standing still with its legs at rest: nothing to do
+
+		// Too far off to see the feet move.
+		float dx = TargetPosition.X - BodyPosition.X, dz = TargetPosition.Z - BodyPosition.Z;
+		if (dx * dx + dz * dz > LegSwingRange * LegSwingRange)
+			return;
+
+		_legAngle = Mathf.MoveToward(_legAngle, target, LegSettleSpeed * dt);
+		if (Mathf.Abs(_legAngle - _legShown) < 0.01f && _legAngle != 0f)
+			return;
+		_legShown = _legAngle;
+
+		var a = new Vector3(_legAngle, 0f, 0f);
+		var b = Hops ? a : new Vector3(-_legAngle, 0f, 0f);
+		foreach (Node3D leg in _legsA)
+			leg.Rotation = a;
+		foreach (Node3D leg in _legsB)
+			leg.Rotation = b;
+	}
+
 	private void AnimateStriker()
 	{
 		if (_striker == null)
 			return;
 
 		Vector3 offset = Vector3.Zero;
+		float pitch = 0f;
 		if (_state == State.Windup)
 		{
 			float t = 1f - Mathf.Clamp(_stateTimer / Mathf.Max(WindupTime, 0.001f), 0f, 1f);
-			offset = StrikerPullback * Mathf.SmoothStep(0f, 1f, t);
+			float eased = Mathf.SmoothStep(0f, 1f, t);
+			offset = StrikerPullback * eased;
+			pitch = StrikerPullbackPitch * eased;
 		}
 		else if (_state == State.Recover)
 		{
 			// Snap out to the thrust, then ease back to rest over the recovery.
 			float elapsed = RecoverTime - _stateTimer;
 			const float jabTime = 0.05f;
-			offset = elapsed < jabTime
-				? StrikerPullback.Lerp(StrikerThrust, elapsed / jabTime)
-				: StrikerThrust.Lerp(Vector3.Zero, Mathf.Clamp((elapsed - jabTime) / Mathf.Max(RecoverTime - jabTime, 0.01f), 0f, 1f));
+			if (elapsed < jabTime)
+			{
+				float jab = elapsed / jabTime;
+				offset = StrikerPullback.Lerp(StrikerThrust, jab);
+				pitch = Mathf.Lerp(StrikerPullbackPitch, StrikerThrustPitch, jab);
+			}
+			else
+			{
+				float back = Mathf.Clamp((elapsed - jabTime) / Mathf.Max(RecoverTime - jabTime, 0.01f), 0f, 1f);
+				offset = StrikerThrust.Lerp(Vector3.Zero, back);
+				pitch = Mathf.Lerp(StrikerThrustPitch, 0f, back);
+			}
+		}
+
+		if (Mathf.Abs(pitch - _strikerPitch) > 0.002f || (pitch == 0f && _strikerPitch != 0f))
+		{
+			_strikerPitch = pitch;
+			_striker.Rotation = new Vector3(_strikerRestRotation.X + pitch, _strikerRestRotation.Y, _strikerRestRotation.Z);
 		}
 
 		if (offset.DistanceSquaredTo(_strikerOffset) < 1e-6f)

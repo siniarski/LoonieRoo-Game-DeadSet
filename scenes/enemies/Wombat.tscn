@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/Enemies/Wombat.cs" id="1_wombat"]
 [ext_resource type="Resource" path="res://resources/enemies/Wombat.tres" id="2_stats"]
@@ -7,6 +7,9 @@
 [ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
 [ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/Body.res" id="mesh_Body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/LegFR.res" id="mesh_LegFR"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/LegBL.res" id="mesh_LegBL"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/LegBR.res" id="mesh_LegBR"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/Leg.res" id="mesh_Leg"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/Head.res" id="mesh_Head"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Wombat/Patches.res" id="mesh_Patches"]
@@ -26,6 +29,8 @@ Stats = ExtResource("2_stats")
 DeathCue = 6
 EffectHeight = 0.9
 DeathSparkAmount = 60
+LegsA = [NodePath("Visual/Paw/Leg"), NodePath("Visual/LegBR")]
+LegsB = [NodePath("Visual/LegFR"), NodePath("Visual/LegBL")]
 
 [node name="BodyShape" type="CollisionShape3D" parent="."]
 position = Vector3(0, 0.75, 0)
@@ -50,7 +55,20 @@ position = Vector3(0, 1.34, -0.72)
 [node name="Body" type="MeshInstance3D" parent="Visual"]
 mesh = ExtResource("mesh_Body")
 
+[node name="LegFR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.4, 0.62, -0.42)
+mesh = ExtResource("mesh_LegFR")
+
+[node name="LegBL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.4, 0.62, 0.56)
+mesh = ExtResource("mesh_LegBL")
+
+[node name="LegBR" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.4, 0.62, 0.56)
+mesh = ExtResource("mesh_LegBR")
+
 [node name="Leg" type="MeshInstance3D" parent="Visual/Paw"]
+position = Vector3(0, 0.62, 0)
 mesh = ExtResource("mesh_Leg")
 
 [node name="Head" type="MeshInstance3D" parent="Visual/HeadPivot"]
@@ -67,4 +85,3 @@ script = ExtResource("4_hit")
 
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_melee")
-

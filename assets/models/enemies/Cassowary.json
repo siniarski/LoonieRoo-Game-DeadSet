@@ -86,8 +86,8 @@
 			"parent": "Visual",
 			"position": [
 				0.17000000178813934,
-				0.3799999952316284,
-				0.11999999731779099
+				0.5,
+				0.2199999988079071
 			]
 		}
 	],
@@ -103,11 +103,25 @@
 			"materials": [
 				"M_Feather",
 				"M_Neck",
-				"M_Wattle",
+				"M_Wattle"
+			],
+			"verts_blender": 1013,
+			"tris": 1872,
+			"cast_shadow": true
+		},
+		{
+			"name": "LegL",
+			"parent": "Visual",
+			"position": [
+				-0.17,
+				0.5,
+				0.22
+			],
+			"materials": [
 				"M_Leg"
 			],
-			"verts_blender": 1022,
-			"tris": 1855,
+			"verts_blender": 121,
+			"tris": 203,
 			"cast_shadow": true
 		},
 		{
@@ -119,12 +133,11 @@
 				0.0
 			],
 			"materials": [
-				"M_Feather",
 				"M_Leg",
 				"M_Glow"
 			],
-			"verts_blender": 233,
-			"tris": 423,
+			"verts_blender": 121,
+			"tris": 203,
 			"cast_shadow": true
 		},
 		{

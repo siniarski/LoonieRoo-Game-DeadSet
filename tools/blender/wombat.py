@@ -1,6 +1,6 @@
 """Wombat: the charger. A barrel of muscle on four stumps with a blocky battering-ram head.
 
-Parts: Body (torso + three legs), Paw/Leg (front-left leg: scrapes the ground in the wind-up),
+Parts: Body, LegFR, LegBL, LegBR, Paw/Leg (front-left leg: also scrapes the ground in the wind-up),
 Glow/Patches (mutation boils: Wombat.cs brightens them), HeadPivot/Head (lowers and jabs).
 """
 import math
@@ -68,12 +68,13 @@ def leg(part, x, z, front):
                    seg=4, mid=0.5, bulge=1.25)
 
 
-leg(body, 0.40, -0.42, True)
-leg(body, -0.40, 0.56, False)
-leg(body, 0.40, 0.56, False)
-
-paw = m.part("Leg", "Visual/Paw", PAW)
-leg(paw, -0.40, -0.42, True)
+# One part per leg, pivoting where it meets the body, so Wombat.cs can swing them in
+# diagonal pairs. The front-left one hangs under Visual/Paw, which also scrapes in the wind-up.
+HIP_Y = 0.62
+leg(m.part("LegFR", "Visual", (0.40, HIP_Y, -0.42)), 0.40, -0.42, True)
+leg(m.part("LegBL", "Visual", (-0.40, HIP_Y, 0.56)), -0.40, 0.56, False)
+leg(m.part("LegBR", "Visual", (0.40, HIP_Y, 0.56)), 0.40, 0.56, False)
+leg(m.part("Leg", "Visual/Paw", (-0.40, HIP_Y, -0.42)), -0.40, -0.42, True)
 
 # ---- Head: a blunt wedge skull, pale muzzle, wide nose pad, angry brow ----------------------
 head = m.part("Head", "Visual/HeadPivot", HEAD)

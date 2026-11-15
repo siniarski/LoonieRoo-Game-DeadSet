@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/Enemies/MeleeChaser.cs" id="1_chaser"]
 [ext_resource type="Resource" path="res://resources/enemies/Cassowary.tres" id="2_stats"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/Combat/MeleeAttack.cs" id="5_melee"]
 [ext_resource type="Script" path="res://scripts/Combat/WeakSpot.cs" id="6_weak"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Cassowary/Body.res" id="mesh_Body"]
+[ext_resource type="ArrayMesh" path="res://assets/models/enemies/Cassowary/LegL.res" id="mesh_LegL"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Cassowary/Leg.res" id="mesh_Leg"]
 [ext_resource type="ArrayMesh" path="res://assets/models/enemies/Cassowary/Head.res" id="mesh_Head"]
 
@@ -31,8 +32,13 @@ RecoverTime = 0.5
 BobHeight = 0.04
 BobFrequency = 0.7
 StrikerPath = NodePath("Visual/Striker")
-StrikerPullback = Vector3(0, 0.2, 0.25)
-StrikerThrust = Vector3(0, 0.35, -0.6)
+StrikerPullback = Vector3(0, 0.08, 0.1)
+StrikerThrust = Vector3(0, 0.2, -0.3)
+StrikerPullbackPitch = -0.6
+StrikerThrustPitch = 1.2
+LegsA = [NodePath("Visual/LegL")]
+LegsB = [NodePath("Visual/Striker/Leg")]
+LegSwingAngle = 0.55
 
 [node name="BodyShape" type="CollisionShape3D" parent="."]
 position = Vector3(0, 0.75, 0)
@@ -46,10 +52,14 @@ FollowPath = NodePath("../Visual/Head")
 [node name="Visual" type="Node3D" parent="."]
 
 [node name="Striker" type="Node3D" parent="Visual"]
-position = Vector3(0.17, 0.38, 0.12)
+position = Vector3(0.17, 0.5, 0.22)
 
 [node name="Body" type="MeshInstance3D" parent="Visual"]
 mesh = ExtResource("mesh_Body")
+
+[node name="LegL" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.17, 0.5, 0.22)
+mesh = ExtResource("mesh_LegL")
 
 [node name="Head" type="MeshInstance3D" parent="Visual"]
 position = Vector3(0, 1.76, -0.3)
@@ -66,4 +76,3 @@ script = ExtResource("4_hit")
 
 [node name="MeleeAttack" type="Node" parent="."]
 script = ExtResource("5_melee")
-
