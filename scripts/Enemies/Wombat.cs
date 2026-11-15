@@ -41,7 +41,7 @@ public partial class Wombat : Enemy
 	[Export] public EnemyCue LockCue { get; set; } = EnemyCue.Grunt;
 
 	[ExportGroup("Charge")]
-	[Export] public float ChargeSpeed { get; set; } = 14f;
+	[Export] public float ChargeSpeed { get; set; } = 12.6f;
 	/// <summary>How quickly it reaches charge speed (m/s²).</summary>
 	[Export] public float ChargeAcceleration { get; set; } = 90f;
 	/// <summary>Charge ends after this many metres if nothing was hit.</summary>

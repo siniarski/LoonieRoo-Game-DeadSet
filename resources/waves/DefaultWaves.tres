@@ -21,7 +21,7 @@ EarliestFraction = 0
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w1_Emu")])
 MaxAlive = 10
-PackInterval = 2.0
+PackInterval = 3
 
 [sub_resource type="Resource" id="w2_Emu"]
 script = ExtResource("s_spawn")
@@ -34,7 +34,7 @@ EarliestFraction = 0
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w2_Emu")])
 MaxAlive = 14
-PackInterval = 1.8
+PackInterval = 2.7
 
 [sub_resource type="Resource" id="w3_Emu"]
 script = ExtResource("s_spawn")
@@ -61,7 +61,7 @@ EarliestFraction = 0.5
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w3_Emu"), SubResource("w3_Dingo"), SubResource("w3_Wombat")])
 MaxAlive = 18
-PackInterval = 1.6
+PackInterval = 2.4
 
 [sub_resource type="Resource" id="w4_Emu"]
 script = ExtResource("s_spawn")
@@ -88,7 +88,7 @@ EarliestFraction = 0.3
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w4_Emu"), SubResource("w4_Magpie"), SubResource("w4_Wombat")])
 MaxAlive = 26
-PackInterval = 1.4
+PackInterval = 2.1
 
 [sub_resource type="Resource" id="w5_Emu"]
 script = ExtResource("s_spawn")
@@ -122,7 +122,7 @@ EarliestFraction = 0.2
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w5_Emu"), SubResource("w5_Dingo"), SubResource("w5_Kangaroo"), SubResource("w5_Wombat")])
 MaxAlive = 36
-PackInterval = 1.2
+PackInterval = 1.8
 
 [sub_resource type="Resource" id="w6_Emu"]
 script = ExtResource("s_spawn")
@@ -156,7 +156,7 @@ EarliestFraction = 0.2
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w6_Emu"), SubResource("w6_Magpie"), SubResource("w6_Cassowary"), SubResource("w6_Wombat")])
 MaxAlive = 50
-PackInterval = 1.0
+PackInterval = 1.5
 
 [sub_resource type="Resource" id="w7_Emu"]
 script = ExtResource("s_spawn")
@@ -204,7 +204,7 @@ EarliestFraction = 0.2
 script = ExtResource("s_def")
 Spawns = Array[ExtResource("s_spawn")]([SubResource("w7_Emu"), SubResource("w7_Dingo"), SubResource("w7_Magpie"), SubResource("w7_Kangaroo"), SubResource("w7_Cassowary"), SubResource("w7_Wombat")])
 MaxAlive = 70
-PackInterval = 0.8
+PackInterval = 1.2
 
 [resource]
 script = ExtResource("s_set")

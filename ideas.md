@@ -30,3 +30,24 @@ The wombat (charger) stays in the scope as Milestone 5 and isn't in this roster.
 - **Trader cards** are taller than they need to be; could show an icon or the owned-upgrade list.
 - **Headshot kill pop:** the head bursts off (extra sparks and a different sound) for that KF feel.
 - **Wave-end summary** in the break: kills, headshot %, cash earned that wave.
+
+## From playtest 1 (2026-11-15): weapon variety and per-weapon upgrades (not built, needs a go-ahead)
+
+You asked for more weapons, plus upgrades for a weapon after you buy it (for example ricochet to
+nearby enemies, or a chance to pierce). Both are outside the prototype scope in CLAUDE.md
+("other weapons and firearms" are listed as out of scope), so this is a scope change to decide on.
+
+The code is already set up for it: the player tells the equipped weapon to fire, and each weapon
+decides how. A small version would be:
+
+1. **Two more tradie tools, sold in the trader**, each with one clear job next to the nail gun:
+   - **Brushcutter** (melee/short cone, no ammo): for the emu crush at arm's length.
+   - **Rivet gun** (slow, heavy, pierces in a line): for wombats and lined-up flocks.
+   Switch with 1/2/3 or the scroll wheel; carry all you've bought.
+2. **Weapon mods** as data (`WeaponMod` resources, like upgrades), offered in the trader for the
+   weapon in your hands: Pierce (+1 target, -20% damage each), Chain ricochet (jumps to the
+   nearest enemy within 4 m), Bigger mag, Faster fire. Bought with cash, so cash has a second use.
+3. Keep the 1-of-3 player upgrades as they are.
+
+Questions to settle first: buy weapons with cash or unlock them at set waves? Can mods be
+bought more than once (stacking)?

@@ -17,7 +17,7 @@ public partial class WaveDirector : Node
 
 	[Export] public WaveSet Waves { get; set; }
 	/// <summary>Spawn points closer than this to the player are skipped (if any others exist).</summary>
-	[Export] public float MinSpawnDistance { get; set; } = 12f;
+	[Export] public float MinSpawnDistance { get; set; } = 16f;
 	/// <summary>Enemies in a pack scatter within this radius, in metres.</summary>
 	[Export] public float ScatterRadius { get; set; } = 1.8f;
 	/// <summary>Enemies below this height fell out of the world and are removed.</summary>

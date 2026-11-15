@@ -10,8 +10,8 @@ namespace Deadset.Player;
 public partial class PlayerController : CharacterBody3D
 {
 	[ExportGroup("Movement")]
-	[Export] public float WalkSpeed { get; set; } = 5.5f;
-	[Export] public float SprintSpeed { get; set; } = 8.5f;
+	[Export] public float WalkSpeed { get; set; } = 4.95f;
+	[Export] public float SprintSpeed { get; set; } = 7.65f;
 	/// <summary>How fast you reach target speed on the ground (m/s²).</summary>
 	[Export] public float GroundAcceleration { get; set; } = 60f;
 	/// <summary>How fast you stop on the ground with no input (m/s²).</summary>
@@ -24,7 +24,7 @@ public partial class PlayerController : CharacterBody3D
 
 	[ExportGroup("Dash")]
 	/// <summary>Horizontal speed during the dash burst (m/s).</summary>
-	[Export] public float DashSpeed { get; set; } = 14f;
+	[Export] public float DashSpeed { get; set; } = 12.6f;
 	/// <summary>Seconds the burst lasts.</summary>
 	[Export] public float DashDuration { get; set; } = 0.18f;
 	/// <summary>Seconds before the dash can be used again.</summary>

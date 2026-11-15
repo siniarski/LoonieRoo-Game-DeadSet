@@ -41,6 +41,19 @@ public static class PlaceholderSfx
 	private static AudioStreamWav _growl;
 	private static AudioStreamWav _dashWhoosh;
 	private static AudioStreamWav _ricochet;
+	private static AudioStreamWav _footLight;
+	private static AudioStreamWav _footHeavy;
+	private static AudioStreamWav _playerStep;
+	private static AudioStreamWav _playerLand;
+
+	/// <summary>Claw scratch on dirt: light runners (emus, dingoes, bunnies).</summary>
+	public static AudioStreamWav FootLight => _footLight ??= Build(0.07f, t => (Noise() * 0.7f + Sine(420f, t) * 0.3f) * MathF.Exp(-t * 60f) * 0.8f);
+	/// <summary>Low padded thud: heavy runners (wombats, cassowaries, roos).</summary>
+	public static AudioStreamWav FootHeavy => _footHeavy ??= Build(0.14f, t => (Sweep(t, 110f, 55f, 30f) * 0.9f + Noise() * MathF.Exp(-t * 80f) * 0.35f) * MathF.Exp(-t * 24f));
+	/// <summary>The player's boot on dirt.</summary>
+	public static AudioStreamWav PlayerStep => _playerStep ??= Build(0.09f, t => (Noise() * 0.5f + Sweep(t, 160f, 90f, 40f) * 0.5f) * MathF.Exp(-t * 45f) * 0.7f);
+	/// <summary>Both boots hitting the ground after a jump.</summary>
+	public static AudioStreamWav PlayerLand => _playerLand ??= Build(0.16f, t => (Noise() * 0.45f + Sweep(t, 140f, 60f, 25f) * 0.7f) * MathF.Exp(-t * 26f));
 
 	/// <summary>Short rising chirp when a Glow Bunny pops.</summary>
 	public static AudioStreamWav BunnySqueak => _bunnySqueak ??= Build(0.14f, t => Sweep(t, 900f, 2200f, 20f) * MathF.Exp(-t * 22f) * 0.5f);

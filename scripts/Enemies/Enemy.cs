@@ -36,6 +36,16 @@ public abstract partial class Enemy : CharacterBody3D
 	[Export] public float CorpseHold { get; set; } = 0.5f;
 	[Export] public float CorpseSink { get; set; } = 0.6f;
 
+	[ExportGroup("Footsteps")]
+	/// <summary>Metres travelled per footstep sound (0 = silent).</summary>
+	[Export] public float StrideLength { get; set; } = 1.3f;
+	/// <summary>Heavy enemies thud; light ones scratch.</summary>
+	[Export] public bool HeavyFootsteps { get; set; }
+	[Export] public float FootstepVolumeDb { get; set; } = -8f;
+	/// <summary>Footsteps further than this from the player are not played.</summary>
+	[Export] public float FootstepRange { get; set; } = 16f;
+
+	[ExportGroup("")]
 	/// <summary>Ignores gravity and keeps its height (birds). Still paths along the ground navmesh.</summary>
 	[Export] public bool Flying { get; set; }
 
@@ -160,6 +170,29 @@ public abstract partial class Enemy : CharacterBody3D
 	{
 		foreach (WeakSpot spot in _weakSpots)
 			spot.Follow();
+		TickFootsteps();
+	}
+
+	private float _strideTravelled;
+
+	/// <summary>
+	/// Plays a footstep every StrideLength metres of ground travel, if near the player, so a
+	/// flock coming up behind you can be heard. The per-sound voice cap keeps a horde in check.
+	/// </summary>
+	private void TickFootsteps()
+	{
+		if (Flying || StrideLength <= 0f)
+			return;
+		float dt = (float)GetPhysicsProcessDeltaTime();
+		Vector3 v = Velocity;
+		_strideTravelled += new Vector2(v.X, v.Z).Length() * dt;
+		if (_strideTravelled < StrideLength)
+			return;
+		_strideTravelled -= StrideLength * Mathf.Floor(_strideTravelled / StrideLength);
+		if (BodyPosition.DistanceSquaredTo(TargetPosition) > FootstepRange * FootstepRange)
+			return;
+		PlaceholderSfx.PlayAt(GetParent(), HeavyFootsteps ? PlaceholderSfx.FootHeavy : PlaceholderSfx.FootLight,
+			BodyPosition, FootstepVolumeDb, 0.15f);
 	}
 
 	private static void RefreshCrowd(ulong frame)
