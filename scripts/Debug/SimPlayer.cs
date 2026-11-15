@@ -331,8 +331,12 @@ public partial class SimPlayer : Node
 		var where = new StringBuilder();
 		foreach (Node node in GetTree().GetNodesInGroup("enemies"))
 			if (node is Enemy enemy)
-				where.Append($"{enemy.Name}@({enemy.GlobalPosition.X:0.0},{enemy.GlobalPosition.Y:0.0},{enemy.GlobalPosition.Z:0.0}) ");
-		GD.Print($"SIM STALL wave {_wave}: no kills for 45 s, {director.EnemiesRemaining} remaining; player at {_player.GlobalPosition}; alive: {where}");
+				where.Append($"{enemy.Stats?.DisplayName}@({enemy.GlobalPosition.X:0.0},{enemy.GlobalPosition.Y:0.0},{enemy.GlobalPosition.Z:0.0})"
+					+ $" hp {enemy.GetNode<HealthComponent>("HealthComponent").Current:0} v {enemy.Velocity.Length():0.0} "
+					+ $"open {NavGrid.IsOpenGround(enemy.GlobalPosition)}; ");
+		GD.Print($"SIM STALL wave {_wave}: no kills for 45 s, {director.EnemiesRemaining} remaining; player at {_player.GlobalPosition} "
+			+ $"(open {NavGrid.IsOpenGround(_player.GlobalPosition)}), target {(IsInstanceValid(_target) ? _target.Name : "none")}, "
+			+ $"shots this wave {_shots}; alive: {where}");
 		Finish("stalled");
 	}
 

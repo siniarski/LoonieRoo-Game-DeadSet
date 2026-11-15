@@ -18,4 +18,20 @@ public partial class WaveSet : Resource
 	[Export] public int EndlessMaxAliveGrowth { get; set; } = 2;
 	/// <summary>Hard cap on enemies alive at once, however far the endless waves go.</summary>
 	[Export] public int MaxAliveCap { get; set; } = 200;
+
+	[ExportGroup("Late waves get chunkier")]
+	/// <summary>From this wave on, enemies get tougher and wider each wave.</summary>
+	[Export] public int ChunkyFromWave { get; set; } = 6;
+	/// <summary>Extra health per wave from ChunkyFromWave (0.1 = +10% a wave).</summary>
+	[Export] public float HealthGrowthPerWave { get; set; } = 0.1f;
+	[Export] public float MaxHealthMultiplier { get; set; } = 2f;
+	/// <summary>Extra width per wave. Height barely changes, so heads stay at eye height.</summary>
+	[Export] public float WidthGrowthPerWave { get; set; } = 0.03f;
+	[Export] public float MaxWidth { get; set; } = 1.15f;
+
+	public float HealthMultiplierFor(int wave) =>
+		Mathf.Min(1f + HealthGrowthPerWave * Mathf.Max(wave - ChunkyFromWave + 1, 0), MaxHealthMultiplier);
+
+	public float WidthFor(int wave) =>
+		Mathf.Min(1f + WidthGrowthPerWave * Mathf.Max(wave - ChunkyFromWave + 1, 0), MaxWidth);
 }

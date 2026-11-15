@@ -22,6 +22,19 @@ public abstract partial class Enemy : CharacterBody3D
 	public static int AliveCount => All.Count;
 
 	[Export] public EnemyStats Stats { get; set; }
+	/// <summary>Set by whoever spawns it, before it enters the tree (late waves are tougher).</summary>
+	public float HealthMultiplier { get; set; } = 1f;
+
+	/// <summary>
+	/// Makes this enemy tougher and wider. Call before adding it to the tree, so the hit
+	/// reaction picks up the new size as its rest pose.
+	/// </summary>
+	public void MakeChunky(float healthMultiplier, float width)
+	{
+		HealthMultiplier = healthMultiplier;
+		if (width > 1.001f && GetNodeOrNull<Node3D>("Visual") is { } visual)
+			visual.Scale = new Vector3(width, 1f + (width - 1f) * 0.15f, width);
+	}
 
 	[ExportGroup("Death")]
 	[Export] public Color DeathSparkColor { get; set; } = new(0.45f, 1f, 0.4f);
@@ -109,7 +122,7 @@ public abstract partial class Enemy : CharacterBody3D
 	public override void _Ready()
 	{
 		Health = GetNode<HealthComponent>("HealthComponent");
-		Health.MaxHealth = Stats.MaxHealth;
+		Health.MaxHealth = Stats.MaxHealth * HealthMultiplier;
 		Health.ResetHealth();
 		Health.Died += OnDied;
 

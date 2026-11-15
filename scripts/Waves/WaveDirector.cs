@@ -394,6 +394,8 @@ public partial class WaveDirector : Node
 		{
 			PendingSpawn spawn = _pending.Dequeue();
 			var enemy = spawn.Scene.Instantiate<Node3D>();
+			if (enemy is Enemy body)
+				body.MakeChunky(Waves.HealthMultiplierFor(WaveNumber), Waves.WidthFor(WaveNumber));
 			// Place it before it enters the tree, so it never spends a frame at the origin.
 			enemy.Position = spawn.Position;
 			parent.AddChild(enemy);

@@ -28,6 +28,18 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 
 ## Unplayed
 
+### Chunkier late waves (2026-11-16)
+- What changed: from wave 6, every enemy gets +10% health a wave (+50% by wave 10, max double) and up to 15% wider (not taller, heads stay at eye height).
+- Fun bet: late waves feel heavier and take longer to chew through, instead of the same emus in bigger numbers.
+- Try it: `play.cmd --wave=10 --god` (compare with `play.cmd --wave=1 --god`)
+- Judge: from wave 8 on, a headshot nail no longer one-shots an emu. Does that feel like a fair step up, or does it break the head-height rhythm?
+
+### Pricier final mod levels (2026-11-16)
+- What changed: the last level of every 3-level mod costs double (now $360-715).
+- Fun bet: the last upgrade is a big late-game buy you save for, so cash still matters after wave 8.
+- Try it: `play.cmd --wave=8 --trader --cash=2500 --weapon=rivet`
+- Judge: is saving up for a level 3 mod a satisfying goal, or just a tax?
+
 ### Drop Bear climbers (2026-11-16) — test-only, not in waves
 - What changed: Drop Bears ignore paths and come straight at you, climbing up and over containers, the shed and walls; from the top they crouch and growl (0.45 s), then pounce on you for 15 damage, then sit dazed for 0.9 s.
 - Fun bet: cover stops being a wall at your back; you have to watch the rooftops too.

@@ -46,8 +46,19 @@ public partial class WeaponMod : Resource
 	[Export] public int Price { get; set; } = 100;
 	/// <summary>Each further level costs this much more than the last (1.5 = +50%).</summary>
 	[Export] public float PriceGrowth { get; set; } = 1.5f;
+	/// <summary>
+	/// The last level of a mod with 3 or more levels costs this many times its normal price:
+	/// the late-game cash sink.
+	/// </summary>
+	[Export] public float FinalLevelMultiplier { get; set; } = 2f;
 
-	public int PriceForLevel(int level) => Mathf.RoundToInt(Price * Mathf.Pow(PriceGrowth, Mathf.Max(level - 1, 0)) / 5f) * 5;
+	public int PriceForLevel(int level)
+	{
+		float price = Price * Mathf.Pow(PriceGrowth, Mathf.Max(level - 1, 0));
+		if (MaxLevel >= 3 && level >= MaxLevel)
+			price *= FinalLevelMultiplier;
+		return Mathf.RoundToInt(price / 5f) * 5;
+	}
 
 	/// <summary>Applies one level of this mod.</summary>
 	public void Apply(WeaponModifiers mods)
