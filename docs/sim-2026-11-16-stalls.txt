@@ -1,0 +1,16 @@
+    0 Error(s)
+SIM end: died on wave 8 (524 kills), 6.7 game minutes, loadout nail
+SIM end: died on wave 8 (509 kills), 5.6 game minutes, loadout nail
+SIM end: died on wave 7 (338 kills), 4.7 game minutes, loadout nail
+SIM end: died on wave 8 (474 kills), 5.8 game minutes, loadout nail
+SIM STALL wave 8: no kills for 45 s, 11 remaining; player at (-10.662018, 7.3166564E-05, 7.7795477) (open True), target @CharacterBody3D@16278, shots this wave 503; alive: Wombat@(-18.3,0.0,-8.0) hp 378 v 3.7 open True; Wombat@(-19.6,0.0,-13.9) hp 334 v 2.9 open True; Wombat@(-17.1,0.0,-7.8) hp 252 v 12.6 open True; Wombat@(-16.0,0.0,-5.1) hp 293 v 12.6 open True; Wombat@(-19.4,0.0,-12.8) hp 221 v 4.5 open False; Emu@(-11.2,-0.1,6.1) hp 27 v 4.9 open True; Wombat@(-20.6,0.0,-14.9) hp 343 v 3.3 open True; Cassowary@(-12.1,0.0,6.5) hp 126 v 5.0 open True; Emu@(-11.7,-0.1,5.6) hp 52 v 5.1 open True; Emu@(-12.0,-0.1,4.8) hp 35 v 5.4 open True; Emu@(-12.4,-0.1,3.8) hp 2 v 5.7 open True; 
+SIM end: stalled, 6.9 game minutes, loadout nail
+SIM end: died on wave 9 (679 kills), 7.3 game minutes, loadout nail
+SIM end: died on wave 9 (583 kills), 7.0 game minutes, loadout nail
+SIM STALL wave 9: no kills for 45 s, 36 remaining; player at (29.660673, 0.0008462494, -1.5585048) (open True), target @CharacterBody3D@19815, shots this wave 480; alive: Wombat@(23.7,0.0,12.4) hp 326 v 12.6 open True; Wombat@(22.5,0.0,12.8) hp 420 v 3.1 open True; Wombat@(24.9,0.0,15.9) hp 420 v 3.6 open False; Wombat@(29.0,0.0,14.9) hp 420 v 3.5 open False; Emu@(29.5,-0.1,2.4) hp 44 v 5.8 open True; Emu@(30.6,-0.1,1.4) hp 44 v 5.3 open True; Emu@(29.8,-0.1,3.8) hp 56 v 4.0 open True; Emu@(31.0,-0.1,2.3) hp 26 v 5.9 open True; Wombat@(30.4,0.0,12.2) hp 190 v 3.5 open True; Cassowary@(30.9,0.0,5.7) hp 300 v 5.2 open True; Emu@(28.9,-0.1,5.3) hp 31 v 5.1 open True; Emu@(29.1,-0.1,1.7) hp 56 v 4.8 open True; Emu@(30.1,-0.1,0.8) hp 26 v 0.0 open True; Emu@(28.4,-0.1,3.4) hp 4 v 5.9 open True; Wombat@(29.1,0.0,13.3) hp 420 v 3.6 open False; Cassowary@(30.3,0.0,6.8) hp 290 v 5.2 open True; Wombat@(29.0,0.0,11.7) hp 396 v 3.7 open False; Emu@(29.9,-0.1,5.0) hp 32 v 5.1 open True; Wombat@(28.3,0.0,17.5) hp 420 v 3.6 open True; Cassowary@(29.5,0.0,7.8) hp 350 v 5.6 open True; Kangaroo@(29.8,0.0,4.1) hp 100 v 4.9 open True; Emu@(29.8,-0.1,0.8) hp 44 v 5.4 open True; Emu@(29.0,-0.1,4.4) hp 56 v 5.1 open True; Emu@(30.5,-0.1,2.9) hp 44 v 6.1 open True; Emu@(29.0,-0.1,3.7) hp 56 v 5.4 open True; Emu@(28.8,-0.1,0.8) hp 56 v 6.5 open True; Emu@(28.6,-0.1,2.4) hp 44 v 6.0 open True; Emu@(29.3,-0.1,1.1) hp 56 v 0.0 open True; Emu@(29.8,-0.1,1.5) hp 56 v 5.2 open True; Emu@(30.5,-0.1,0.6) hp 
+SIM end: stalled, 7.7 game minutes, loadout nail
+SIM end: died on wave 7 (279 kills), 4.5 game minutes, loadout nail
+SIM STALL wave 8: no kills for 45 s, 3 remaining; player at (20.281023, 0.00084608246, 29.473648) (open True), target @CharacterBody3D@13659, shots this wave 526; alive: Wombat@(22.8,0.0,27.9) hp 49 v 3.7 open True; Wombat@(24.3,0.0,27.4) hp 202 v 3.6 open True; Wombat@(23.4,0.0,29.0) hp 34 v 3.4 open True; 
+SIM end: stalled, 7.0 game minutes, loadout nail
+
+[exited with code 0]

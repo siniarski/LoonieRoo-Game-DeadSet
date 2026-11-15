@@ -41,6 +41,11 @@ A steady climb without a cliff. Waves 4-5 have the widest spread.
 
 1. **Late cash still has no sink.** Options: a steeper taper (to 40%); higher prices for level 3
    mods; or buy the second weapon too (the bot only buys one).
-2. **One run's log stopped mid-wave 4** (rivet loadout). Eight reruns did not reproduce it. The
+2. **Running dry can soft-lock a wave (found later the same day).** With chunkier late waves, a
+   nail-gun-only run fires all ~540 nails it can carry during wave 8 or 9, then has no way to
+   kill what's left: no kills for 45 s, enemies alive right next to it, and the wave can't
+   end until the player dies. 3 of 10 nail-only runs hit this. Needs a design call: a bigger
+   nail reserve, ammo dropped by kills, or a weak melee you always have (like KF's knife).
+3. **One run's log stopped mid-wave 4** (rivet loadout). Eight reruns did not reproduce it. The
    bot now reports a stall (no kill for 45 s mid-wave) with every live enemy's position, so if a
    wave ever can't end, the next run will say where the enemy is stuck.

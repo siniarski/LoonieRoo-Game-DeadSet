@@ -336,7 +336,7 @@ public partial class SimPlayer : Node
 					+ $"open {NavGrid.IsOpenGround(enemy.GlobalPosition)}; ");
 		GD.Print($"SIM STALL wave {_wave}: no kills for 45 s, {director.EnemiesRemaining} remaining; player at {_player.GlobalPosition} "
 			+ $"(open {NavGrid.IsOpenGround(_player.GlobalPosition)}), target {(IsInstanceValid(_target) ? _target.Name : "none")}, "
-			+ $"shots this wave {_shots}; alive: {where}");
+			+ $"shots this wave {_shots}, ammo {AmmoLine()}; alive: {where}");
 		Finish("stalled");
 	}
 
