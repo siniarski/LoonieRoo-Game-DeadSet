@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Glow Bunny (upright)"
+Bounty = 10
 MaxHealth = 40
 MoveSpeed = 7.5
 Acceleration = 30

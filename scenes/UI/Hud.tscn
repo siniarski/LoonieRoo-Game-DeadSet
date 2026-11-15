@@ -184,3 +184,38 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 20
 text = "RELOADING"
 horizontal_alignment = 1
+
+[node name="WaveInfo" type="Label" parent="."]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 18.0
+offset_right = 400.0
+offset_bottom = 58.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 26
+text = "WAVE 1"
+horizontal_alignment = 1
+
+[node name="Announcement" type="Label" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -250.0
+offset_right = 500.0
+offset_bottom = -150.0
+pivot_offset = Vector2(500, 50)
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 72
+text = "WAVE 1"
+horizontal_alignment = 1
+vertical_alignment = 1

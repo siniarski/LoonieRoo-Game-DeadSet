@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Dingo"
+Bounty = 15
 MaxHealth = 50
 MoveSpeed = 9.5
 Acceleration = 35

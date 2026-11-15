@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Cassowary"
+Bounty = 60
 MaxHealth = 250
 MoveSpeed = 6.5
 Acceleration = 18

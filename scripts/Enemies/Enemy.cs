@@ -42,7 +42,11 @@ public abstract partial class Enemy : CharacterBody3D
 	private NavigationAgent3D _agent;
 	private float _repathTimer;
 
-	public override void _EnterTree() => All.Add(this);
+	public override void _EnterTree()
+	{
+		All.Add(this);
+		AddToGroup("enemies");
+	}
 	public override void _ExitTree() => All.Remove(this);
 
 	public override void _Ready()

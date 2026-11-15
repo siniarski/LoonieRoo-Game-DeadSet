@@ -1,5 +1,7 @@
 using Deadset.Combat;
+using Deadset.Core;
 using Deadset.Player;
+using Deadset.Waves;
 using Deadset.Weapons;
 using Godot;
 
@@ -41,6 +43,11 @@ public partial class Hud : CanvasLayer
 	[Export] public float DamageForFullFlash { get; set; } = 25f;
 	[Export] public float DamageFlashFadeSpeed { get; set; } = 3f;
 
+	[ExportGroup("Waves")]
+	[Export] public float AnnouncementTime { get; set; } = 2.2f;
+	[Export] public Color WaveStartColor { get; set; } = new(1f, 0.55f, 0.2f);
+	[Export] public Color WaveClearedColor { get; set; } = new(0.5f, 1f, 0.45f);
+
 	private Control _crosshair;
 	private ColorRect[] _crosshairLines;
 	private Control _hitmarker;
@@ -50,6 +57,10 @@ public partial class Hud : CanvasLayer
 	private ColorRect _healthFill;
 	private Control _damageVignette;
 	private Label _diedLabel;
+	private Label _waveInfo;
+	private Label _announcement;
+	private WaveDirector _director;
+	private float _announcementTimer;
 
 	private Weapon _weapon;
 	private HealthComponent _playerHealth;
@@ -76,6 +87,13 @@ public partial class Hud : CanvasLayer
 		_healthFill = GetNode<ColorRect>("HealthBar/Fill");
 		_damageVignette = GetNode<Control>("DamageVignette");
 		_diedLabel = GetNode<Label>("Died");
+		_waveInfo = GetNode<Label>("WaveInfo");
+		_announcement = GetNode<Label>("Announcement");
+		_announcement.Modulate = Colors.Transparent;
+		_waveInfo.Text = "";
+
+		GameEvents.Instance.WaveStarted += OnWaveStarted;
+		GameEvents.Instance.WaveCleared += OnWaveCleared;
 
 		LayoutHitmarker();
 		_hitmarker.Modulate = Colors.Transparent;
@@ -85,6 +103,54 @@ public partial class Hud : CanvasLayer
 
 		// Wait one frame so the player has equipped its weapon.
 		CallDeferred(MethodName.BindToPlayer);
+	}
+
+	public override void _ExitTree()
+	{
+		if (GameEvents.Instance == null)
+			return;
+		GameEvents.Instance.WaveStarted -= OnWaveStarted;
+		GameEvents.Instance.WaveCleared -= OnWaveCleared;
+	}
+
+	private void OnWaveStarted(int waveNumber, int enemyCount) => Announce($"WAVE {waveNumber}", WaveStartColor);
+
+	private void OnWaveCleared(int waveNumber) => Announce("WAVE CLEARED", WaveClearedColor);
+
+	private void Announce(string text, Color color)
+	{
+		_announcement.Text = text;
+		_announcement.SelfModulate = color;
+		_announcementTimer = AnnouncementTime;
+	}
+
+	private void UpdateWaveInfo(float dt)
+	{
+		if (_announcementTimer > 0f)
+		{
+			_announcementTimer -= dt;
+			float t = _announcementTimer / AnnouncementTime;
+			float alpha = Mathf.Clamp(t * 3f, 0f, 1f);
+			_announcement.Modulate = new Color(1f, 1f, 1f, alpha);
+			_announcement.Scale = Vector2.One * (1f + 0.25f * Mathf.Pow(Mathf.Max(t - 0.85f, 0f) / 0.15f, 2f));
+		}
+		else
+		{
+			_announcement.Modulate = Colors.Transparent;
+		}
+
+		_director ??= GetTree().GetFirstNodeInGroup("wave_director") as WaveDirector;
+		if (_director == null)
+			return;
+
+		int seconds = Mathf.CeilToInt(Mathf.Max(_director.TimeRemaining, 0f));
+		_waveInfo.Text = _director.CurrentPhase switch
+		{
+			WaveDirector.Phase.Wave => $"WAVE {_director.WaveNumber}   ·   {_director.EnemiesRemaining} LEFT",
+			WaveDirector.Phase.Break => $"BREAK   ·   WAVE {_director.WaveNumber} IN {seconds}s   ·   [ENTER] READY",
+			WaveDirector.Phase.Countdown => $"WAVE {_director.WaveNumber} IN {seconds}s   ·   [ENTER] READY",
+			_ => "",
+		};
 	}
 
 	private void BindToPlayer()
@@ -180,6 +246,8 @@ public partial class Hud : CanvasLayer
 	public override void _Process(double delta)
 	{
 		float dt = (float)delta;
+
+		UpdateWaveInfo(dt);
 
 		_bloom *= Mathf.Exp(-BloomRecoverySpeed * dt);
 		LayoutCrosshair(CrosshairGap + _bloom);

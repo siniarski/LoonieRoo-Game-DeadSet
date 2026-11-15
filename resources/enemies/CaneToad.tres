@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Cane Toad"
+Bounty = 6
 MaxHealth = 25
 MoveSpeed = 4.5
 Acceleration = 25

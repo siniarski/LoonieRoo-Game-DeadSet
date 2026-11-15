@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Drop Bear"
+Bounty = 30
 MaxHealth = 80
 MoveSpeed = 6
 Acceleration = 30

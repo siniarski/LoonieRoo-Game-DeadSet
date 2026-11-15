@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Magpie"
+Bounty = 15
 MaxHealth = 30
 MoveSpeed = 9
 Acceleration = 25

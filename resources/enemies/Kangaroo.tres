@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Kangaroo"
+Bounty = 40
 MaxHealth = 150
 MoveSpeed = 8.5
 Acceleration = 22

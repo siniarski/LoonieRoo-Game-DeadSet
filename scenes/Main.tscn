@@ -15,6 +15,9 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/DropBear.tscn" id="e8"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Magpie.tscn" id="e9"]
 
+[ext_resource type="Script" path="res://scripts/Waves/WaveDirector.cs" id="5_director"]
+[ext_resource type="Resource" path="res://resources/waves/DefaultWaves.tres" id="6_waves"]
+
 [node name="Main" type="Node3D"]
 
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
@@ -27,4 +30,9 @@ position = Vector3(-3, 0.1, 10)
 [node name="TestSpawner" type="Node" parent="."]
 script = ExtResource("4_spawner")
 EnemyScenes = Array[PackedScene]([ExtResource("e0"), ExtResource("e1"), ExtResource("e2"), ExtResource("e3"), ExtResource("e4"), ExtResource("e5"), ExtResource("e6"), ExtResource("e7"), ExtResource("e8"), ExtResource("e9")])
+InitialIndex = -1
 PackSizes = Array[int]([8, 8, 6, 8, 2, 1, 4, 6, 2, 3])
+
+[node name="WaveDirector" type="Node" parent="."]
+script = ExtResource("5_director")
+Waves = ExtResource("6_waves")

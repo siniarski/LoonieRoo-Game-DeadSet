@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_stats")
 DisplayName = "Emu"
+Bounty = 10
 MaxHealth = 40
 MoveSpeed = 7
 Acceleration = 30

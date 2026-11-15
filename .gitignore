@@ -10,3 +10,6 @@ obj/
 *.user
 .vs/
 .idea/
+
+# Temporary screenshot capture scenes
+/_capture*/

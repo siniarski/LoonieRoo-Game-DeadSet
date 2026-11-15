@@ -8,6 +8,8 @@ public partial class EnemyStats : Resource
 {
 	[Export] public string DisplayName { get; set; } = "Enemy";
 	[Export] public float MaxHealth { get; set; } = 20f;
+	/// <summary>Cash paid to the player for the kill.</summary>
+	[Export] public int Bounty { get; set; } = 10;
 
 	[ExportGroup("Movement")]
 	/// <summary>Chase speed in m/s. Player walks at 5.5 and sprints at 8.5.</summary>
