@@ -21,11 +21,11 @@ CoversHead = false
 [sub_resource type="Resource" id="ranged"]
 script = ExtResource("3_r")
 Kind = 3
-MinRange = 10.0
-MaxRange = 24.0
+MinRange = 6.0
+MaxRange = 26.0
 Windup = 1.2
 Cooldown = 7.0
-FirstDelay = 1.0
+FirstDelay = 0.2
 HowlRadius = 30.0
 HowlSeconds = 4.0
 HowlSpeedMultiplier = 1.35

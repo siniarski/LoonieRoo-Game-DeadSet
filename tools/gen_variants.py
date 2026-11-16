@@ -241,7 +241,7 @@ write('dingo', 'mangy', 'Mangy runner',
 write('dingo', 'howler', 'Howler dingo',
       stats=dict(HealthMultiplier=1.2, BountyMultiplier=2.0),
       gears=[gear('torus', (0.13, 0.05, 0), 'Visual', (0, 0.66, -0.36), (0.5, 0.75, 1), glow=True, rot=(-30, 0, 0))],
-      rng=ranged('howl', MinRange=10.0, MaxRange=24.0, Windup=1.2, Cooldown=7.0, FirstDelay=1.0,
+      rng=ranged('howl', MinRange=6.0, MaxRange=26.0, Windup=1.2, Cooldown=7.0, FirstDelay=0.2,
                  HowlRadius=30.0, HowlSeconds=4.0, HowlSpeedMultiplier=1.35, Color=(0.5, 0.75, 1),
                  LaunchOffset=(0, 0.7, -0.45), Cue='howl'))
 

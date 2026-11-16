@@ -1,0 +1,39 @@
+Variants on (before the magpie wedge fix):
+== cutter: 4 runs
+  cutter-1   cleared  7 | melee kills   0 | died on wave 8 (475 kills), 5.7 game minutes, loadout cutter, melee ki
+  cutter-2   cleared  7 | melee kills   0 | died on wave 8 (522 kills), 5.9 game minutes, loadout cutter, melee ki
+  cutter-3   cleared  7 | melee kills   0 | died on wave 8 (483 kills), 5.7 game minutes, loadout cutter, melee ki
+  cutter-4   cleared  3 | melee kills   0 | stalled, 3.0 game minutes, loadout cutter, melee kills in last wave 0 | STALL ['4']
+  waves cleared: [3, 7, 7, 7]  median 7
+  cash left after trader, by wave: w2:1 w3:31 w4:82 w5:1 w6:28 w7:72 w8:302
+  median dmg taken by wave: w1:0 w2:3 w3:33 w4:46 w5:88 w6:64 w7:151
+== nail: 4 runs
+  nail-1     cleared  8 | melee kills   0 | died on wave 9 (668 kills), 6.9 game minutes, loadout nail, melee kill
+  nail-2     cleared  4 | melee kills   0 | died on wave 5 (139 kills), 2.6 game minutes, loadout nail, melee kill
+  nail-3     cleared  6 | melee kills   0 | died on wave 7 (321 kills), 4.9 game minutes, loadout nail, melee kill
+  nail-4     cleared  6 | melee kills   0 | died on wave 7 (328 kills), 4.5 game minutes, loadout nail, melee kill
+  waves cleared: [4, 6, 6, 8]  median 6
+  cash left after trader, by wave: w2:1 w3:45 w4:68 w5:97 w6:59 w7:109 w8:353 w9:1024
+  median dmg taken by wave: w1:0 w2:9 w3:64 w4:70 w5:42 w6:108 w7:162 w8:84
+== rivet: 4 runs
+  rivet-1    cleared  6 | melee kills   0 | died on wave 7 (356 kills), 5.2 game minutes, loadout rivet, melee kil
+  rivet-2    cleared  6 | melee kills   0 | died on wave 7 (353 kills), 4.9 game minutes, loadout rivet, melee kil
+  rivet-3    cleared  6 | melee kills   0 | died on wave 7 (306 kills), 4.9 game minutes, loadout rivet, melee kil
+  rivet-4    cleared  4 | melee kills   0 | died on wave 5 (134 kills), 2.9 game minutes, loadout rivet, melee kil
+  waves cleared: [4, 6, 6, 6]  median 6
+  cash left after trader, by wave: w2:1 w3:35 w4:125 w5:0 w6:40 w7:138
+  median dmg taken by wave: w1:0 w2:0 w3:15 w4:69 w5:87 w6:175
+
+Cutter after the fix:
+== cutter: 8 runs
+  cutter-1   cleared  7 | melee kills   0 | died on wave 8 (509 kills), 5.6 game minutes, loadout cutter, melee ki
+  cutter-2   cleared  7 | melee kills   0 | died on wave 8 (462 kills), 5.2 game minutes, loadout cutter, melee ki
+  cutter-3   cleared  8 | melee kills   0 | died on wave 9 (608 kills), 7.0 game minutes, loadout cutter, melee ki
+  cutter-4   cleared  7 | melee kills   0 | died on wave 8 (476 kills), 5.9 game minutes, loadout cutter, melee ki
+  cutter-5   cleared  4 | melee kills   0 | died on wave 5 (129 kills), 2.7 game minutes, loadout cutter, melee ki
+  cutter-6   cleared  7 | melee kills   0 | died on wave 8 (458 kills), 5.6 game minutes, loadout cutter, melee ki
+  cutter-7   cleared  7 | melee kills   0 | died on wave 8 (437 kills), 5.5 game minutes, loadout cutter, melee ki
+  cutter-8   cleared  6 | melee kills   0 | died on wave 7 (334 kills), 4.5 game minutes, loadout cutter, melee ki
+  waves cleared: [4, 6, 7, 7, 7, 7, 7, 8]  median 7
+  cash left after trader, by wave: w2:1 w3:37 w4:96 w5:1 w6:71 w7:86 w8:267 w9:407
+  median dmg taken by wave: w1:0 w2:0 w3:24 w4:64 w5:60 w6:118 w7:105 w8:144

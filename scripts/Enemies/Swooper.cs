@@ -212,8 +212,12 @@ public partial class Swooper : Enemy
 				float climb = GlobalPosition.Y < 0f ? ClimbSpeed : 0f;
 				Velocity = new Vector3(flat.X, climb, flat.Z);
 				Move();
+				// Ran into cover on the way out: turn round rather than grind against it.
+				if (GetSlideCollisionCount() > 0 && !TouchedTarget())
+					_diveDir = new Vector3(-_diveDir.X, _diveDir.Y, -_diveDir.Z);
 				_timer -= dt;
-				if (_timer <= 0f && GlobalPosition.Y >= -0.05f)
+				// Wedged and can't climb: give up the climb after a moment so it can't stall a wave.
+				if (_timer <= 0f && (GlobalPosition.Y >= -0.05f || _timer < -1f))
 				{
 					Velocity = new Vector3(Velocity.X, 0f, Velocity.Z);
 					StartCircling();
