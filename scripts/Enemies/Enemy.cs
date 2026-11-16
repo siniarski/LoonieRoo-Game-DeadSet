@@ -152,6 +152,8 @@ public abstract partial class Enemy : CharacterBody3D
 		Health.MaxHealth = Stats.MaxHealth * HealthMultiplier;
 		Health.ResetHealth();
 		Health.Died += OnDied;
+		if (Stats.AlwaysFlanks)
+			IsFlanker = true;
 
 		Visual = GetNode<Node3D>("Visual");
 		// Pathing is shared (NavGrid). A leftover agent would only cost a server update every tick.

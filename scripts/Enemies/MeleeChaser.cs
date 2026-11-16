@@ -23,6 +23,16 @@ public partial class MeleeChaser : Enemy
 	[Export] public float LungeSpeed { get; set; }
 	[Export] public float LungeUpSpeed { get; set; }
 	[Export] public EnemyCue AttackCue { get; set; } = EnemyCue.Peck;
+	/// <summary>Speed a landed hit knocks the player back at, in m/s (0 = no knockback).</summary>
+	[Export] public float HitKnockback { get; set; }
+	/// <summary>Upward speed a landed hit gives the player (a kick that lifts you off your feet).</summary>
+	[Export] public float HitKnockbackUp { get; set; }
+	/// <summary>
+	/// Seconds it backs off after a strike before closing in again (0 = it stays at reach).
+	/// Hit and run: the kangaroo hops in, boxes, and hops back out.
+	/// </summary>
+	[Export] public float BackOffTime { get; set; }
+	[Export] public float BackOffSpeed { get; set; } = 6f;
 
 	[ExportGroup("Striker")]
 	[Export] public NodePath StrikerPath { get; set; } = "Visual/Striker";
@@ -57,7 +67,7 @@ public partial class MeleeChaser : Enemy
 	/// <summary>How fast the legs come back to rest when it stops, in radians per second.</summary>
 	[Export] public float LegSettleSpeed { get; set; } = 9f;
 
-	private enum State { Chase, Windup, Recover }
+	private enum State { Chase, Windup, Recover, BackOff }
 
 	private MeleeAttack _melee;
 	private Node3D _striker;
@@ -163,10 +173,20 @@ public partial class MeleeChaser : Enemy
 				bool landed = !lunging || Flying || Grounded;
 				if (_stateTimer <= 0f && landed)
 				{
-					_state = State.Chase;
 					AttackSlots.Release(this);
+					_state = BackOffTime > 0f ? State.BackOff : State.Chase;
+					_stateTimer = BackOffTime;
 				}
 				Steer(Vector3.Zero, dt, allowSteering: !lunging || Grounded);
+				return;
+
+			case State.BackOff:
+				_stateTimer -= dt;
+				if (_stateTimer <= 0f)
+					_state = State.Chase;
+				// Retreat while still facing the player, like a boxer stepping out.
+				Steer(-toTargetDir * BackOffSpeed + Separation(), dt);
+				FaceDirection(toTargetDir, dt);
 				return;
 		}
 
@@ -211,11 +231,32 @@ public partial class MeleeChaser : Enemy
 		_stateTimer = RecoverTime;
 		if (distance <= Stats.AttackRange * ReachMultiplier && _melee.ApplyTo(TargetHealth))
 		{
+			KnockBackTarget();
 			AudioStream sound = PlaceholderSfx.ForCue(AttackCue);
 			if (sound != null)
 				PlaceholderSfx.PlayAt(GetParent(), sound, BodyPosition + Vector3.Up * EffectHeight, -6f);
 		}
 	}
+
+	/// <summary>Knocks the player away from it (set rather than added, so several hits can't stack).</summary>
+	private void KnockBackTarget()
+	{
+		if ((HitKnockback <= 0f && HitKnockbackUp <= 0f) || Target is not CharacterBody3D body)
+			return;
+		Vector3 away = TargetPosition - BodyPosition;
+		away.Y = 0f;
+		away = away.LengthSquared() > 1e-4f ? away.Normalized() : -Visual.GlobalBasis.Z;
+		Vector3 v = body.Velocity;
+		Vector3 horizontal = new(v.X, 0f, v.Z);
+		float along = horizontal.Dot(away);
+		if (along < HitKnockback)
+			horizontal += away * (HitKnockback - along);
+		body.Velocity = new Vector3(horizontal.X, Mathf.Max(v.Y, HitKnockbackUp), horizontal.Z);
+		Knockbacks++;
+	}
+
+	/// <summary>Hits that knocked the player back this session (for the self-check).</summary>
+	public static int Knockbacks { get; set; }
 
 	public override void _Process(double delta)
 	{
@@ -236,7 +277,7 @@ public partial class MeleeChaser : Enemy
 			_bobPhase += dt * 2.5f;
 			offset.Y = Mathf.Sin(_bobPhase) * HoverBob;
 		}
-		else if (_state == State.Chase && Grounded)
+		else if ((_state == State.Chase || _state == State.BackOff) && Grounded)
 		{
 			_bobPhase += speed * BobFrequency * Mathf.Pi * dt;
 			float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);

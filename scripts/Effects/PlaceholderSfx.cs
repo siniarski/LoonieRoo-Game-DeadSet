@@ -3,7 +3,7 @@ using Godot;
 
 namespace Deadset.Effects;
 
-public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak, Growl }
+public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak, Growl, Warble }
 
 /// <summary>
 /// Placeholder sound effects synthesised in code, so the prototype needs no audio imports.
@@ -79,6 +79,12 @@ public static class PlaceholderSfx
 	/// <summary>Bright metallic tink layered on a weak-spot (head) hit.</summary>
 	public static AudioStreamWav HeadshotTink => _headshotTink ??= Build(0.2f, t => (Sine(3100f, t) * 0.5f + Sine(4650f, t) * 0.3f) * MathF.Exp(-t * 18f));
 	/// <summary>Hard woody knock of a beak.</summary>
+	/// <summary>A magpie's swoop call: a fast rising warble, then a sharp clack.</summary>
+	public static AudioStreamWav Warble => _warble ??= Build(0.45f, t =>
+		(t < 0.32f ? Sine(900f + 900f * t / 0.32f + 180f * MathF.Sin(t * 70f), t) * 0.5f * MathF.Min(t * 30f, 1f) : 0f)
+		+ (t >= 0.34f ? (Noise() * 0.5f + Sine(2400f, t) * 0.4f) * MathF.Exp(-(t - 0.34f) * 60f) : 0f));
+	private static AudioStreamWav _warble;
+
 	/// <summary>A head bursting: a wet low pop with a crack on top.</summary>
 	public static AudioStreamWav HeadPop => _headPop ??= Build(0.3f, t =>
 		Sweep(t, 420f, 70f, 18f) * MathF.Exp(-t * 12f) * 0.9f
@@ -107,6 +113,7 @@ public static class PlaceholderSfx
 		EnemyCue.Peck => Peck,
 		EnemyCue.Thump => Thump,
 		EnemyCue.Squawk => Squawk,
+		EnemyCue.Warble => Warble,
 		EnemyCue.Grunt => Grunt,
 		EnemyCue.Croak => Croak,
 		EnemyCue.Growl => Growl,

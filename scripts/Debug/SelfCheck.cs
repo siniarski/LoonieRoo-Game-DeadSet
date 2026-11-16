@@ -53,7 +53,7 @@ public partial class SelfCheck : Node
 			await Frames(1);
 		await Frames(5);
 
-		string which = string.IsNullOrEmpty(Which) ? "reach,flank,weapons,trader,perf" : Which;
+		string which = string.IsNullOrEmpty(Which) ? "reach,flank,specials,weapons,trader,perf" : Which;
 		foreach (string check in which.Split(','))
 		{
 			switch (check.Trim())
@@ -64,6 +64,7 @@ public partial class SelfCheck : Node
 				case "trader": CheckTrader(); break;
 				case "perf": await CheckPerf(); break;
 				case "flank": await CheckFlank(); break;
+				case "specials": await CheckSpecials(); break;
 				default: Fail(check, "unknown check"); break;
 			}
 			ClearEnemies();
@@ -296,6 +297,74 @@ public partial class SelfCheck : Node
 	}
 
 	/// <summary>Every weapon on sale, plus the nail gun, kills an emu in front of it.</summary>
+	/// <summary>Each wave special does its own move against a player standing still in the open.</summary>
+	private async Task CheckSpecials()
+	{
+		Node startSpot = null;
+		foreach (Node n in GetTree().GetNodesInGroup("player_spot"))
+			if (n.Name == "Start")
+				startSpot = n;
+		Vector3 origin = (startSpot as Node3D)?.GlobalPosition ?? Vector3.Zero;
+		HealthComponent health = HealthComponent.FindOn(_player);
+
+		// Magpie: circles, then dives at your head.
+		{
+			Place(origin);
+			health.ResetHealth();
+			int dives = Swooper.Dives, hits = Swooper.DiveHits;
+			Spawn(EnemyScene("magpie"), origin + new Vector3(10f, 0f, 0f));
+			for (float t = 0f; t < 10f && Swooper.DiveHits == hits; t += 0.25f)
+			{
+				Place(origin);
+				await Seconds(0.25f);
+			}
+			Expect(Swooper.DiveHits > hits, "specials.magpie", $"dives {Swooper.Dives - dives}, hits {Swooper.DiveHits - hits}");
+			ClearEnemies();
+			await Frames(2);
+		}
+
+		// Kangaroo: boxes you back, then hops out. Cassowary: kicks you flying.
+		foreach (string name in new[] { "kangaroo", "cassowary" })
+		{
+			Place(origin);
+			health.ResetHealth();
+			int knocks = MeleeChaser.Knockbacks;
+			Node3D roo = Spawn(EnemyScene(name), origin + new Vector3(5f, 0f, 0f));
+			float pushed = 0f, backedOff = 0f, nearest = float.MaxValue;
+			for (float t = 0f; t < 6f; t += 0.05f)
+			{
+				await Seconds(0.05f);
+				if (!IsInstanceValid(roo))
+					break;
+				float d = roo.GlobalPosition.DistanceTo(_player.GlobalPosition);
+				nearest = Mathf.Min(nearest, d);
+				if (MeleeChaser.Knockbacks > knocks)
+				{
+					pushed = Mathf.Max(pushed, new Vector2(_player.GlobalPosition.X - origin.X, _player.GlobalPosition.Z - origin.Z).Length());
+					backedOff = Mathf.Max(backedOff, d - nearest);
+				}
+				if (MeleeChaser.Knockbacks > knocks && t > 4f)
+					break;
+			}
+			bool hopsOut = name != "kangaroo" || backedOff >= 2f;
+			Expect(MeleeChaser.Knockbacks > knocks && pushed >= 1.5f && hopsOut, $"specials.{name}",
+				$"knockbacks {MeleeChaser.Knockbacks - knocks}, pushed {pushed:0.0} m, backed off {backedOff:0.0} m");
+			ClearEnemies();
+			await Frames(2);
+		}
+
+		// Dingoes always flank.
+		{
+			Node3D dingo = Spawn(EnemyScene("dingo"), origin + new Vector3(12f, 0f, 0f));
+			await Frames(2);
+			Expect(dingo is Enemy { IsFlanker: true }, "specials.dingo", $"flanker {(dingo as Enemy)?.IsFlanker}");
+			ClearEnemies();
+			await Frames(2);
+		}
+		Place(origin);
+		health.ResetHealth();
+	}
+
 	private async Task CheckWeapons()
 	{
 		PackedScene emu = EnemyScene("emu");

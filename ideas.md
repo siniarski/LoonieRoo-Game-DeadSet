@@ -13,12 +13,12 @@ They exist so we can compare look and aim feel. Play them, then decide which to 
 | 2 | Glow Bunny (upright) | ~1.5 m | Alternative common swarm | — |
 | 3 | Feral (mutated townsfolk) | ~1.6 m | Alternative common enemy | Off-theme: leans on lore |
 | 4 | Glow Bunny (low) | ~0.45 m | Low "crawler" special | Swarm under your crosshair |
-| 5 | Kangaroo | ~1.65 m, bobs | Mid-tier bruiser | Hop-in, box, hop-out |
-| 6 | Cassowary | ~1.75 m | Mid-tier tank | Kick knockback |
-| 7 | Dingo | ~0.75 m | Low fast special | Pack flanking |
+| 5 | Kangaroo | ~1.65 m, bobs | Mid-tier bruiser | Hop-in, box, hop-out (BUILT 2026-11-16) |
+| 6 | Cassowary | ~1.75 m | Mid-tier tank | Kick knockback (BUILT 2026-11-16) |
+| 7 | Dingo | ~0.75 m | Low fast special | Pack flanking (BUILT 2026-11-16: always flanks) |
 | 8 | Cane toad | ~0.3 m | Low crawler | Poison puddle on death? |
 | 9 | Drop bear | ~1.0 m | Ambusher special | Drops from cover/trees |
-| 0 | Magpie | ~2.4 m, flying | Overhead special | Swooping dive |
+| 0 | Magpie | ~2.4 m, flying | Overhead special | Swooping dive (BUILT 2026-11-16) |
 
 The wombat (charger) stays in the scope as Milestone 5 and isn't in this roster.
 

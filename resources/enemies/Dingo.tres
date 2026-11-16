@@ -15,3 +15,4 @@ SeparationStrength = 4
 AttackDamage = 6
 AttackRange = 1.4
 AttackCooldown = 0.9
+AlwaysFlanks = true

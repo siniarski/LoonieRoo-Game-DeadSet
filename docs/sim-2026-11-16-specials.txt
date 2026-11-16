@@ -1,0 +1,24 @@
+== cutter: 4 runs
+  cutter-1   cleared  3 | melee kills   0 | died on wave 4 (97 kills), 2.3 game minutes, loadout cutter, melee kil
+  cutter-2   cleared  6 | melee kills   0 | died on wave 7 (329 kills), 4.9 game minutes, loadout cutter, melee ki
+  cutter-3   cleared  5 | melee kills   0 | died on wave 6 (231 kills), 3.8 game minutes, loadout cutter, melee ki
+  cutter-4   cleared  6 | melee kills   0 | died on wave 7 (326 kills), 4.7 game minutes, loadout cutter, melee ki
+  waves cleared: [3, 5, 6, 6]  median 6
+  cash left after trader, by wave: w2:1 w3:36 w4:82 w5:19 w6:16 w7:77
+  median dmg taken by wave: w1:0 w2:12 w3:39 w4:24 w5:45 w6:147
+== nail: 4 runs
+  nail-1     cleared  7 | melee kills   0 | died on wave 8 (431 kills), 5.7 game minutes, loadout nail, melee kill
+  nail-2     cleared  6 | melee kills   0 | died on wave 7 (283 kills), 4.3 game minutes, loadout nail, melee kill
+  nail-3     cleared  7 | melee kills   0 | died on wave 8 (450 kills), 5.5 game minutes, loadout nail, melee kill
+  nail-4     cleared  6 | melee kills   0 | died on wave 7 (338 kills), 4.7 game minutes, loadout nail, melee kill
+  waves cleared: [6, 6, 7, 7]  median 7
+  cash left after trader, by wave: w2:1 w3:39 w4:166 w5:102 w6:50 w7:241 w8:229
+  median dmg taken by wave: w1:0 w2:0 w3:6 w4:81 w5:39 w6:156 w7:163
+== rivet: 4 runs
+  rivet-1    cleared  5 | melee kills   0 | died on wave 6 (220 kills), 3.9 game minutes, loadout rivet, melee kil
+  rivet-2    cleared  5 | melee kills   0 | died on wave 6 (223 kills), 3.8 game minutes, loadout rivet, melee kil
+  rivet-3    cleared  6 | melee kills   0 | died on wave 7 (294 kills), 5.0 game minutes, loadout rivet, melee kil
+  rivet-4    cleared  5 | melee kills   0 | died on wave 6 (198 kills), 4.0 game minutes, loadout rivet, melee kil
+  waves cleared: [5, 5, 5, 6]  median 5
+  cash left after trader, by wave: w2:1 w3:57 w4:71 w5:0 w6:1 w7:110
+  median dmg taken by wave: w1:0 w2:0 w3:18 w4:51 w5:112 w6:105

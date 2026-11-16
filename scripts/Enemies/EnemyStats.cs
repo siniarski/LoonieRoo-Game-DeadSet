@@ -24,6 +24,8 @@ public partial class EnemyStats : Resource
 	[Export] public float SeparationStrength { get; set; } = 4f;
 	/// <summary>Can be picked as a flanker (paths round behind the player). Off for chargers.</summary>
 	[Export] public bool CanFlank { get; set; } = true;
+	/// <summary>Every one of these flanks, whatever the wave's flanker share (dingoes hunt as a pack).</summary>
+	[Export] public bool AlwaysFlanks { get; set; }
 
 	[ExportGroup("Attack")]
 	[Export] public float AttackDamage { get; set; } = 5f;

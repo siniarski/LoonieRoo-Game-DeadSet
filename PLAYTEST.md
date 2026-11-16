@@ -31,6 +31,17 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 
 ## Unplayed
 
+### Specials get their own moves (2026-11-16)
+- What changed: the four wave specials stop being reskinned emus.
+  - Magpie (wave 4+): circles overhead, warbles, then dives straight at your face and climbs away. Sidestep or step back and it misses; shoot it on the way in.
+  - Kangaroo (wave 5+): hops in, boxes you back a few metres, then hops out to come again.
+  - Cassowary (wave 6+): a slower, clearer wind-up, then a kick that sends you flying.
+  - Dingo (wave 3+): every dingo flanks, so they always come at you from the side the pack isn't on.
+- Fun bet: each special forces a different reaction (dodge, keep distance, turn round) in the middle of the emu rhythm, instead of just being a tougher emu.
+- Try it: `play.cmd --nowaves --spawn=magpie:2` (or `kangaroo:2`, `cassowary:1`, `dingo:4`; add `--god` to just watch)
+- Judge: can you read and dodge a magpie dive? Does getting boxed/kicked away feel fair or just annoying?
+- Doubt: in bot runs damage on waves 4–5 went up (rivet median 7 -> 5 waves), but the bot never dodges. If it's too much, lower the magpie's turn rate or the kangaroo's knockback.
+
 ### Spawns come round behind a camper (2026-11-16)
 - What changed: once you've held one spot for about 6 s, new packs mostly come in from the spawn gates behind you (where you're not looking), not the one you're facing.
 - Fun bet: a lane end stops being a safe farm; holding a spot is a choice with a cost, and moving resets it.
