@@ -15,6 +15,11 @@ namespace Deadset.Enemies;
 /// </summary>
 public partial class Wombat : Enemy
 {
+	/// <summary>How much of a shove (hammer hit) actually moves it. Wombats are heavy.</summary>
+	[Export] public float ShoveTaken { get; set; } = 0.2f;
+
+	public override void Shove(Vector3 push) => base.Shove(push * ShoveTaken);
+
 	[ExportGroup("Charge trigger")]
 	/// <summary>Closest distance at which it will start a charge, in metres. Nearer than this it headbutts.</summary>
 	[Export] public float ChargeMinDistance { get; set; } = 4f;

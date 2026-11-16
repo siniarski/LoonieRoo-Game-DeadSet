@@ -363,6 +363,8 @@ public abstract partial class Enemy : CharacterBody3D
 		if (_flankTime > FlankTimeout || toTarget.LengthSquared() < FlankReleaseDistance * FlankReleaseDistance
 			|| FlatDistanceSquared(goal, BodyPosition) < 4f)
 		{
+			if (_flankTime <= FlankTimeout)
+				CallFromBehind(toTarget);
 			_flanking = false;
 			_route = NavGrid.Route.Direct;
 			_repathTimer = 0f;
@@ -386,6 +388,35 @@ public abstract partial class Enemy : CharacterBody3D
 		Vector3 to = _waypoint - BodyPosition;
 		to.Y = 0f;
 		return to.LengthSquared() > 0.01f ? to.Normalized() : Vector3.Zero;
+	}
+
+	/// <summary>Seconds between flank calls across all enemies, so a pack coming round doesn't spam it.</summary>
+	public static float FlankCallGap { get; set; } = 0.9f;
+	/// <summary>Volume of the call a flanker makes when it comes round behind the player.</summary>
+	[Export] public float FlankCallVolumeDb { get; set; } = 2f;
+	private static double _lastFlankCall = -10.0;
+	/// <summary>How many flank calls have played (for the checks).</summary>
+	public static int FlankCallCount { get; private set; }
+
+	/// <summary>
+	/// The fair warning: a flanker that ends up behind the player calls out once (its own voice,
+	/// the DeathCue sound), so you hear it coming round before it bites.
+	/// </summary>
+	private void CallFromBehind(Vector3 toTarget)
+	{
+		if (DeathCue == EnemyCue.None || !IsInstanceValid(Target))
+			return;
+		Vector3 facing = -Target.GlobalBasis.Z;
+		facing.Y = 0f;
+		// toTarget points from us to the player; we're behind them if their facing points away from us.
+		if (facing.Dot(toTarget) < 0.2f * toTarget.Length() * facing.Length())
+			return;
+		double now = Time.GetTicksMsec() / 1000.0;
+		if (now - _lastFlankCall < FlankCallGap / Mathf.Max((float)Engine.TimeScale, 0.01f))
+			return;
+		_lastFlankCall = now;
+		FlankCallCount++;
+		PlaceholderSfx.PlayAt(GetParent(), PlaceholderSfx.ForCue(DeathCue), BodyPosition + Vector3.Up, FlankCallVolumeDb, 0.1f);
 	}
 
 	private static float FlatDistanceSquared(Vector3 a, Vector3 b)
@@ -465,9 +496,27 @@ public abstract partial class Enemy : CharacterBody3D
 			GlobalPosition = next;
 	}
 
+	/// <summary>
+	/// Knocks the body along the ground (a hammer hit). The push fades as the behaviour steers
+	/// back to its own speed. Heavy enemies override this to shrug most of it off.
+	/// </summary>
+	public virtual void Shove(Vector3 push)
+	{
+		Velocity += new Vector3(push.X, 0f, push.Z);
+		// Use real collision moves for a moment, so a shove can't slide it through cover.
+		_noGlideTicks = 12;
+	}
+
+	private int _noGlideTicks;
+
 	/// <summary>True when a plain slide along the ground is as good as a collision move this tick.</summary>
 	private bool CanGlide(Vector3 velocity)
 	{
+		if (_noGlideTicks > 0)
+		{
+			_noGlideTicks--;
+			return false;
+		}
 		if (!OpenGroundGlide || !(Grounded || Flying) || Mathf.Abs(velocity.Y) > 0.01f)
 			return false;
 		if (_crowdFrame != EnemyCrowd.Frame)

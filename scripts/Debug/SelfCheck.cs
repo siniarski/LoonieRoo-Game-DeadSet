@@ -249,6 +249,7 @@ public partial class SelfCheck : Node
 			foreach (float s in new[] { 0f, share })
 			{
 				Place(spot.GlobalPosition);
+				Aim(gate.GlobalPosition + Vector3.Up * 1.6f);   // facing the pack, like a player would
 				await Frames(2);
 				for (int i = 0; i < 24; i++)
 				{
@@ -256,6 +257,7 @@ public partial class SelfCheck : Node
 					if (body != null)
 						body.IsFlanker = i < Mathf.RoundToInt(24 * s);
 				}
+				int callsBefore = Enemy.FlankCallCount;
 				var arrived = new Dictionary<Node3D, Vector3>();
 				for (float t = 0f; t < 40f && arrived.Count < 24; t += 0.1f)
 				{
@@ -282,7 +284,7 @@ public partial class SelfCheck : Node
 				}
 				float behindShare = arrived.Count > 0 ? (float)behind / arrived.Count : 0f;
 				if (s > 0f) behindWith = behindShare; else behindWithout = behindShare;
-				line += $" | flankers {s:P0}: {arrived.Count}/24 arrived, {sectors.Count}/8 directions, {behindShare:P0} from behind";
+				line += $" | flankers {s:P0}: {arrived.Count}/24 arrived, {sectors.Count}/8 directions, {behindShare:P0} from behind, {Enemy.FlankCallCount - callsBefore} calls";
 				ClearEnemies();
 				await Frames(3);
 			}

@@ -108,6 +108,17 @@ public partial class MeleeChaser : Enemy
 		return legs.ToArray();
 	}
 
+	/// <summary>A shove mid wind-up knocks it out of the attack (the attack cooldown still runs).</summary>
+	public override void Shove(Vector3 push)
+	{
+		base.Shove(push);
+		if (_state == State.Windup)
+		{
+			_state = State.Chase;
+			AttackSlots.Release(this);
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
