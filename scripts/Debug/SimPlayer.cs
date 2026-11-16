@@ -137,7 +137,7 @@ public partial class SimPlayer : Node
 	private void Finish(string how)
 	{
 		double minutes = (_stats?.Seconds ?? 0f) / 60.0;
-		GD.Print($"SIM end: {how}, {minutes:0.0} game minutes, loadout {Loadout}");
+		GD.Print($"SIM end: {how}, {minutes:0.0} game minutes, loadout {Loadout}, melee kills in last wave {_meleeKills}");
 		GetTree().Quit();
 	}
 
@@ -257,7 +257,14 @@ public partial class SimPlayer : Node
 				_nearby.Add(enemy.GlobalPosition);
 		}
 
-		if (Smart)
+		if (_dry && IsInstanceValid(_target))
+		{
+			// Nothing to shoot: walk in and use the hammer.
+			Vector3 to = _target.GlobalPosition - me;
+			to.Y = 0f;
+			ApplyMove(to.Length() > 1.6f ? to.Normalized() : Vector3.Zero);
+		}
+		else if (Smart)
 			MoveSmart(me, dt);
 		else
 			MoveSimple(me);
@@ -435,6 +442,7 @@ public partial class SimPlayer : Node
 	}
 
 	private bool _meleeBound;
+	private bool _dry;
 
 	private void AimAt(Node3D target)
 	{
@@ -465,6 +473,7 @@ public partial class SimPlayer : Node
 		foreach (Weapon weapon in _arsenal.Weapons)
 			if (weapon.AmmoInMagazine + weapon.ReserveAmmo > 0 || weapon.IsReloading)
 				allDry = false;
+		_dry = allDry;
 		_arsenal.MeleeHeld = allDry && IsInstanceValid(_target) && distance < 2.6f;
 		if (allDry)
 		{

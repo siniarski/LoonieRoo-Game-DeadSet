@@ -39,13 +39,30 @@ A steady climb without a cliff. Waves 4-5 have the widest spread.
 
 ## Open issues
 
-1. **Late cash still has no sink.** Options: a steeper taper (to 40%); higher prices for level 3
+1. **Late cash still has no sink.** FIXED: level 3 mods cost double; leftover cash is now
+   usually under $300 a trader. Options: a steeper taper (to 40%); higher prices for level 3
    mods; or buy the second weapon too (the bot only buys one).
-2. **Running dry can soft-lock a wave (found later the same day).** With chunkier late waves, a
+2. **Running dry can soft-lock a wave.** FIXED: the Tradie's claw hammer (always on hand) plus
+   3 nails back per hammer kill. Starting wave 3 with no ammo at all, the bot cleared it on
+   hammer kills in 2 of 4 runs; no stalls in 42 runs since. With chunkier late waves, a
    nail-gun-only run fires all ~540 nails it can carry during wave 8 or 9, then has no way to
    kill what's left: no kills for 45 s, enemies alive right next to it, and the wave can't
    end until the player dies. 3 of 10 nail-only runs hit this. Needs a design call: a bigger
    nail reserve, ammo dropped by kills, or a weak melee you always have (like KF's knife).
-3. **One run's log stopped mid-wave 4** (rivet loadout). Eight reruns did not reproduce it. The
+3. **One run's log stopped mid-wave 4** (rivet loadout). CLOSED: not seen in 22 more rivet runs. Eight reruns did not reproduce it. The
    bot now reports a stall (no kill for 45 s mid-wave) with every live enemy's position, so if a
    wave ever can't end, the next run will say where the enemy is stuck.
+
+## Flankers (added later the same day)
+
+From wave 2, some of each wave path round to a spot behind the player. The `flank` check
+(a 24-emu pack from the gate nearest each player spot) went from 0% of arrivals from behind
+to 25% at every spot, Container Alley and the shed included (South excepted: its gate is
+right next to it). Full logs: `sim-2026-11-16-flankers.txt`.
+
+- A flat 25% from wave 2 hit hard: median waves cleared fell to nail 7, rivet 6, cutter 8, and
+  4 of 24 runs died on wave 5.
+- Ramping it (10% in wave 2, 25% by wave 6) flattened that: every loadout's median is 7
+  (range 6-9), nothing dies before wave 6, no stalls in 18 runs.
+- The bot fights all round equally well, so it can't tell how much harder flanking feels to a
+  person who has to turn round. That's what the play card is for.

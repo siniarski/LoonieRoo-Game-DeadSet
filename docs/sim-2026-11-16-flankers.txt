@@ -1,0 +1,79 @@
+# Flat 25% flankers from wave 2 (sims5)
+== cutter: 6 runs
+  cutter-1   cleared  8 | melee kills   0 | died on wave 9 (610 kills), 7.0 game minutes, loadout cutter
+  cutter-2   cleared  6 | melee kills   0 | died on wave 7 (366 kills), 4.4 game minutes, loadout cutter
+  cutter-3   cleared  8 | melee kills   0 | died on wave 9 (617 kills), 7.3 game minutes, loadout cutter
+  cutter-4   cleared  5 | melee kills   0 | died on wave 6 (206 kills), 3.4 game minutes, loadout cutter
+  cutter-5   cleared  8 | melee kills   0 | died on wave 9 (658 kills), 7.0 game minutes, loadout cutter
+  cutter-6   cleared  8 | melee kills   0 | died on wave 9 (605 kills), 6.7 game minutes, loadout cutter
+  waves cleared: [5, 6, 8, 8, 8, 8]  median 8
+  cash left after trader, by wave: w2:1 w3:48 w4:75 w5:1 w6:69 w7:79 w8:274 w9:312
+  median dmg taken by wave: w1:0 w2:0 w3:18 w4:39 w5:36 w6:71 w7:148 w8:146
+== nail: 10 runs
+  nail-1     cleared  8 | melee kills   0 | died on wave 9 (693 kills), 7.4 game minutes, loadout nail
+  nail-10    cleared  8 | melee kills   0 | died on wave 9 (643 kills), 6.5 game minutes, loadout nail
+  nail-2     cleared  6 | melee kills   0 | died on wave 7 (308 kills), 4.7 game minutes, loadout nail
+  nail-3     cleared  4 | melee kills   0 | died on wave 5 (137 kills), 2.8 game minutes, loadout nail
+  nail-4     cleared  7 | melee kills   0 | died on wave 8 (468 kills), 5.6 game minutes, loadout nail
+  nail-5     cleared  6 | melee kills   0 | died on wave 7 (369 kills), 5.5 game minutes, loadout nail
+  nail-6     cleared  8 | melee kills   0 | died on wave 9 (711 kills), 7.7 game minutes, loadout nail
+  nail-7     cleared  7 | melee kills   0 | died on wave 8 (481 kills), 5.9 game minutes, loadout nail
+  nail-8     cleared  7 | melee kills   0 | died on wave 8 (499 kills), 6.1 game minutes, loadout nail
+  nail-9     cleared  4 | melee kills   0 | died on wave 5 (132 kills), 3.1 game minutes, loadout nail
+  waves cleared: [4, 4, 6, 6, 7, 7, 7, 8, 8, 8]  median 7
+  cash left after trader, by wave: w2:1 w3:31 w4:104 w5:116 w6:154 w7:84 w8:70 w9:497
+  median dmg taken by wave: w1:0 w2:3 w3:12 w4:12 w5:39 w6:91 w7:134 w8:129
+== rivet: 8 runs
+  rivet-1    cleared  6 | melee kills   0 | died on wave 7 (302 kills), 4.7 game minutes, loadout rivet
+  rivet-2    cleared  6 | melee kills   0 | died on wave 7 (316 kills), 5.0 game minutes, loadout rivet
+  rivet-3    cleared  4 | melee kills   0 | died on wave 5 (141 kills), 3.2 game minutes, loadout rivet
+  rivet-4    cleared  6 | melee kills   0 | died on wave 7 (268 kills), 4.4 game minutes, loadout rivet
+  rivet-5    cleared  7 | melee kills   0 | died on wave 8 (445 kills), 6.5 game minutes, loadout rivet
+  rivet-6    cleared  8 | melee kills   0 | died on wave 9 (612 kills), 7.5 game minutes, loadout rivet
+  rivet-7    cleared  7 | melee kills   0 | died on wave 8 (488 kills), 6.4 game minutes, loadout rivet
+  rivet-8    cleared  6 | melee kills   0 | died on wave 7 (323 kills), 4.9 game minutes, loadout rivet
+  waves cleared: [4, 6, 6, 6, 6, 7, 7, 8]  median 6
+  cash left after trader, by wave: w2:1 w3:45 w4:93 w5:1 w6:7 w7:59 w8:270 w9:226
+  median dmg taken by wave: w1:0 w2:12 w3:12 w4:30 w5:66 w6:67 w7:114 w8:137
+
+# Ramped flankers 10% -> 25% by wave 6 (sims6)
+== cutter: 4 runs
+  cutter-1   cleared  6 | melee kills   0 | died on wave 7 (340 kills), 4.5 game minutes, loadout cutter
+  cutter-2   cleared  7 | melee kills   0 | died on wave 8 (481 kills), 5.9 game minutes, loadout cutter
+  cutter-3   cleared  7 | melee kills   0 | died on wave 8 (471 kills), 5.4 game minutes, loadout cutter
+  cutter-4   cleared  9 | melee kills   0 | died on wave 10 (868 kills), 8.4 game minutes, loadout cutter
+  waves cleared: [6, 7, 7, 9]  median 7
+  cash left after trader, by wave: w2:1 w3:7 w4:134 w5:130 w6:74 w7:64 w8:47 w9:96 w10:537
+  median dmg taken by wave: w1:0 w2:18 w3:3 w4:3 w5:61 w6:83 w7:168 w8:82 w9:167
+== nail: 8 runs
+  nail-1     cleared  8 | melee kills   0 | died on wave 9 (636 kills), 6.9 game minutes, loadout nail
+  nail-2     cleared  7 | melee kills   0 | died on wave 8 (419 kills), 5.5 game minutes, loadout nail
+  nail-3     cleared  7 | melee kills   0 | died on wave 8 (461 kills), 5.4 game minutes, loadout nail
+  nail-4     cleared  8 | melee kills   0 | died on wave 9 (663 kills), 7.3 game minutes, loadout nail
+  nail-5     cleared  7 | melee kills   0 | died on wave 8 (483 kills), 5.7 game minutes, loadout nail
+  nail-6     cleared  7 | melee kills   0 | died on wave 8 (508 kills), 6.0 game minutes, loadout nail
+  nail-7     cleared  6 | melee kills   0 | died on wave 7 (325 kills), 4.6 game minutes, loadout nail
+  nail-8     cleared  6 | melee kills   0 | died on wave 7 (320 kills), 4.5 game minutes, loadout nail
+  waves cleared: [6, 6, 7, 7, 7, 7, 8, 8]  median 7
+  cash left after trader, by wave: w2:1 w3:47 w4:72 w5:108 w6:143 w7:167 w8:154 w9:578
+  median dmg taken by wave: w1:0 w2:0 w3:34 w4:36 w5:48 w6:60 w7:118 w8:187
+== rivet: 6 runs
+  rivet-1    cleared  7 | melee kills   0 | died on wave 8 (442 kills), 6.0 game minutes, loadout rivet
+  rivet-2    cleared  7 | melee kills   0 | died on wave 8 (429 kills), 6.1 game minutes, loadout rivet
+  rivet-3    cleared  6 | melee kills   0 | died on wave 7 (304 kills), 5.0 game minutes, loadout rivet
+  rivet-4    cleared  6 | melee kills   0 | died on wave 7 (355 kills), 5.2 game minutes, loadout rivet
+  rivet-5    cleared  6 | melee kills   0 | died on wave 7 (316 kills), 4.9 game minutes, loadout rivet
+  rivet-6    cleared  7 | melee kills   0 | died on wave 8 (478 kills), 7.1 game minutes, loadout rivet
+  waves cleared: [6, 6, 6, 7, 7, 7]  median 7
+  cash left after trader, by wave: w2:1 w3:29 w4:117 w5:1 w6:51 w7:55 w8:262
+  median dmg taken by wave: w1:0 w2:9 w3:24 w4:27 w5:81 w6:118 w7:136
+
+# Start wave 3 with no ammo (hammer only + refunds)
+SIM end: died on wave 3 (21 kills), 0.5 game minutes, loadout nail, melee kills in last wave 13
+SIM wave 3 cleared 43s | kills 30 | headshots 68% | took 90 dmg, hp 10 armour 0 | shots 51 melee kills 18 | earned $288, cash $488 | nails 0+3
+SIM wave 4 cleared 42s | kills 42 | headshots 66% | took 12 dmg, hp 10 armour 88 | shots 229 melee kills 0 | earned $418, cash $434 | nails 24+235
+SIM end: reached wave 4, 1.5 game minutes, loadout nail, melee kills in last wave 0
+SIM end: died on wave 3 (29 kills), 0.7 game minutes, loadout nail, melee kills in last wave 18
+SIM wave 3 cleared 39s | kills 30 | headshots 79% | took 60 dmg, hp 40 armour 0 | shots 48 melee kills 17 | earned $288, cash $488 | nails 0+3
+SIM wave 4 cleared 42s | kills 42 | headshots 77% | took 104 dmg, hp 36 armour 0 | shots 242 melee kills 0 | earned $418, cash $434 | nails 38+208
+SIM end: reached wave 4, 1.5 game minutes, loadout nail, melee kills in last wave 0

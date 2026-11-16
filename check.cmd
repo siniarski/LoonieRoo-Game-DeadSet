@@ -14,7 +14,7 @@ echo == flags
 if not %errorlevel%==0 set FAILED=1
 findstr /b /c:"CHECK" "%TEMP%\deadset_flags.txt"
 
-echo == reach, weapons, trader, perf
+echo == reach, flank, weapons, trader, perf
 "%GODOT%" --headless --path "%~dp0." -- --nowaves --check > "%TEMP%\deadset_check.txt" 2>&1
 if not %errorlevel%==0 set FAILED=1
 findstr /b /c:"CHECK" "%TEMP%\deadset_check.txt"

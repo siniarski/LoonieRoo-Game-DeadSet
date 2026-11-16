@@ -25,8 +25,19 @@ public partial class WaveSet : Resource
 	/// spot (the end of a lane) is fed from only one direction.
 	/// </summary>
 	[Export] public int FlankFromWave { get; set; } = 2;
-	/// <summary>Share of each wave's enemies that flank (0.25 = one in four).</summary>
+	/// <summary>Share of enemies that flank in FlankFromWave, rising evenly to FlankerShare by FullFlankWave.</summary>
+	[Export(PropertyHint.Range, "0,1")] public float FirstFlankerShare { get; set; } = 0.1f;
+	/// <summary>Share of each wave's enemies that flank once ramped up (0.25 = one in four).</summary>
 	[Export(PropertyHint.Range, "0,1")] public float FlankerShare { get; set; } = 0.25f;
+	[Export] public int FullFlankWave { get; set; } = 6;
+
+	public float FlankerShareFor(int wave)
+	{
+		if (wave < FlankFromWave)
+			return 0f;
+		float t = FullFlankWave > FlankFromWave ? Mathf.Clamp((float)(wave - FlankFromWave) / (FullFlankWave - FlankFromWave), 0f, 1f) : 1f;
+		return Mathf.Lerp(FirstFlankerShare, FlankerShare, t);
+	}
 
 	[ExportGroup("Late waves get chunkier")]
 	/// <summary>From this wave on, enemies get tougher and wider each wave.</summary>

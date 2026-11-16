@@ -400,8 +400,8 @@ public partial class WaveDirector : Node
 			if (enemy is Enemy body)
 			{
 				body.MakeChunky(Waves.HealthMultiplierFor(WaveNumber), Waves.WidthFor(WaveNumber));
-				body.IsFlanker = WaveNumber >= Waves.FlankFromWave && body.Stats is { CanFlank: true }
-					&& GD.Randf() < (FlankerShareOverride >= 0f ? FlankerShareOverride : Waves.FlankerShare);
+				body.IsFlanker = body.Stats is { CanFlank: true }
+					&& GD.Randf() < (FlankerShareOverride >= 0f ? FlankerShareOverride : Waves.FlankerShareFor(WaveNumber));
 			}
 			// Place it before it enters the tree, so it never spends a frame at the origin.
 			enemy.Position = spawn.Position;

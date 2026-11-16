@@ -24,14 +24,14 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 | `--god` | Take no damage |
 | `--nowaves` | No waves: an empty arena for `--spawn` tests |
 | `--noammo` | Every gun you carry starts empty (try the hero's melee) |
-| `--flankers=X` | Share of each wave that flanks, 0 to 1 (default 0.25; `0` turns flanking off to compare) |
+| `--flankers=X` | Share of every wave that flanks, 0 to 1 (default ramps 0.1 to 0.25 by wave 6; `0` turns flanking off to compare) |
 | `--sim=nail\|rivet\|cutter` | A bot plays the run and prints `SIM` lines (tuning data); watch it or add `--simspeed=3` |
 | `--simwaves=N` | The bot quits after wave N (default 10) |
 
 ## Unplayed
 
 ### Flankers (2026-11-16)
-- What changed: from wave 2, about one enemy in four goes the long way round and comes at you from behind (the side away from the rest of the pack), instead of queuing up in front.
+- What changed: from wave 2 (one in ten, rising to one in four by wave 6), some enemies go the long way round and comes at you from behind (the side away from the rest of the pack), instead of queuing up in front.
 - Fun bet: standing at the end of a lane is no longer a free farm; you have to check your back, and a lane is somewhere to fight from for a bit, not forever.
 - Try it: `play.cmd --wave=4 --at=alley` (then compare `play.cmd --wave=4 --at=alley --flankers=0`)
 - Judge: when an emu reaches you from behind, does it feel like you got outplayed (fair), or like it came from nowhere (cheap)?
