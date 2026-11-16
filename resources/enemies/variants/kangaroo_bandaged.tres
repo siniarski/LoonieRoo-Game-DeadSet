@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.5, 0.36, 0.1)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.0, 0.0, -0.22)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.88, 0.85, 0.75, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 60.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.09, 0.03, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.17, 0.0, -0.2)
+RotationDegrees = Vector3(90.0, 0.0, 0.0)
+Color = Color(0.88, 0.85, 0.75, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.09, 0.03, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(-0.17, 0.0, -0.2)
+RotationDegrees = Vector3(90.0, 0.0, 0.0)
+Color = Color(0.88, 0.85, 0.75, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "bandaged"
+DisplayName = "Bandaged buck"
+HealthMultiplier = 1.2
+BountyMultiplier = 1.5
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2")])

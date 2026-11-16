@@ -92,6 +92,56 @@ public partial class WaveDirector : Node
 	{
 		public PackedScene Scene;
 		public Vector3 Position;
+		public PackInfo Pack;
+	}
+
+	/// <summary>Shared by every enemy of one pack: who leads it, if anyone.</summary>
+	private sealed class PackInfo
+	{
+		public bool Started;
+		public Enemy Leader;
+	}
+
+	/// <summary>Debug (--novariants): plain enemies only, to compare.</summary>
+	public static bool VariantsOff { get; set; }
+	/// <summary>Debug (--variants=X): every variant rule rolls at this share (0 to 1) from wave 1.</summary>
+	public static float VariantShareOverride { get; set; } = -1f;
+	private readonly List<VariantRule> _ruleScratch = new();
+
+	/// <summary>Picks a variant for a new enemy from the wave set's rules, or null for a plain one.</summary>
+	private EnemyVariant RollVariant(Enemy body, PackInfo pack)
+	{
+		bool first = pack == null || !pack.Started;
+		if (pack != null)
+			pack.Started = true;
+		if (VariantsOff || Waves?.Variants == null || body.Stats == null)
+			return null;
+		_ruleScratch.Clear();
+		foreach (VariantRule rule in Waves.Variants)
+			if (rule?.Variant != null && rule.Enemy == body.Stats.DisplayName && (!rule.OnePerPack || first))
+				_ruleScratch.Add(rule);
+		// Random order, so no rule always gets first pick.
+		for (int i = _ruleScratch.Count - 1; i > 0; i--)
+		{
+			int j = GD.RandRange(0, i);
+			(_ruleScratch[i], _ruleScratch[j]) = (_ruleScratch[j], _ruleScratch[i]);
+		}
+		foreach (VariantRule rule in _ruleScratch)
+		{
+			float share = VariantShareOverride >= 0f ? VariantShareOverride : rule.ShareFor(WaveNumber);
+			if (share > 0f && GD.Randf() < share)
+				return rule.Variant;
+		}
+		return null;
+	}
+
+	/// <summary>Something spawned an enemy mid-wave (a joey, chicks): it counts towards the wave.</summary>
+	private void OnEnemySpawned(Node3D enemy)
+	{
+		if (CurrentPhase != Phase.Wave || _alive.Contains(enemy))
+			return;
+		_alive.Add(enemy);
+		enemy.TreeExiting += () => _alive.Remove(enemy);
 	}
 
 	private readonly List<Pack> _queue = new();
@@ -104,6 +154,7 @@ public partial class WaveDirector : Node
 	private class VentBurst
 	{
 		public Node3D Vent;
+		public PackInfo Pack = new();
 		public PackedScene Scene;
 		public int Count;
 		public float Timer;
@@ -128,6 +179,7 @@ public partial class WaveDirector : Node
 		Deadset.Enemies.AttackSlots.MaxAttackers = MaxSimultaneousAttackers;
 		AddToGroup("wave_director");
 		GameEvents.Instance.EnemyKilled += OnEnemyKilled;
+		GameEvents.Instance.EnemySpawned += OnEnemySpawned;
 
 		_player = GetTree().GetFirstNodeInGroup("player") as Node3D;
 		HealthComponent playerHealth = HealthComponent.FindOn(_player);
@@ -147,7 +199,10 @@ public partial class WaveDirector : Node
 	public override void _ExitTree()
 	{
 		if (GameEvents.Instance != null)
+		{
 			GameEvents.Instance.EnemyKilled -= OnEnemyKilled;
+			GameEvents.Instance.EnemySpawned -= OnEnemySpawned;
+		}
 	}
 
 	/// <summary>Ends the countdown or break early (the player is ready).</summary>
@@ -352,6 +407,7 @@ public partial class WaveDirector : Node
 				_pending.Enqueue(new PendingSpawn
 				{
 					Scene = burst.Scene,
+					Pack = burst.Pack,
 					Position = NavGrid.SnapToGround(at + new Vector3(Mathf.Cos(angle) * 0.6f, 0.1f, Mathf.Sin(angle) * 0.6f)),
 				});
 			}
@@ -385,6 +441,7 @@ public partial class WaveDirector : Node
 
 		Vector3 centre = point.GlobalPosition;
 		float radius = ScatterRadius * Mathf.Sqrt(Mathf.Max(count, 1) / 4f);
+		var packInfo = new PackInfo();
 		for (int i = 0; i < count; i++)
 		{
 			float angle = GD.Randf() * Mathf.Tau;
@@ -392,6 +449,7 @@ public partial class WaveDirector : Node
 			_pending.Enqueue(new PendingSpawn
 			{
 				Scene = scene,
+				Pack = packInfo,
 				// A big pack scatters wide: keep everyone inside the walls and out of cover.
 				Position = NavGrid.SnapToGround(centre + new Vector3(Mathf.Cos(angle) * r, 0.1f, Mathf.Sin(angle) * r)),
 			});
@@ -414,6 +472,13 @@ public partial class WaveDirector : Node
 				body.MakeChunky(Waves.HealthMultiplierFor(WaveNumber), Waves.WidthFor(WaveNumber));
 				body.IsFlanker = body.Stats is { CanFlank: true }
 					&& GD.Randf() < (FlankerShareOverride >= 0f ? FlankerShareOverride : Waves.FlankerShareFor(WaveNumber));
+				EnemyVariant variant = RollVariant(body, spawn.Pack);
+				if (variant != null)
+					body.ApplyVariant(variant);
+				if (variant is { PackLeader: true } && spawn.Pack != null)
+					spawn.Pack.Leader = body;
+				else if (spawn.Pack?.Leader != null && IsInstanceValid(spawn.Pack.Leader))
+					body.Leader = spawn.Pack.Leader;
 			}
 			// Place it before it enters the tree, so it never spends a frame at the origin.
 			enemy.Position = spawn.Position;

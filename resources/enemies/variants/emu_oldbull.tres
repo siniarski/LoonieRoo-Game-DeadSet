@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.45, 0.035, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 0.95, 0.0)
+RotationDegrees = Vector3(8.0, 0.0, 0.0)
+Color = Color(0.25, 0.25, 0.25, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.42, 0.035, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 0.78, 0.0)
+RotationDegrees = Vector3(-6.0, 0.0, 0.0)
+Color = Color(0.25, 0.25, 0.25, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.04, 0.02, 0.3)
+Attach = NodePath("Visual/Striker/Head")
+Offset = Vector3(0.07, 0.05, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 30.0)
+Color = Color(0.86, 0.8, 0.66, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "oldbull"
+DisplayName = "Old bull emu"
+Size = 1.1
+HealthMultiplier = 2.5
+DamageMultiplier = 1.4
+BountyMultiplier = 2.5
+ShoveTaken = 0.3
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2")])

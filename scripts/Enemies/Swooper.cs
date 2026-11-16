@@ -121,7 +121,7 @@ public partial class Swooper : Enemy
 					break;
 				}
 				Vector3 direction = HasLiveTarget ? ChaseDirection(dt) : Vector3.Zero;
-				Steer(direction * Stats.MoveSpeed + Separation(), dt);
+				Steer(direction * MoveSpeed + Separation(), dt);
 				FaceDirection(direction, dt);
 				break;
 			}
@@ -138,7 +138,15 @@ public partial class Swooper : Enemy
 				Steer(desired + Separation(), dt);
 				FaceDirection(desired, dt);
 				_timer -= dt;
-				if (_timer <= 0f && HasLiveTarget && _melee.IsReady && AttackSlots.TryAcquire(this))
+				// A bomber never dives: it drops stones as it circles.
+				if (Variant?.Ranged is { Kind: RangedAttack.AttackKind.Drop })
+				{
+					TickRanged(dt, distance);
+					break;
+				}
+				bool squadronReady = Variant is not { Squadron: true }
+					|| (_squadronDiving == 0 && Time.GetTicksMsec() / 1000.0 >= _squadronNext);
+				if (_timer <= 0f && squadronReady && HasLiveTarget && _melee.IsReady && AttackSlots.TryAcquire(this))
 				{
 					_state = State.Windup;
 					_timer = WindupTime;
@@ -160,6 +168,11 @@ public partial class Swooper : Enemy
 					_diveDir = (AimPoint - HeadPoint).Normalized();
 					_melee.StartCooldown();
 					Dives++;
+					if (Variant is { Squadron: true })
+					{
+						_squadronDiving++;
+						_inSquadronDive = true;
+					}
 				}
 				break;
 
@@ -221,13 +234,37 @@ public partial class Swooper : Enemy
 
 	private void StartCircling()
 	{
+		EndSquadronDive();
 		_state = State.Circle;
-		_timer = (float)GD.RandRange(CircleTimeMin, CircleTimeMax);
+		// Squadron birds are always ready: the relay decides who goes next.
+		_timer = Variant is { Squadron: true } ? 0.3f : (float)GD.RandRange(CircleTimeMin, CircleTimeMax);
 		AttackSlots.Release(this);
+	}
+
+	/// <summary>Squadron birds dive one after another: the next goes a beat after this one pulls out.</summary>
+	private static int _squadronDiving;
+	private static double _squadronNext;
+	private bool _inSquadronDive;
+	[Export] public float SquadronGap { get; set; } = 0.5f;
+
+	private void EndSquadronDive()
+	{
+		if (!_inSquadronDive)
+			return;
+		_inSquadronDive = false;
+		_squadronDiving = Mathf.Max(_squadronDiving - 1, 0);
+		_squadronNext = Time.GetTicksMsec() / 1000.0 + SquadronGap;
+	}
+
+	public override void _ExitTree()
+	{
+		EndSquadronDive();
+		base._ExitTree();
 	}
 
 	private void StartPullOut()
 	{
+		EndSquadronDive();
 		_state = State.PullOut;
 		_timer = PullOutTime;
 		AttackSlots.Release(this);

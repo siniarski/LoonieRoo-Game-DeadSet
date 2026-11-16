@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.8, 0.6, 0.08)
+Attach = NodePath("Visual/HeadPivot")
+Offset = Vector3(0.0, 0.0, -0.38)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.58, 0.62, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 120.0
+Heavy = true
+CoversHead = true
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.08, 0.6, 1.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.62, 0.85, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.58, 0.62, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 80.0
+Heavy = true
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.08, 0.6, 1.0)
+Attach = NodePath("Visual")
+Offset = Vector3(-0.62, 0.85, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.58, 0.62, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 80.0
+Heavy = true
+CoversHead = false
+
+[sub_resource type="Resource" id="g3"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.3, 0.1, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 1.42, 0.15)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.08, 0.08, 0.08, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "armoured"
+DisplayName = "Armoured wombat"
+BountyMultiplier = 1.6
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2"), SubResource("g3")])

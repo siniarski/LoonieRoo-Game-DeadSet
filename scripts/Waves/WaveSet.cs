@@ -39,6 +39,10 @@ public partial class WaveSet : Resource
 		return Mathf.Lerp(FirstFlankerShare, FlankerShare, t);
 	}
 
+	[ExportGroup("Variants")]
+	/// <summary>Which variants turn up from which wave. Later waves lean on these more than on health.</summary>
+	[Export] public Godot.Collections.Array<VariantRule> Variants { get; set; } = new();
+
 	[ExportGroup("Late waves get chunkier")]
 	/// <summary>From this wave on, enemies get tougher and wider each wave.</summary>
 	[Export] public int ChunkyFromWave { get; set; } = 6;

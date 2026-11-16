@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.04, 0.5, 0.9)
+Attach = NodePath("Visual")
+Offset = Vector3(0.2, 1.0, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.85, 0.75, 0.5, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.04, 0.5, 0.9)
+Attach = NodePath("Visual")
+Offset = Vector3(-0.2, 1.0, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.85, 0.75, 0.5, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "chick"
+DisplayName = "Cassowary chick"
+Size = 0.4
+HealthMultiplier = 0.1
+SpeedMultiplier = 1.1
+DamageMultiplier = 0.25
+BountyMultiplier = 0.2
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1")])

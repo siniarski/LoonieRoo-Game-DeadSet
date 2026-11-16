@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WaveSet" load_steps=39 format=3]
+[gd_resource type="Resource" script_class="WaveSet" load_steps=86 format=3]
 
 [ext_resource type="Script" path="res://scripts/Waves/WaveSet.cs" id="s_set"]
 [ext_resource type="Script" path="res://scripts/Waves/WaveDefinition.cs" id="s_def"]
@@ -9,6 +9,30 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/Kangaroo.tscn" id="e_Kangaroo"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Magpie.tscn" id="e_Magpie"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/Wombat.tscn" id="e_Wombat"]
+[ext_resource type="Script" path="res://scripts/Waves/VariantRule.cs" id="s_vrule"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/emu_sprinter.tres" id="v_emu_sprinter"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/emu_collared.tres" id="v_emu_collared"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/emu_glowneck.tres" id="v_emu_glowneck"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/emu_spitter.tres" id="v_emu_spitter"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/emu_oldbull.tres" id="v_emu_oldbull"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/wombat_armoured.tres" id="v_wombat_armoured"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/wombat_mortar.tres" id="v_wombat_mortar"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/wombat_bulldozer.tres" id="v_wombat_bulldozer"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/wombat_burrower.tres" id="v_wombat_burrower"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_boxer.tres" id="v_kangaroo_boxer"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_pouch.tres" id="v_kangaroo_pouch"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_bandaged.tres" id="v_kangaroo_bandaged"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_rockkick.tres" id="v_kangaroo_rockkick"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_bigred.tres" id="v_kangaroo_bigred"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/cassowary_casque.tres" id="v_cassowary_casque"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/cassowary_enraged.tres" id="v_cassowary_enraged"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/cassowary_brooder.tres" id="v_cassowary_brooder"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/dingo_mangy.tres" id="v_dingo_mangy"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/dingo_alpha.tres" id="v_dingo_alpha"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/dingo_howler.tres" id="v_dingo_howler"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/magpie_cabletie.tres" id="v_magpie_cabletie"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/magpie_squadron.tres" id="v_magpie_squadron"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/magpie_bomber.tres" id="v_magpie_bomber"]
 
 [sub_resource type="Resource" id="w1_Emu"]
 script = ExtResource("s_spawn")
@@ -206,6 +230,236 @@ Spawns = Array[ExtResource("s_spawn")]([SubResource("w7_Emu"), SubResource("w7_D
 MaxAlive = 70
 PackInterval = 1.2
 
+[sub_resource type="Resource" id="vr_emu_sprinter"]
+script = ExtResource("s_vrule")
+Enemy = "Emu"
+Variant = ExtResource("v_emu_sprinter")
+FromWave = 3
+FirstShare = 0.06
+ShareGrowthPerWave = 0.02
+MaxShare = 0.15
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_emu_collared"]
+script = ExtResource("s_vrule")
+Enemy = "Emu"
+Variant = ExtResource("v_emu_collared")
+FromWave = 4
+FirstShare = 0.06
+ShareGrowthPerWave = 0.03
+MaxShare = 0.2
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_emu_glowneck"]
+script = ExtResource("s_vrule")
+Enemy = "Emu"
+Variant = ExtResource("v_emu_glowneck")
+FromWave = 5
+FirstShare = 0.05
+ShareGrowthPerWave = 0.02
+MaxShare = 0.12
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_emu_spitter"]
+script = ExtResource("s_vrule")
+Enemy = "Emu"
+Variant = ExtResource("v_emu_spitter")
+FromWave = 5
+FirstShare = 0.02
+ShareGrowthPerWave = 0.01
+MaxShare = 0.05
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_emu_oldbull"]
+script = ExtResource("s_vrule")
+Enemy = "Emu"
+Variant = ExtResource("v_emu_oldbull")
+FromWave = 7
+FirstShare = 0.02
+ShareGrowthPerWave = 0.01
+MaxShare = 0.06
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_wombat_armoured"]
+script = ExtResource("s_vrule")
+Enemy = "Wombat"
+Variant = ExtResource("v_wombat_armoured")
+FromWave = 4
+FirstShare = 0.25
+ShareGrowthPerWave = 0.1
+MaxShare = 0.5
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_wombat_mortar"]
+script = ExtResource("s_vrule")
+Enemy = "Wombat"
+Variant = ExtResource("v_wombat_mortar")
+FromWave = 6
+FirstShare = 0.15
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_wombat_bulldozer"]
+script = ExtResource("s_vrule")
+Enemy = "Wombat"
+Variant = ExtResource("v_wombat_bulldozer")
+FromWave = 7
+FirstShare = 0.15
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_wombat_burrower"]
+script = ExtResource("s_vrule")
+Enemy = "Wombat"
+Variant = ExtResource("v_wombat_burrower")
+FromWave = 8
+FirstShare = 0.15
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_kangaroo_boxer"]
+script = ExtResource("s_vrule")
+Enemy = "Kangaroo"
+Variant = ExtResource("v_kangaroo_boxer")
+FromWave = 5
+FirstShare = 0.3
+ShareGrowthPerWave = 0.1
+MaxShare = 0.5
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_kangaroo_pouch"]
+script = ExtResource("s_vrule")
+Enemy = "Kangaroo"
+Variant = ExtResource("v_kangaroo_pouch")
+FromWave = 6
+FirstShare = 0.2
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_kangaroo_bandaged"]
+script = ExtResource("s_vrule")
+Enemy = "Kangaroo"
+Variant = ExtResource("v_kangaroo_bandaged")
+FromWave = 7
+FirstShare = 0.2
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_kangaroo_rockkick"]
+script = ExtResource("s_vrule")
+Enemy = "Kangaroo"
+Variant = ExtResource("v_kangaroo_rockkick")
+FromWave = 7
+FirstShare = 0.15
+ShareGrowthPerWave = 0.05
+MaxShare = 0.25
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_kangaroo_bigred"]
+script = ExtResource("s_vrule")
+Enemy = "Kangaroo"
+Variant = ExtResource("v_kangaroo_bigred")
+FromWave = 7
+FirstShare = 0.1
+ShareGrowthPerWave = 0.05
+MaxShare = 0.2
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_cassowary_casque"]
+script = ExtResource("s_vrule")
+Enemy = "Cassowary"
+Variant = ExtResource("v_cassowary_casque")
+FromWave = 6
+FirstShare = 0.3
+ShareGrowthPerWave = 0.1
+MaxShare = 0.5
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_cassowary_enraged"]
+script = ExtResource("s_vrule")
+Enemy = "Cassowary"
+Variant = ExtResource("v_cassowary_enraged")
+FromWave = 7
+FirstShare = 0.25
+ShareGrowthPerWave = 0.05
+MaxShare = 0.35
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_cassowary_brooder"]
+script = ExtResource("s_vrule")
+Enemy = "Cassowary"
+Variant = ExtResource("v_cassowary_brooder")
+FromWave = 8
+FirstShare = 0.2
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_dingo_mangy"]
+script = ExtResource("s_vrule")
+Enemy = "Dingo"
+Variant = ExtResource("v_dingo_mangy")
+FromWave = 3
+FirstShare = 0.15
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_dingo_alpha"]
+script = ExtResource("s_vrule")
+Enemy = "Dingo"
+Variant = ExtResource("v_dingo_alpha")
+FromWave = 5
+FirstShare = 0.5
+ShareGrowthPerWave = 0.1
+MaxShare = 0.8
+OnePerPack = true
+
+[sub_resource type="Resource" id="vr_dingo_howler"]
+script = ExtResource("s_vrule")
+Enemy = "Dingo"
+Variant = ExtResource("v_dingo_howler")
+FromWave = 6
+FirstShare = 0.08
+ShareGrowthPerWave = 0.03
+MaxShare = 0.15
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_magpie_cabletie"]
+script = ExtResource("s_vrule")
+Enemy = "Magpie"
+Variant = ExtResource("v_magpie_cabletie")
+FromWave = 4
+FirstShare = 0.25
+ShareGrowthPerWave = 0.1
+MaxShare = 0.5
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_magpie_squadron"]
+script = ExtResource("s_vrule")
+Enemy = "Magpie"
+Variant = ExtResource("v_magpie_squadron")
+FromWave = 6
+FirstShare = 0.3
+ShareGrowthPerWave = 0.1
+MaxShare = 0.5
+OnePerPack = false
+
+[sub_resource type="Resource" id="vr_magpie_bomber"]
+script = ExtResource("s_vrule")
+Enemy = "Magpie"
+Variant = ExtResource("v_magpie_bomber")
+FromWave = 7
+FirstShare = 0.2
+ShareGrowthPerWave = 0.05
+MaxShare = 0.3
+OnePerPack = false
+
 [resource]
 script = ExtResource("s_set")
 Waves = Array[ExtResource("s_def")]([SubResource("wave1"), SubResource("wave2"), SubResource("wave3"), SubResource("wave4"), SubResource("wave5"), SubResource("wave6"), SubResource("wave7")])
@@ -214,3 +468,6 @@ BreakDuration = 30.0
 EndlessCountMultiplier = 1.25
 EndlessMaxAliveGrowth = 30
 MaxAliveCap = 200
+Variants = Array[ExtResource("s_vrule")]([SubResource("vr_emu_sprinter"), SubResource("vr_emu_collared"), SubResource("vr_emu_glowneck"), SubResource("vr_emu_spitter"), SubResource("vr_emu_oldbull"), SubResource("vr_wombat_armoured"), SubResource("vr_wombat_mortar"), SubResource("vr_wombat_bulldozer"), SubResource("vr_wombat_burrower"), SubResource("vr_kangaroo_boxer"), SubResource("vr_kangaroo_pouch"), SubResource("vr_kangaroo_bandaged"), SubResource("vr_kangaroo_rockkick"), SubResource("vr_kangaroo_bigred"), SubResource("vr_cassowary_casque"), SubResource("vr_cassowary_enraged"), SubResource("vr_cassowary_brooder"), SubResource("vr_dingo_mangy"), SubResource("vr_dingo_alpha"), SubResource("vr_dingo_howler"), SubResource("vr_magpie_cabletie"), SubResource("vr_magpie_squadron"), SubResource("vr_magpie_bomber")])
+HealthGrowthPerWave = 0.04
+MaxHealthMultiplier = 1.4

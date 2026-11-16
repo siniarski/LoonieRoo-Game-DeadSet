@@ -53,7 +53,7 @@ public partial class SelfCheck : Node
 			await Frames(1);
 		await Frames(5);
 
-		string which = string.IsNullOrEmpty(Which) ? "reach,flank,specials,weapons,trader,perf" : Which;
+		string which = string.IsNullOrEmpty(Which) ? "reach,flank,specials,variants,weapons,trader,perf" : Which;
 		foreach (string check in which.Split(','))
 		{
 			switch (check.Trim())
@@ -65,6 +65,7 @@ public partial class SelfCheck : Node
 				case "perf": await CheckPerf(); break;
 				case "flank": await CheckFlank(); break;
 				case "specials": await CheckSpecials(); break;
+				case "variants": await CheckVariants(); break;
 				default: Fail(check, "unknown check"); break;
 			}
 			ClearEnemies();

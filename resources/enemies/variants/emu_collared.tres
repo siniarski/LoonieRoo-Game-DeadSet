@@ -1,0 +1,67 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 1
+Size = Vector3(0.16, 0.3, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.0, 0.21, -0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.78, 0.8, 0.82, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 30.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.18, 0.035, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.0, 0.34, -0.06)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.62, 0.42, 0.28, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.18, 0.035, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.0, 0.22, -0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.62, 0.42, 0.28, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g3"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.18, 0.035, 0.0)
+Attach = NodePath("Visual/Striker")
+Offset = Vector3(0.0, 0.08, -0.04)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.62, 0.42, 0.28, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "collared"
+DisplayName = "Collared emu"
+BountyMultiplier = 1.4
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2"), SubResource("g3")])

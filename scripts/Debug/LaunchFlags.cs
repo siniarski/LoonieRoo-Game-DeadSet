@@ -23,6 +23,9 @@ namespace Deadset.Debug;
 /// --mod=ID[:LEVELS]  give a weapon mod (ids in resources/weapons/mods), on whichever weapon has it
 /// --upgrade=ID[:N]   give a player upgrade (ids in resources/upgrades)
 /// --spawn=ENEMY:N    N enemies in a ring around you (emu, wombat, dingo, ...); repeatable
+///                    ENEMY.VARIANT spawns a variant, e.g. wombat.armoured:2 (ids in resources/enemies/variants)
+/// --novariants       waves use plain enemies only
+/// --variants=X       every variant rule rolls at share X (0 to 1) from wave 1
 /// --at=SPOT          start at a named spot in the arena (alley, shed, tank, north, south)
 /// --god              can't die
 /// --flankers=X      share of each wave that flanks (0 to 1; the wave set default is 0.25)
@@ -124,6 +127,12 @@ public partial class LaunchFlags : Node
 					break;
 				case "flankers":
 					WaveDirector.FlankerShareOverride = Mathf.Clamp(value.ToFloat(), 0f, 1f);
+					break;
+				case "novariants":
+					WaveDirector.VariantsOff = true;
+					break;
+				case "variants":
+					WaveDirector.VariantShareOverride = Mathf.Clamp(value.ToFloat(), 0f, 1f);
 					break;
 				case "camptime":
 					WaveDirector.CampSecondsOverride = Mathf.Max(0f, value.ToFloat());
@@ -245,8 +254,27 @@ public partial class LaunchFlags : Node
 		GD.PushWarning($"LaunchFlags: no arena spot called '{spot}'.");
 	}
 
+	/// <summary>The variant resource for "enemy.id" names (resources/enemies/variants/enemy_id.tres), or null.</summary>
+	public static Enemies.EnemyVariant FindVariant(string enemy, string id)
+	{
+		string path = $"res://resources/enemies/variants/{enemy}_{id}.tres";
+		if (!ResourceLoader.Exists(path))
+		{
+			GD.PushWarning($"LaunchFlags: no variant '{id}' for '{enemy}' ({path}).");
+			return null;
+		}
+		return GD.Load<Enemies.EnemyVariant>(path);
+	}
+
 	private void SpawnRing(Node3D player, string enemy, int count)
 	{
+		Enemies.EnemyVariant variant = null;
+		int dot = enemy.IndexOf('.');
+		if (dot > 0)
+		{
+			variant = FindVariant(enemy[..dot], enemy[(dot + 1)..]);
+			enemy = enemy[..dot];
+		}
 		var spawner = GetParent().GetNodeOrNull<TestSpawner>("TestSpawner");
 		PackedScene scene = null;
 		if (spawner != null)
@@ -264,6 +292,8 @@ public partial class LaunchFlags : Node
 			float angle = i * Mathf.Tau / count;
 			Vector3 at = player.GlobalPosition + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * SpawnRingRadius;
 			var body = scene.Instantiate<Node3D>();
+			if (body is Enemies.Enemy e)
+				e.ApplyVariant(variant);
 			body.Position = NavGrid.SnapToGround(at) + Vector3.Up * 0.1f;
 			parent.AddChild(body);
 		}

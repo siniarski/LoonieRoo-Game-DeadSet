@@ -11,6 +11,8 @@ public partial class GameEvents : Node
 	public static GameEvents Instance { get; private set; }
 
 	[Signal] public delegate void EnemyKilledEventHandler(Node3D enemy);
+	/// <summary>An enemy appeared mid-wave from something other than the wave director (a joey, a chick).</summary>
+	[Signal] public delegate void EnemySpawnedEventHandler(Node3D enemy);
 
 	/// <summary>Countdown before a wave (the first one, or after a break) has begun.</summary>
 	[Signal] public delegate void WaveIncomingEventHandler(int waveNumber, float seconds);

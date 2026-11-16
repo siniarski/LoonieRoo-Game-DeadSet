@@ -120,6 +120,9 @@ public partial class MeleeConeWeapon : Weapon
 			(_, Node3D enemy, HealthComponent health) = _targets[i];
 			Vector3 at = enemy.GlobalPosition + Vector3.Up * 0.9f;
 			health.LastHitWeakSpot = false;
+			// The line shreds light gear (ties, wraps, wire collars) as it cuts.
+			if (enemy is Enemies.Enemy wearer)
+				wearer.ShredLightGear(damage * 2f);
 			bool killed = health.ApplyDamage(damage);
 			ReportHit(killed);
 			ImpactEffects.SpawnSparks(effects, at, (origin - at).Normalized(), CutSparkColor, 9);

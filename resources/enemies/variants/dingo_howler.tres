@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+[ext_resource type="Script" path="res://scripts/Enemies/RangedAttack.cs" id="3_r"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.13, 0.05, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 0.66, -0.36)
+RotationDegrees = Vector3(-30.0, 0.0, 0.0)
+Color = Color(0.5, 0.75, 1.0, 1)
+Glow = true
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="ranged"]
+script = ExtResource("3_r")
+Kind = 3
+MinRange = 10.0
+MaxRange = 24.0
+Windup = 1.2
+Cooldown = 7.0
+FirstDelay = 1.0
+HowlRadius = 30.0
+HowlSeconds = 4.0
+HowlSpeedMultiplier = 1.35
+Color = Color(0.5, 0.75, 1.0, 1)
+LaunchOffset = Vector3(0.0, 0.7, -0.45)
+Cue = 10
+
+[resource]
+script = ExtResource("1_v")
+Id = "howler"
+DisplayName = "Howler dingo"
+HealthMultiplier = 1.2
+BountyMultiplier = 2.0
+Gear = Array[ExtResource("2_g")]([SubResource("g0")])
+Ranged = SubResource("ranged")

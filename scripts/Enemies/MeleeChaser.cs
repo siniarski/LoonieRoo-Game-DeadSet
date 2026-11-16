@@ -105,6 +105,38 @@ public partial class MeleeChaser : Enemy
 		_legsB = ResolveLegs(LegsB);
 		_visualRest = Visual.Position;
 		_bobPhase = GD.Randf() * Mathf.Tau;
+
+		if (Variant is { } v)
+		{
+			_comboHits = Mathf.Max(v.ComboHits, 1);
+			BackOffTime *= v.BackOffMultiplier;
+			RecoverTime *= v.RecoverMultiplier;
+			HitKnockback *= v.KnockbackMultiplier;
+			HitKnockbackUp *= v.KnockbackMultiplier;
+			if (v.HitAndRunTime > 0f)
+			{
+				BackOffTime = v.HitAndRunTime;
+				BackOffSpeed = Stats.MoveSpeed * 0.8f;
+			}
+			SpeedFactor = v.CalmSpeedMultiplier;
+		}
+		_packOffset = new Vector3((float)GD.RandRange(-2.5, 2.5), 0f, (float)GD.RandRange(1.0, 3.0));
+	}
+
+	private int _comboHits = 1;
+	private int _comboLeft;
+	private Vector3 _packOffset;
+	private bool _hadLeader;
+	private float _scatterTimer;
+
+	public override void Enrage()
+	{
+		if (IsEnraged)
+			return;
+		base.Enrage();
+		SpeedFactor = Variant?.EnrageSpeedMultiplier ?? 1.4f;
+		_comboHits = Mathf.Max(_comboHits, Variant?.EnrageComboHits ?? 2);
+		WindupTime *= 0.8f;
 	}
 
 	private Node3D[] ResolveLegs(Godot.Collections.Array<NodePath> paths)
@@ -143,6 +175,9 @@ public partial class MeleeChaser : Enemy
 
 	private void Tick(float dt)
 	{
+		if (!IsEnraged && Variant is { EnrageAtHealth: > 0f } v && Health.Current <= Health.MaxHealth * v.EnrageAtHealth)
+			Enrage();
+
 		if (!HasLiveTarget)
 		{
 			_state = State.Chase;
@@ -171,6 +206,16 @@ public partial class MeleeChaser : Enemy
 			case State.Recover:
 				_stateTimer -= dt;
 				bool landed = !lunging || Flying || Grounded;
+				// A combo: snap straight into the next strike instead of recovering.
+				if (_comboLeft > 0 && RecoverTime - _stateTimer >= RecoverTime * 0.35f && (Flying || Grounded))
+				{
+					_comboLeft--;
+					_state = State.Windup;
+					_stateTimer = WindupTime * 0.45f;
+					FaceDirection(toTargetDir, 1f, 100f);
+					Steer(Vector3.Zero, dt);
+					return;
+				}
 				if (_stateTimer <= 0f && landed)
 				{
 					AttackSlots.Release(this);
@@ -190,6 +235,18 @@ public partial class MeleeChaser : Enemy
 				return;
 		}
 
+		// Ranged variants stop to throw when they're out of reach.
+		if (TickRanged(dt, distance))
+		{
+			Steer(Separation(), dt);
+			FaceDirection(toTargetDir, dt, 10f);
+			return;
+		}
+
+		// A packmate moves with its leader and only closes in when the leader does.
+		if (FollowLeader(dt, distance))
+			return;
+
 		if (distance <= Stats.AttackRange && _melee.IsReady && (Flying || Grounded) && AttackSlots.TryAcquire(this))
 		{
 			StartWindup(toTargetDir);
@@ -208,15 +265,67 @@ public partial class MeleeChaser : Enemy
 
 		// Brake early enough to stop at reach rather than skidding into the player.
 		float stopDistance = Mathf.Max(distance - Stats.AttackRange * 0.9f, 0f);
-		float speed = Mathf.Min(Stats.MoveSpeed, Mathf.Sqrt(2f * Stats.Acceleration * stopDistance) + 0.5f);
+		float speed = Mathf.Min(MoveSpeed, Mathf.Sqrt(2f * Stats.Acceleration * stopDistance) + 0.5f);
 
 		Vector3 direction = ChaseDirection(dt);
 		Steer(direction * speed + Separation(), dt);
 		FaceDirection(direction, dt);
 	}
 
+	/// <summary>
+	/// Packmates trail their leader until it gets close to the player, then everyone goes in
+	/// together. If the leader dies first, each one hesitates a random moment and they come in
+	/// one at a time. Returns true when it handled movement this tick.
+	/// </summary>
+	private bool FollowLeader(float dt, float distance)
+	{
+		if (Leader != null)
+		{
+			_hadLeader = true;
+			if (!IsInstanceValid(Leader) || Leader.IsDead)
+			{
+				Leader = null;
+				_scatterTimer = (float)GD.RandRange(0.5, 4.0);
+			}
+			else
+			{
+				Vector3 leaderToTarget = TargetPosition - Leader.GlobalPosition;
+				leaderToTarget.Y = 0f;
+				if (leaderToTarget.Length() > 6f && distance > 5f)
+				{
+					// Fall in behind the leader, on the far side from the player.
+					Vector3 back = -leaderToTarget.Normalized();
+					Vector3 side = Vector3.Up.Cross(back);
+					Vector3 spot = Leader.GlobalPosition + back * _packOffset.Z + side * _packOffset.X;
+					Vector3 to = spot - BodyPosition;
+					to.Y = 0f;
+					float speed = Mathf.Min(MoveSpeed * 1.1f, to.Length() * 3f);
+					Vector3 dir = to.LengthSquared() > 0.01f ? to.Normalized() : Vector3.Zero;
+					Steer(dir * speed + Separation(), dt);
+					FaceDirection(dir.LengthSquared() > 0f ? dir : leaderToTarget.Normalized(), dt);
+					return true;
+				}
+			}
+		}
+		if (_scatterTimer > 0f)
+		{
+			// Leaderless: dither at a distance for a moment before coming in alone.
+			_scatterTimer -= dt;
+			Vector3 away = BodyPosition - TargetPosition;
+			away.Y = 0f;
+			Steer((distance < 8f ? away.Normalized() * MoveSpeed * 0.5f : Vector3.Zero) + Separation(), dt);
+			FaceDirection(-away, dt);
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>True if it lost its pack leader and is still hesitating (for the self-check).</summary>
+	public bool Scattered => _scatterTimer > 0f || (_hadLeader && Leader == null);
+
 	private void StartWindup(Vector3 direction)
 	{
+		_comboLeft = _comboHits - 1;
 		_state = State.Windup;
 		_stateTimer = WindupTime;
 		_melee.StartCooldown();
@@ -280,7 +389,7 @@ public partial class MeleeChaser : Enemy
 		else if ((_state == State.Chase || _state == State.BackOff) && Grounded)
 		{
 			_bobPhase += speed * BobFrequency * Mathf.Pi * dt;
-			float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);
+			float amount = Mathf.Min(speed / Mathf.Max(MoveSpeed, 0.01f), 1f);
 			float wave = Hops ? Mathf.Abs(Mathf.Sin(_bobPhase)) : Mathf.Sin(_bobPhase) * 0.5f + 0.5f;
 			offset.Y = wave * BobHeight * amount;
 			_gaitAmount = amount;

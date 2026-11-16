@@ -144,6 +144,7 @@ public abstract partial class Enemy : CharacterBody3D
 	{
 		All.Remove(this);
 		AttackSlots.Release(this);
+		RangedSlots.Release(this);
 	}
 
 	public override void _Ready()
@@ -154,6 +155,7 @@ public abstract partial class Enemy : CharacterBody3D
 		Health.Died += OnDied;
 		if (Stats.AlwaysFlanks)
 			IsFlanker = true;
+		ReadyVariant();
 
 		Visual = GetNode<Node3D>("Visual");
 		// Pathing is shared (NavGrid). A leftover agent would only cost a server update every tick.
@@ -201,6 +203,8 @@ public abstract partial class Enemy : CharacterBody3D
 			BodyPosition = EnemyCrowd.PositionOf(_crowdIndex);
 		else
 			BodyPosition = GlobalPosition;   // joined the tree after this tick's snapshot
+
+		TickVariant((float)GetPhysicsProcessDeltaTime());
 
 		if (EnemyCrowd.Target == Target)
 			TargetPosition = EnemyCrowd.TargetPosition;
@@ -508,6 +512,7 @@ public abstract partial class Enemy : CharacterBody3D
 	/// </summary>
 	public virtual void Shove(Vector3 push)
 	{
+		push *= Variant?.ShoveTaken ?? 1f;
 		Velocity += new Vector3(push.X, 0f, push.Z);
 		// Use real collision moves for a moment, so a shove can't slide it through cover.
 		_noGlideTicks = 12;
@@ -627,6 +632,7 @@ public abstract partial class Enemy : CharacterBody3D
 		ImpactEffects.SpawnSparks(parent, center, Vector3.Up, DeathSparkColor, DeathSparkAmount);
 		if (Health.LastHitWeakSpot)
 			PopHead(parent);
+		DieVariant(parent);
 		if (DeathSound != null)
 			PlaceholderSfx.PlayAt(parent, DeathSound, center, -6f, 0.15f);
 

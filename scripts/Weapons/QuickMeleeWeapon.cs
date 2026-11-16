@@ -104,6 +104,14 @@ public partial class QuickMeleeWeapon : Weapon
 		float damage = Stats.Damage * DamageMultiplier;
 		var head = best.GetNodeOrNull<WeakSpot>("HeadWeakSpot");
 		bool headHit = head != null && look.AngleTo(head.GlobalPosition - origin) < Mathf.DegToRad(HeadAimDegrees);
+		// A helmet takes a head hit instead of the head (heavy ones only dent).
+		if (headHit && best is Enemies.Enemy helmeted && helmeted.HeadPlate() is { } helmet)
+		{
+			helmet.TakeHit(damage * (helmet.Heavy ? 1f : 3f), head.GlobalPosition, (origin - head.GlobalPosition).Normalized());
+			ReportHit(false, false);
+			EmitSignal(SignalName.Fired, -HitKickDegrees, (float)GD.RandRange(-1.5, 1.5));
+			return;
+		}
 		if (headHit)
 			damage *= head.EffectiveMultiplier;
 		Vector3 at = headHit ? head.GlobalPosition : best.GlobalPosition + Vector3.Up * 0.8f;

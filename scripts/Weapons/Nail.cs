@@ -65,6 +65,8 @@ public partial class Nail : Node3D
 	private float _pierceKeep;
 	private readonly System.Collections.Generic.HashSet<HealthComponent> _alreadyHit = new();
 	private Weapon _source;
+	private float _armourMultiplier = 1f;
+	private bool _armourPiercing;
 	private Array<Rid> _exclude;
 	private Vector3 _visualOffset;
 	private float _age;
@@ -87,6 +89,8 @@ public partial class Nail : Node3D
 		_chainLeft = p.Chain;
 		_pierceKeep = p.PierceDamageKeep;
 		_source = p.Source;
+		_armourMultiplier = p.Source?.Stats?.ArmourDamageMultiplier ?? 1f;
+		_armourPiercing = p.Source?.Stats?.ArmourPiercing ?? false;
 		_exclude = new Array<Rid>();
 		if (p.Exclude.IsValid)
 			_exclude.Add(p.Exclude);
@@ -141,6 +145,27 @@ public partial class Nail : Node3D
 	private void OnImpact(Vector3 point, Vector3 normal, Node collider, int shapeIndex)
 	{
 		Node effectsParent = GetParent();
+		if (ArmourPlate.FromHit(collider) is { } plate)
+		{
+			plate.TakeHit(_damage * _armourMultiplier, point, normal);
+			if (IsInstanceValid(_source))
+				_source.ReportHit(false, false);
+			_exclude.Add(plate.GetRid());
+			if (_armourPiercing)
+			{
+				// Rivets punch through and carry on into the body behind.
+				_damage *= 0.8f;
+				GlobalPosition = point + _direction * 0.02f;
+				return;
+			}
+			if (_ricochetsLeft > 0)
+			{
+				Ricochet(point, normal, effectsParent);
+				return;
+			}
+			QueueFree();
+			return;
+		}
 		HealthComponent health = HealthComponent.FindOn(collider);
 
 		if (health != null)

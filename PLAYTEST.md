@@ -19,17 +19,59 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 | `--weapon=nail\|cutter\|rivet` | Own that weapon and hold it (repeatable; the last one is in your hands) |
 | `--mod=ID[:LEVELS]` | Give a weapon mod, for example `nail_pierce:2` (ids in `resources/weapons/mods/`) |
 | `--upgrade=ID[:N]` | Give a player upgrade, for example `oi_watch_it` (ids in `resources/upgrades/`) |
-| `--spawn=ENEMY:N` | N enemies in a ring 8 m around you (`emu`, `wombat`, `dingo`, `kangaroo`, ...) |
+| `--spawn=ENEMY:N` | N enemies in a ring 8 m around you (`emu`, `wombat`, `dingo`, `kangaroo`, ...). `ENEMY.VARIANT:N` spawns a variant, e.g. `wombat.armoured:2` (ids in `resources/enemies/variants/`, named `enemy_variant.tres`) |
 | `--at=SPOT` | Start at `alley`, `shed`, `tank`, `north`, `south` or `start` |
 | `--god` | Take no damage |
 | `--nowaves` | No waves: an empty arena for `--spawn` tests |
 | `--noammo` | Every gun you carry starts empty (try the hero's melee) |
+| `--novariants` | Waves use plain enemies only (compare with and without variants) |
+| `--variants=X` | Every variant rolls at share X (0 to 1) from wave 1, e.g. `--variants=0.5` |
 | `--camptime=S` | Seconds holding one spot before vents and spawns start coming at your back (default 6) |
 | `--flankers=X` | Share of every wave that flanks, 0 to 1 (default ramps 0.1 to 0.25 by wave 6; `0` turns flanking off to compare) |
 | `--sim=nail\|rivet\|cutter` | A bot plays the run and prints `SIM` lines (tuning data); watch it or add `--simspeed=3` |
 | `--simwaves=N` | The bot quits after wave N (default 10) |
 
 ## Unplayed
+
+### Variant behaviours (2026-11-16)
+- What changed: variants that move or fight differently:
+  - Emus: scrawny sprinter (thin, fast, fragile, yellow tag), glowneck (glowing head; a head kill bursts and hurts the flock round it), old bull (big, barbed-wire wrapped, tough, hard to shove).
+  - Wombats: bulldozer (orange blade; ramming cover doesn't stun it), burrower (mud-caked, big claws; goes underground as a moving mound and pops up 7 m away into a charge).
+  - Kangaroos: boxer (red headband and gloves; a one-two combo, comes back faster), Big Red (huge, knocks you further, slow to recover), joey-pouch (a joey hops out when it dies).
+  - Cassowaries: short fuse (dark neck bands; flares red and goes berserk at half health), brooder (comes with 3 chicks and moves slowly; kill a chick and she goes berserk).
+  - Dingoes: alpha (studded collar; its pack trails it and goes in together; kill it first and they hesitate and come one at a time), mangy runner (patchy, fast, bites and backs off).
+  - Magpies: squadron (orange leg bands; take turns diving, one after another).
+- Fun bet: you read the tell and change what you do (glowneck: wait for the flock to bunch; alpha: shoot it first; brooder: leave the chicks).
+- Try it: `play.cmd --nowaves --spawn=dingo.alpha:1 --spawn=dingo:3` (swap in any `enemy.variant`; add `--god` to watch)
+- Judge: which ones make you change what you do, and which ones are just a different hat?
+
+### Ranged variants (2026-11-16)
+- What changed: five variants attack from range. Each stops, glows and makes a sound before it throws, and the throws are slow arcs. At most 2 throw at once.
+  - Mortar wombat (glowing cubes piled on its back): lobs a glowing cube high; a ring marks where it'll land.
+  - Spitter emu (green throat): spits a short arc that leaves a stinging puddle.
+  - Rock-kicking kangaroo (yellow bandana): flicks a spray of stones at you while it's out of reach.
+  - Bomber magpie (stone in its claws): circles without diving and drops stones; a ring shows where.
+  - Howler dingo (glowing blue throat): stops and howls, and everything nearby speeds up for 4 s.
+- Fun bet: ranged threats make you move and pick targets, without turning the game into dodging bullets.
+- Try it: `play.cmd --nowaves --spawn=wombat.mortar:2` (or `emu.spitter:3`, `kangaroo.rockkick:2`, `magpie.bomber:2`, `dingo.howler:1`)
+- Judge: is it always clear something is about to hit you, and does sidestepping always work?
+
+### Armour you shoot off (2026-11-16)
+- What changed: some variants wear armour plates. Shots that hit a plate ping off (nails can ricochet off it if you have the mod). Rivets crack plates fast and punch through to what's behind. The brushcutter shreds light gear (wire, ties, wraps) but not metal. Enough damage knocks a plate off with a clang, and it spins away.
+  - Armoured wombat: steel face and side plates. Bulldozer wombat: a big orange blade on its face.
+  - Collared emu: a tin collar round the neck (aim at the head above it).
+  - Bandaged buck kangaroo: wrapped forearms guarding the chest.
+  - Casque cassowary: a bone helmet over the face (shoot it off, or hit the head from the side).
+  - Cable-tie magpie: a cable-tie mask over the face.
+- Fun bet: the rivet gun has a clear job against armour, and aiming round or through gear is a skill.
+- Try it: `play.cmd --nowaves --spawn=wombat.armoured:2 --weapon=rivet --weapon=nail`
+- Judge: do you read the armour and switch weapons or angle, or does it feel like a damage sponge?
+
+### Variants replace most of the health ramp (2026-11-16)
+- What changed: from wave 3 on, a growing share of each enemy type turns up as visible variants (23 of them, each with gear you can spot). The late-wave health ramp is now small (+4% a wave, max +40%, was +10% to +100%).
+- Fun bet: late waves get harder because there's more to read and react to, not because everything takes more nails.
+- Try it: `play.cmd --wave=7` (compare `play.cmd --wave=7 --novariants`), or `--wave=3 --variants=0.5` to see lots early.
+- Judge: are late waves more interesting than before, or just busier?
 
 ### Specials get their own moves (2026-11-16)
 - What changed: the four wave specials stop being reskinned emus.

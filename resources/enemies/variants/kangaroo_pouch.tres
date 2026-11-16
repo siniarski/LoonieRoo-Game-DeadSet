@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+[ext_resource type="Resource" path="res://resources/enemies/variants/kangaroo_joey.tres" id="4_ref"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 3
+Size = Vector3(0.17, 0.0, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 0.95, -0.2)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.62, 0.42, 0.3, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 3
+Size = Vector3(0.08, 0.0, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 1.13, -0.3)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.36, 0.25, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 4
+Size = Vector3(0.04, 0.1, 0.03)
+Attach = NodePath("Visual")
+Offset = Vector3(0.04, 1.22, -0.3)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.36, 0.25, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "pouch"
+DisplayName = "Joey-pouch kangaroo"
+BountyMultiplier = 1.4
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2")])
+SpawnOnDeath = ExtResource("4_ref")
+SpawnOnDeathCount = 1

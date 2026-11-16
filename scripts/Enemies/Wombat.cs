@@ -139,7 +139,7 @@ public partial class Wombat : Enemy
 	/// <summary>Glow emission strength while stunned. Below the idle value the patches also darken.</summary>
 	[Export] public float GlowStunEnergy { get; set; } = 0.2f;
 
-	private enum State { Chase, Windup, Charge, Skid, Stunned, HeadbuttWindup, HeadbuttRecover }
+	private enum State { Chase, Windup, Charge, Skid, Stunned, HeadbuttWindup, HeadbuttRecover, Burrowed }
 
 	/// <summary>Current behaviour state, for debugging and test scenes.</summary>
 	public string StateName => _state.ToString();
@@ -272,6 +272,9 @@ public partial class Wombat : Enemy
 				if (_stateTimer <= 0f)
 					Enter(State.Chase);
 				break;
+			case State.Burrowed:
+				Burrowed(dt, distance, toTargetDir);
+				break;
 			case State.HeadbuttWindup:
 				_stateTimer -= dt;
 				FaceDirection(toTargetDir, dt, 10f);
@@ -290,9 +293,94 @@ public partial class Wombat : Enemy
 		_stateTime = 0f;
 	}
 
+	[ExportGroup("Burrowing (variant)")]
+	/// <summary>A burrower goes under when the player is further than this.</summary>
+	[Export] public float BurrowMinDistance { get; set; } = 13f;
+	/// <summary>It pops up this close to the player and charges straight away.</summary>
+	[Export] public float SurfaceDistance { get; set; } = 7f;
+	[Export] public float BurrowSpeedMultiplier { get; set; } = 1.2f;
+	[Export] public float BurrowCooldown { get; set; } = 7f;
+
+	/// <summary>Times a burrower popped up this session (for the self-check).</summary>
+	public static int Surfacings { get; set; }
+
+	private float _burrowCooldown = 1f;
+	private MeshInstance3D _mound;
+	private uint _bodyLayer;
+
+	private void Burrow()
+	{
+		Enter(State.Burrowed, 10f);
+		SetDust(true);
+		Visual.Visible = false;
+		_bodyLayer = CollisionLayer;
+		CollisionLayer = 0;
+		SetPlatesSolid(false);
+		if (_mound == null)
+		{
+			var mesh = new SphereMesh { Radius = 0.6f, Height = 0.5f, RadialSegments = 10, Rings = 4 };
+			mesh.SurfaceSetMaterial(0, new StandardMaterial3D { AlbedoColor = new Color(0.55f, 0.36f, 0.22f), Roughness = 1f });
+			_mound = new MeshInstance3D { Name = "Mound", Mesh = mesh, Position = new Vector3(0f, 0.05f, 0f) };
+			AddChild(_mound);
+		}
+		_mound.Visible = true;
+		PlayCue(EnemyCue.Thump, -2f);
+	}
+
+	private void Surface(Vector3 toTargetDir)
+	{
+		Surfacings++;
+		_burrowCooldown = BurrowCooldown;
+		Visual.Visible = true;
+		CollisionLayer = _bodyLayer;
+		SetPlatesSolid(true);
+		if (_mound != null)
+			_mound.Visible = false;
+		ImpactEffects.SpawnSparks(GetParent(), GlobalPosition + Vector3.Up * 0.3f, Vector3.Up, DustColor, 30, 3f, 0.6f);
+		PlayCue(EnemyCue.Thump, 3f);
+		// Straight into a charge from short range: the mound was the warning.
+		_directionLocked = false;
+		_chargeDirection = toTargetDir;
+		_chargeCooldownTimer = 0f;
+		Enter(State.Windup, WindupTime * 0.75f);
+		PlayCue(WindupCue, 0f);
+	}
+
+	private void Burrowed(float dt, float distance, Vector3 toTargetDir)
+	{
+		_stateTimer -= dt;
+		if (distance <= SurfaceDistance || _stateTimer <= 0f)
+		{
+			SlideToStop(dt);
+			Surface(toTargetDir);
+			return;
+		}
+		Vector3 direction = ChaseDirection(dt);
+		Steer(direction * MoveSpeed * BurrowSpeedMultiplier, dt);
+		FaceDirection(direction, dt, 6f);
+	}
+
 	private void Chase(float dt, float distance, Vector3 toTargetDir)
 	{
 		bool grounded = Grounded;
+
+		if (Variant is { Burrows: true })
+		{
+			_burrowCooldown -= dt;
+			if (grounded && _burrowCooldown <= 0f && distance >= BurrowMinDistance)
+			{
+				Burrow();
+				return;
+			}
+		}
+
+		// Mortar wombats stop to lob when out of charging range.
+		if (TickRanged(dt, distance))
+		{
+			SlideToStop(dt);
+			FaceDirection(toTargetDir, dt, 8f);
+			return;
+		}
 
 		if (grounded && _chargeCooldownTimer <= 0f
 			&& distance >= ChargeMinDistance && distance <= ChargeMaxDistance && CanSeeTarget())
@@ -319,7 +407,7 @@ public partial class Wombat : Enemy
 		}
 
 		float stopDistance = Mathf.Max(distance - Stats.AttackRange * 0.9f, 0f);
-		float speed = Mathf.Min(Stats.MoveSpeed, Mathf.Sqrt(2f * Stats.Acceleration * stopDistance) + 0.5f);
+		float speed = Mathf.Min(MoveSpeed, Mathf.Sqrt(2f * Stats.Acceleration * stopDistance) + 0.5f);
 		Vector3 direction = ChaseDirection(dt);
 		Steer(direction * speed + Separation(), dt);
 		FaceDirection(direction, dt, 6f);
@@ -505,6 +593,16 @@ public partial class Wombat : Enemy
 	private void HitWall(Vector3 point, Vector3 normal)
 	{
 		SlamShake(point);
+		if (Variant is { NoStunOnCover: true })
+		{
+			// A bulldozer shrugs off the wall: a short shove back and it's ready to go again.
+			ImpactEffects.SpawnSparks(GetParent(), point, normal, ImpactSparkColor, ImpactSparkAmount);
+			PlaceholderSfx.PlayAt(GetParent(), PlaceholderSfx.Clang, point, 0f, 0.1f);
+			Velocity = -_chargeDirection * StunBounceSpeed;
+			EndCharge(State.Skid, MissRecoverTime * 0.6f);
+			_chargeCooldownTimer = ChargeCooldown * 0.4f;
+			return;
+		}
 		ImpactEffects.SpawnSparks(GetParent(), point, normal, ImpactSparkColor, ImpactSparkAmount);
 		PlaceholderSfx.PlayAt(GetParent(), PlaceholderSfx.Thump, point, 4f, 0.05f);
 		Velocity = -_chargeDirection * StunBounceSpeed;
@@ -577,7 +675,7 @@ public partial class Wombat : Enemy
 			case State.Chase:
 				float speed = new Vector2(Velocity.X, Velocity.Z).Length();
 				_bobPhase += speed * BobFrequency * Mathf.Pi * dt;
-				float amount = Mathf.Min(speed / Mathf.Max(Stats.MoveSpeed, 0.01f), 1f);
+				float amount = Mathf.Min(speed / Mathf.Max(MoveSpeed, 0.01f), 1f);
 				offset.Y = (Mathf.Sin(_bobPhase) * 0.5f + 0.5f) * BobHeight * amount;
 				roll = Mathf.Sin(_bobPhase * 0.5f) * 0.04f * amount;
 				legTarget = Mathf.Sin(_bobPhase * 0.5f) * LegSwingAngle * amount;

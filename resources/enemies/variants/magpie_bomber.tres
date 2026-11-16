@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+[ext_resource type="Script" path="res://scripts/Enemies/RangedAttack.cs" id="3_r"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 3
+Size = Vector3(0.11, 0.0, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 2.02, 0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.62, 0.6, 0.55, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="ranged"]
+script = ExtResource("3_r")
+Kind = 2
+MinRange = 0.0
+MaxRange = 9.0
+Windup = 0.5
+Cooldown = 2.5
+FirstDelay = 2.0
+Damage = 10.0
+FlightTime = 0.6
+SplashRadius = 1.2
+Color = Color(0.72, 0.7, 0.62, 1)
+ProjectileSize = 0.22
+LaunchOffset = Vector3(0.0, 2.0, 0.0)
+Cue = 5
+
+[resource]
+script = ExtResource("1_v")
+Id = "bomber"
+DisplayName = "Bomber magpie"
+BountyMultiplier = 1.5
+Gear = Array[ExtResource("2_g")]([SubResource("g0")])
+Ranged = SubResource("ranged")

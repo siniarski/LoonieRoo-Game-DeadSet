@@ -50,6 +50,12 @@ public partial class WeaponStats : Resource
 	/// <summary>Share of damage a shot keeps after passing through an enemy, before mods.</summary>
 	[Export(PropertyHint.Range, "0,1")] public float BasePierceDamageKeep { get; set; } = 0.6f;
 
+	[ExportGroup("Armour")]
+	/// <summary>Damage multiplier against armour plates (rivets crack them fast).</summary>
+	[Export] public float ArmourDamageMultiplier { get; set; } = 1f;
+	/// <summary>Punches through a plate and carries on into whatever is behind it.</summary>
+	[Export] public bool ArmourPiercing { get; set; }
+
 	[ExportGroup("Aiming (iron sights)")]
 	/// <summary>Camera field of view while aiming down sights.</summary>
 	[Export(PropertyHint.Range, "30,90")] public float AdsFov { get; set; } = 60f;

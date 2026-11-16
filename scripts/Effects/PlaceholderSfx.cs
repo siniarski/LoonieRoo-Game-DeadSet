@@ -3,7 +3,7 @@ using Godot;
 
 namespace Deadset.Effects;
 
-public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak, Growl, Warble }
+public enum EnemyCue { None, Squeak, Nip, Peck, Thump, Squawk, Grunt, Croak, Growl, Warble, Howl, Hork }
 
 /// <summary>
 /// Placeholder sound effects synthesised in code, so the prototype needs no audio imports.
@@ -79,6 +79,42 @@ public static class PlaceholderSfx
 	/// <summary>Bright metallic tink layered on a weak-spot (head) hit.</summary>
 	public static AudioStreamWav HeadshotTink => _headshotTink ??= Build(0.2f, t => (Sine(3100f, t) * 0.5f + Sine(4650f, t) * 0.3f) * MathF.Exp(-t * 18f));
 	/// <summary>Hard woody knock of a beak.</summary>
+	/// <summary>A shot glancing off armour: a bright metallic ping.</summary>
+	public static AudioStreamWav Ping => _ping ??= Build(0.25f, t =>
+		(Sine(2900f, t) * 0.4f + Sine(4350f, t) * 0.25f + Sine(6100f, t) * 0.12f) * MathF.Exp(-t * 16f)
+		+ Noise() * MathF.Exp(-t * 200f) * 0.3f);
+	private static AudioStreamWav _ping;
+
+	/// <summary>A plate knocked off: a heavy clang with a rattle.</summary>
+	public static AudioStreamWav Clang => _clang ??= Build(0.6f, t =>
+		(Sine(520f, t) * 0.5f + Sine(1370f, t) * 0.3f + Sine(2210f, t) * 0.2f) * MathF.Exp(-t * 6f)
+		+ Noise() * MathF.Exp(-t * 40f) * 0.4f);
+	private static AudioStreamWav _clang;
+
+	/// <summary>A dingo howl: rises, holds and falls.</summary>
+	public static AudioStreamWav Howl => _howl ??= Build(1.3f, t =>
+	{
+		float f = t < 0.3f ? 380f + 420f * t / 0.3f : t < 0.9f ? 800f + 30f * MathF.Sin(t * 30f) : 800f - 450f * (t - 0.9f) / 0.4f;
+		_howlPhase += Tau * f / SampleRate;
+		float env = MathF.Min(t * 6f, 1f) * (t > 1.0f ? MathF.Max(0f, (1.3f - t) / 0.3f) : 1f);
+		return (MathF.Sin(_howlPhase) * 0.5f + MathF.Sin(_howlPhase * 2f) * 0.12f) * env;
+	});
+	private static AudioStreamWav _howl;
+	private static float _howlPhase;
+
+	/// <summary>A wet hork: something getting brought up to spit or lob.</summary>
+	public static AudioStreamWav Hork => _hork ??= Build(0.35f, t =>
+		(Sweep(t, 160f, 260f, 6f) * 0.5f + Noise() * 0.5f) * MathF.Min(t * 12f, 1f) * MathF.Exp(-t * 6f));
+	private static AudioStreamWav _hork;
+
+	/// <summary>A lobbed blob leaving: a hollow whoomp.</summary>
+	public static AudioStreamWav Launch => _launch ??= Build(0.25f, t => Sweep(t, 140f, 320f, 12f) * MathF.Exp(-t * 14f) + Noise() * MathF.Exp(-t * 50f) * 0.3f);
+	private static AudioStreamWav _launch;
+
+	/// <summary>A lobbed blob landing: a wet splat.</summary>
+	public static AudioStreamWav Splat => _splat ??= Build(0.35f, t => (Noise() * 0.7f + Sweep(t, 220f, 60f, 18f) * 0.6f) * MathF.Exp(-t * 12f));
+	private static AudioStreamWav _splat;
+
 	/// <summary>A magpie's swoop call: a fast rising warble, then a sharp clack.</summary>
 	public static AudioStreamWav Warble => _warble ??= Build(0.45f, t =>
 		(t < 0.32f ? Sine(900f + 900f * t / 0.32f + 180f * MathF.Sin(t * 70f), t) * 0.5f * MathF.Min(t * 30f, 1f) : 0f)
@@ -114,6 +150,8 @@ public static class PlaceholderSfx
 		EnemyCue.Thump => Thump,
 		EnemyCue.Squawk => Squawk,
 		EnemyCue.Warble => Warble,
+		EnemyCue.Howl => Howl,
+		EnemyCue.Hork => Hork,
 		EnemyCue.Grunt => Grunt,
 		EnemyCue.Croak => Croak,
 		EnemyCue.Growl => Growl,

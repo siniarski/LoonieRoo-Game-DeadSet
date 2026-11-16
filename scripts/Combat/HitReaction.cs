@@ -57,8 +57,10 @@ public partial class HitReaction : Node
 
 	private void SetFlash(bool on)
 	{
+		// Armour knocked off takes its mesh with it: skip meshes that have left the model.
 		foreach (GeometryInstance3D mesh in _meshes)
-			mesh.MaterialOverlay = on ? _flashMaterial : null;
+			if (IsInstanceValid(mesh) && _visual.IsAncestorOf(mesh))
+				mesh.MaterialOverlay = on ? _flashMaterial : null;
 	}
 
 	public override void _Process(double delta)

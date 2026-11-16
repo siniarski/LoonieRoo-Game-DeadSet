@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.02, 0.14, 0.22)
+Attach = NodePath("Visual")
+Offset = Vector3(0.15, 0.62, 0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.85, 0.65, 0.6, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.02, 0.12, 0.16)
+Attach = NodePath("Visual")
+Offset = Vector3(-0.15, 0.6, 0.25)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.85, 0.65, 0.6, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 0
+Size = Vector3(0.18, 0.02, 0.14)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 0.74, 0.12)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.85, 0.65, 0.6, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "mangy"
+DisplayName = "Mangy runner"
+Width = 0.85
+SpeedMultiplier = 1.35
+HealthMultiplier = 0.5
+BountyMultiplier = 0.8
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2")])
+HitAndRunTime = 0.7

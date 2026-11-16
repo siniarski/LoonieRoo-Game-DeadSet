@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+[ext_resource type="Script" path="res://scripts/Enemies/RangedAttack.cs" id="3_r"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.13, 0.04, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 1.47, -0.08)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(1.0, 0.8, 0.1, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="ranged"]
+script = ExtResource("3_r")
+Kind = 1
+MinRange = 5.0
+MaxRange = 14.0
+Windup = 0.6
+Cooldown = 4.0
+FirstDelay = 1.0
+Damage = 5.0
+Count = 4
+SpreadDegrees = 14.0
+FlightTime = 0.55
+SplashRadius = 0.6
+LandingMarker = false
+Color = Color(0.6, 0.5, 0.38, 1)
+ProjectileSize = 0.13
+LaunchOffset = Vector3(0.0, 0.3, 0.2)
+Cue = 6
+
+[resource]
+script = ExtResource("1_v")
+Id = "rockkick"
+DisplayName = "Rock-kicking kangaroo"
+BountyMultiplier = 1.5
+Gear = Array[ExtResource("2_g")]([SubResource("g0")])
+Ranged = SubResource("ranged")

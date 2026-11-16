@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[sub_resource type="Resource" id="g0"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.13, 0.05, 0.0)
+Attach = NodePath("Visual/Head")
+Offset = Vector3(0.0, -0.4, 0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.05, 0.05, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g1"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.15, 0.05, 0.0)
+Attach = NodePath("Visual/Head")
+Offset = Vector3(0.0, -0.6, 0.1)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(0.55, 0.05, 0.05, 1)
+Glow = false
+ShowWhenEnraged = false
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g2"]
+script = ExtResource("2_g")
+Shape = 3
+Size = Vector3(0.09, 0.0, 0.0)
+Attach = NodePath("Visual/Head")
+Offset = Vector3(0.05, -0.2, -0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(1.0, 0.15, 0.1, 1)
+Glow = true
+ShowWhenEnraged = true
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g3"]
+script = ExtResource("2_g")
+Shape = 3
+Size = Vector3(0.09, 0.0, 0.0)
+Attach = NodePath("Visual/Head")
+Offset = Vector3(-0.05, -0.2, -0.05)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(1.0, 0.15, 0.1, 1)
+Glow = true
+ShowWhenEnraged = true
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[sub_resource type="Resource" id="g4"]
+script = ExtResource("2_g")
+Shape = 2
+Size = Vector3(0.5, 0.05, 0.0)
+Attach = NodePath("Visual")
+Offset = Vector3(0.0, 1.0, 0.0)
+RotationDegrees = Vector3(0.0, 0.0, 0.0)
+Color = Color(1.0, 0.15, 0.1, 1)
+Glow = true
+ShowWhenEnraged = true
+Armour = 0.0
+Heavy = false
+CoversHead = false
+
+[resource]
+script = ExtResource("1_v")
+Id = "enraged"
+DisplayName = "Short-fused cassowary"
+BountyMultiplier = 1.5
+Gear = Array[ExtResource("2_g")]([SubResource("g0"), SubResource("g1"), SubResource("g2"), SubResource("g3"), SubResource("g4")])
+EnrageAtHealth = 0.5
+EnrageSpeedMultiplier = 1.45
+EnrageComboHits = 2

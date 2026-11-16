@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyVariant" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/Enemies/EnemyVariant.cs" id="1_v"]
+[ext_resource type="Script" path="res://scripts/Enemies/GearPiece.cs" id="2_g"]
+
+[resource]
+script = ExtResource("1_v")
+Id = "joey"
+DisplayName = "Joey"
+Size = 0.45
+HealthMultiplier = 0.12
+SpeedMultiplier = 1.25
+DamageMultiplier = 0.3
+BountyMultiplier = 0.2
+BackOffMultiplier = 0.5
