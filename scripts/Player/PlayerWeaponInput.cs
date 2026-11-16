@@ -18,6 +18,14 @@ public partial class PlayerWeaponInput : Node
 
 	[Export] public NodePath StartingWeaponPath { get; set; } = "../Head/Camera3D/NailGun";
 	[Export] public NodePath CameraPath { get; set; } = "../Head/Camera3D";
+	/// <summary>Who the player is. Brings the hero's always-on melee.</summary>
+	[Export] public HeroDefinition Hero { get; set; }
+
+	/// <summary>The hero's always-on melee (not in a slot). Null if the hero has none.</summary>
+	public QuickMeleeWeapon QuickMelee { get; private set; }
+	/// <summary>Melee key held. Also set by the sim bot.</summary>
+	public bool MeleeHeld { get; set; }
+	private bool _fireHeld;
 
 	public Weapon EquippedWeapon { get; private set; }
 	/// <summary>Owned weapons in the order they were acquired (slot 1 first).</summary>
@@ -36,6 +44,25 @@ public partial class PlayerWeaponInput : Node
 		_camera = GetNode<CameraRecoil>(CameraPath);
 		_player = GetParent<PlayerController>();
 		Equip(AddWeapon(GetNode<Weapon>(StartingWeaponPath)));
+		AddQuickMelee();
+	}
+
+	private void AddQuickMelee()
+	{
+		if (Hero?.QuickMelee?.Instantiate() is not QuickMeleeWeapon melee)
+			return;
+		QuickMelee = melee;
+		melee.Name = "QuickMelee";
+		melee.SharedMods = SharedMods;
+		melee.AimSource = _camera;
+		melee.Wielder = _player;
+		_camera.AddChild(melee);
+		melee.Fired += OnWeaponFired;
+		melee.HitLanded += (killed, _) =>
+		{
+			if (killed && melee.RefundOnKill > 0 && melee.RefundStats != null)
+				FindByStats(melee.RefundStats)?.AddReserveAmmo(melee.RefundOnKill);
+		};
 	}
 
 	/// <summary>True if a weapon using these stats is already owned.</summary>
@@ -139,11 +166,24 @@ public partial class PlayerWeaponInput : Node
 		{
 			// Ignore the click that recaptures the mouse.
 			if (Input.MouseMode == Input.MouseModeEnum.Captured)
+			{
+				_fireHeld = true;
 				EquippedWeapon.SetTriggerHeld(true);
+			}
 		}
 		else if (@event.IsActionReleased("fire"))
 		{
+			_fireHeld = false;
 			EquippedWeapon.SetTriggerHeld(false);
+		}
+		else if (@event.IsActionPressed("melee"))
+		{
+			if (Input.MouseMode == Input.MouseModeEnum.Captured)
+				MeleeHeld = true;
+		}
+		else if (@event.IsActionReleased("melee"))
+		{
+			MeleeHeld = false;
 		}
 		else if (@event.IsActionPressed("aim"))
 		{
@@ -169,10 +209,21 @@ public partial class PlayerWeaponInput : Node
 		bool captured = Input.MouseMode == Input.MouseModeEnum.Captured;
 		if (_wasMouseCaptured && !captured)
 		{
+			_fireHeld = false;
+			MeleeHeld = false;
 			EquippedWeapon.SetTriggerHeld(false);
 			EquippedWeapon.SetAimHeld(false);
 		}
 		_wasMouseCaptured = captured;
+
+		if (QuickMelee != null)
+		{
+			// The melee key, or the trigger once the gun in hand is completely dry.
+			QuickMelee.SetTriggerHeld(MeleeHeld || (_fireHeld && EquippedWeapon.IsDry));
+			bool swinging = QuickMelee.IsSwinging;
+			EquippedWeapon.Blocked = swinging;
+			EquippedWeapon.Visible = !swinging;
+		}
 
 		_player.IsAiming = EquippedWeapon.IsAiming;
 		_player.AimFov = EquippedWeapon.Stats.AdsFov;

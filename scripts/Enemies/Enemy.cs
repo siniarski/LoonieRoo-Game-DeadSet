@@ -36,6 +36,29 @@ public abstract partial class Enemy : CharacterBody3D
 			visual.Scale = new Vector3(width, 1f + (width - 1f) * 0.15f, width);
 	}
 
+	/// <summary>
+	/// Paths round to a spot behind the player (away from where the rest are coming from)
+	/// before closing in. Set by whoever spawns it.
+	/// </summary>
+	public bool IsFlanker
+	{
+		get => _isFlanker;
+		set { _isFlanker = value; _flanking = value; }
+	}
+	/// <summary>The flank spot sits this far behind the player.</summary>
+	public static float FlankOffset { get; set; } = 7f;
+	/// <summary>Only enemies within this distance count when working out which way the pressure comes from.</summary>
+	public static float FlankScanRadius { get; set; } = 25f;
+	/// <summary>A flanker stops flanking and just attacks once this close to the player, or after FlankTimeout seconds.</summary>
+	public static float FlankReleaseDistance { get; set; } = 3f;
+	/// <summary>Flankers route round the player at least this far out, instead of through them.</summary>
+	public static float FlankAvoidRadius { get; set; } = 5f;
+	public static float FlankTimeout { get; set; } = 15f;
+
+	private bool _isFlanker;
+	private bool _flanking;
+	private float _flankTime;
+
 	[ExportGroup("Death")]
 	[Export] public Color DeathSparkColor { get; set; } = new(0.45f, 1f, 0.4f);
 	[Export] public int DeathSparkAmount { get; set; } = 18;
@@ -146,6 +169,7 @@ public abstract partial class Enemy : CharacterBody3D
 			if (child is not WeakSpot spot)
 				continue;
 			spot.DriveExternally();
+			spot.Toughness = HealthMultiplier;
 			spots.Add(spot);
 		}
 		if (spots.Count > 0)
@@ -231,7 +255,60 @@ public abstract partial class Enemy : CharacterBody3D
 		}
 
 		if (target != null)
+		{
 			NavGrid.UpdateTarget(targetPosition, frame);
+			UpdateFlankGoal(targetPosition, frame);
+		}
+	}
+
+	/// <summary>
+	/// Points the flank field at a spot behind the player, opposite the side most enemies are
+	/// coming from. Only when the pressure is lopsided; a player already surrounded needs no flank.
+	/// </summary>
+	private static void UpdateFlankGoal(Vector3 targetPosition, ulong frame)
+	{
+		if (frame % 15 != 0)
+			return;
+		// Which way is the pressure coming from? Enemies already flanking don't count, unless
+		// they're all there is (a pack still on its way in).
+		Vector3 pressure = Vector3.Zero, all = Vector3.Zero;
+		int count = 0, allCount = 0;
+		bool anyFlanking = false;
+		float scan = FlankScanRadius * FlankScanRadius;
+		foreach (Enemy enemy in All)
+		{
+			Vector3 offset = enemy.GlobalPosition - targetPosition;
+			offset.Y = 0f;
+			float d2 = offset.LengthSquared();
+			if (d2 < 0.01f)
+				continue;
+			Vector3 unit = offset / Mathf.Sqrt(d2);
+			all += unit;
+			allCount++;
+			if (enemy._flanking)
+			{
+				anyFlanking = true;
+				continue;
+			}
+			if (d2 > scan)
+				continue;
+			pressure += unit;
+			count++;
+		}
+		if (!anyFlanking)
+			return;
+		if (count < 3)
+		{
+			pressure = all;
+			count = allCount;
+		}
+		if (count == 0 || pressure.Length() / count < 0.35f)
+		{
+			NavGrid.ClearFlank();
+			return;
+		}
+		Vector3 behind = targetPosition - pressure.Normalized() * FlankOffset;
+		NavGrid.UpdateFlank(behind, targetPosition, FlankAvoidRadius, frame, 30);
 	}
 
 	/// <summary>
@@ -242,6 +319,13 @@ public abstract partial class Enemy : CharacterBody3D
 	{
 		Vector3 toTarget = TargetPosition - BodyPosition;
 		toTarget.Y = 0f;
+
+		if (_flanking)
+		{
+			Vector3 flank = FlankDirection(dt, toTarget);
+			if (flank != Vector3.Zero)
+				return flank;
+		}
 
 		_repathTimer -= dt;
 		bool arrived = _route != NavGrid.Route.Direct && FlatDistanceSquared(_waypoint, BodyPosition) < 0.09f;
@@ -264,6 +348,44 @@ public abstract partial class Enemy : CharacterBody3D
 
 		// Clear run, close by, or no route yet (navmesh still baking): run straight at them.
 		return toTarget.LengthSquared() > 0.0001f ? toTarget.Normalized() : Vector3.Zero;
+	}
+
+	/// <summary>
+	/// Where a flanker heads while it is still going round. Zero once it is done flanking
+	/// (close to the player, at the flank spot, timed out, or there is no flank to make).
+	/// </summary>
+	private Vector3 FlankDirection(float dt, Vector3 toTarget)
+	{
+		_flankTime += dt;
+		if (!NavGrid.FlankReady)
+			return Vector3.Zero;   // nothing lopsided right now: chase normally, try again later
+		Vector3 goal = NavGrid.FlankGoal;
+		if (_flankTime > FlankTimeout || toTarget.LengthSquared() < FlankReleaseDistance * FlankReleaseDistance
+			|| FlatDistanceSquared(goal, BodyPosition) < 4f)
+		{
+			_flanking = false;
+			_route = NavGrid.Route.Direct;
+			_repathTimer = 0f;
+			return Vector3.Zero;
+		}
+
+		_repathTimer -= dt;
+		bool arrived = FlatDistanceSquared(_waypoint, BodyPosition) < 0.09f;
+		if (_repathTimer <= 0f || arrived)
+		{
+			_repathTimer = Stats.RepathInterval;
+			if (!NavGrid.FindFlankRoute(BodyPosition, out _waypoint))
+			{
+				// No way round from here: just come at them.
+				_flanking = false;
+				_route = NavGrid.Route.Direct;
+				_repathTimer = 0f;
+				return Vector3.Zero;
+			}
+		}
+		Vector3 to = _waypoint - BodyPosition;
+		to.Y = 0f;
+		return to.LengthSquared() > 0.01f ? to.Normalized() : Vector3.Zero;
 	}
 
 	private static float FlatDistanceSquared(Vector3 a, Vector3 b)

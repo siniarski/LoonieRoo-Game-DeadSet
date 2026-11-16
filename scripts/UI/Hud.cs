@@ -197,6 +197,9 @@ public partial class Hud : CanvasLayer
 		}
 
 		input.WeaponEquipped += SetWeapon;
+		if (input.QuickMelee != null)
+			input.QuickMelee.HitLanded += OnHitLanded;
+		_quickMeleeKey = input.QuickMelee != null ? $"V / FIRE: {input.QuickMelee.Stats.DisplayName.ToUpperInvariant()}" : null;
 		if (input.EquippedWeapon != null)
 			SetWeapon(input.EquippedWeapon);
 	}
@@ -297,6 +300,7 @@ public partial class Hud : CanvasLayer
 	}
 
 	private Label _weaponName;
+	private string _quickMeleeKey;
 	private float _weaponNameFlash;
 
 	/// <summary>The equipped weapon's name above the ammo count; it flares up on a switch.</summary>
@@ -404,9 +408,12 @@ public partial class Hud : CanvasLayer
 		}
 
 		bool reloading = _weapon != null && _weapon.IsReloading;
-		_reloadLabel.Visible = reloading;
+		bool dry = _weapon != null && _weapon.IsDry && _quickMeleeKey != null;
+		_reloadLabel.Visible = reloading || dry;
 		if (reloading)
 			_reloadLabel.Text = $"{_weapon.Stats.ReloadLabel} {Mathf.RoundToInt(_weapon.ReloadProgress * 100f)}%";
+		else if (dry)
+			_reloadLabel.Text = $"EMPTY  -  {_quickMeleeKey}";
 	}
 
 	private void BuildDashBar()

@@ -50,6 +50,7 @@ public partial class SimPlayer : Node
 	private float _retargetTimer;
 	private float _shopTimer = -1f;
 	private int _shots;
+	private int _meleeKills;
 	private int _cashAtWaveStart;
 	private float _hpAtWaveStart;
 	private int _wave;
@@ -104,6 +105,7 @@ public partial class SimPlayer : Node
 	{
 		_wave = wave;
 		_shots = 0;
+		_meleeKills = 0;
 		_cashAtWaveStart = _wallet.Cash;
 		_hpAtWaveStart = _health.Current + _health.Armour;
 	}
@@ -112,7 +114,7 @@ public partial class SimPlayer : Node
 	{
 		RunStats.WaveSummary w = _stats.LastWave;
 		GD.Print($"SIM wave {wave} cleared {w.Seconds:0}s | kills {w.Kills} | headshots {w.HeadshotPercent:0}% | "
-			+ $"took {w.DamageTaken:0} dmg, hp {_health.Current:0} armour {_health.Armour:0} | shots {_shots} | "
+			+ $"took {w.DamageTaken:0} dmg, hp {_health.Current:0} armour {_health.Armour:0} | shots {_shots} melee kills {_meleeKills} | "
 			+ $"earned ${w.CashEarned}, cash ${_wallet.Cash} | {AmmoLine()}");
 		if (wave >= MaxWaves)
 			Finish($"reached wave {MaxWaves}");
@@ -432,6 +434,16 @@ public partial class SimPlayer : Node
 		return count;
 	}
 
+	private bool _meleeBound;
+
+	private void AimAt(Node3D target)
+	{
+		Vector3 aim = (target.GetNodeOrNull<Node3D>("HeadWeakSpot")?.GlobalPosition ?? target.GlobalPosition + Vector3.Up) + _aimOffset;
+		Vector3 d = aim - _camera.GlobalPosition;
+		_player.Rotation = new Vector3(0f, Mathf.Atan2(-d.X, -d.Z), 0f);
+		_head.Rotation = new Vector3(Mathf.Asin(Mathf.Clamp(d.Normalized().Y, -1f, 1f)), 0f, 0f);
+	}
+
 	private void Fight(Node3D nearest, float distance, int close, float dt)
 	{
 		_retargetTimer -= dt;
@@ -440,6 +452,26 @@ public partial class SimPlayer : Node
 			_retargetTimer = ReactionTime;
 			_target = nearest;
 			_aimOffset = new Vector3((float)GD.RandRange(-1, 1), (float)GD.RandRange(-1, 1), (float)GD.RandRange(-1, 1)) * AimError;
+		}
+
+		if (_arsenal.QuickMelee != null && !_meleeBound)
+		{
+			_meleeBound = true;
+			_arsenal.QuickMelee.HitLanded += (killed, _) => { if (killed) _meleeKills++; };
+		}
+
+		// Every gun dry: fall back on the hero's melee.
+		bool allDry = true;
+		foreach (Weapon weapon in _arsenal.Weapons)
+			if (weapon.AmmoInMagazine + weapon.ReserveAmmo > 0 || weapon.IsReloading)
+				allDry = false;
+		_arsenal.MeleeHeld = allDry && IsInstanceValid(_target) && distance < 2.6f;
+		if (allDry)
+		{
+			_arsenal.EquippedWeapon.SetTriggerHeld(false);
+			if (IsInstanceValid(_target))
+				AimAt(_target);
+			return;
 		}
 
 		// Weapon choice.
@@ -476,10 +508,7 @@ public partial class SimPlayer : Node
 			return;
 		}
 
-		Vector3 aim = (_target.GetNodeOrNull<Node3D>("HeadWeakSpot")?.GlobalPosition ?? _target.GlobalPosition + Vector3.Up) + _aimOffset;
-		Vector3 d = aim - _camera.GlobalPosition;
-		_player.Rotation = new Vector3(0f, Mathf.Atan2(-d.X, -d.Z), 0f);
-		_head.Rotation = new Vector3(Mathf.Asin(Mathf.Clamp(d.Normalized().Y, -1f, 1f)), 0f, 0f);
+		AimAt(_target);
 
 		bool inReach = gun is not MeleeConeWeapon || distance < gun.Stats.MaxRange * gun.ReachMultiplier + 0.5f;
 		gun.SetTriggerHeld(inReach);

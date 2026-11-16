@@ -12,6 +12,13 @@ namespace Deadset.Combat;
 public partial class WeakSpot : CollisionShape3D
 {
 	[Export] public float DamageMultiplier { get; set; } = 2f;
+	/// <summary>
+	/// How much tougher than normal the owner's body is (late-wave chunky enemies). The weak spot
+	/// cancels it out, so a head stays as easy to pop in wave 10 as in wave 1: the extra toughness
+	/// only lands on body shots.
+	/// </summary>
+	public float Toughness { get; set; } = 1f;
+	public float EffectiveMultiplier => DamageMultiplier * Toughness;
 	/// <summary>Optional node to stick to, usually the head mesh under Visual.</summary>
 	[Export] public NodePath FollowPath { get; set; }
 	/// <summary>How far the followed node may drift from the shape before the shape catches up, in metres.</summary>

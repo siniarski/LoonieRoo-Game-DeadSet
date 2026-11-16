@@ -1,0 +1,56 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/QuickMeleeWeapon.cs" id="1_weapon"]
+[ext_resource type="Resource" path="res://resources/weapons/ClawHammerStats.tres" id="2_stats"]
+[ext_resource type="Resource" path="res://resources/weapons/NailGunStats.tres" id="3_nails"]
+
+[sub_resource type="StandardMaterial3D" id="WoodMat"]
+albedo_color = Color(0.62, 0.4, 0.2, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="SteelMat"]
+albedo_color = Color(0.55, 0.57, 0.6, 1)
+metallic = 0.8
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="HandleMesh"]
+material = SubResource("WoodMat")
+size = Vector3(0.035, 0.36, 0.045)
+
+[sub_resource type="BoxMesh" id="HeadMesh"]
+material = SubResource("SteelMat")
+size = Vector3(0.05, 0.05, 0.11)
+
+[sub_resource type="BoxMesh" id="ClawMesh"]
+material = SubResource("SteelMat")
+size = Vector3(0.03, 0.025, 0.1)
+
+[sub_resource type="CylinderMesh" id="FaceMesh"]
+material = SubResource("SteelMat")
+top_radius = 0.032
+bottom_radius = 0.032
+height = 0.04
+
+[node name="ClawHammer" type="Node3D"]
+script = ExtResource("1_weapon")
+Stats = ExtResource("2_stats")
+RefundStats = ExtResource("3_nails")
+
+[node name="Model" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, -0.42, -0.42)
+
+[node name="Handle" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
+mesh = SubResource("HandleMesh")
+
+[node name="Head" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, -0.03)
+mesh = SubResource("HeadMesh")
+
+[node name="Face" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.37, -0.095)
+mesh = SubResource("FaceMesh")
+
+[node name="Claw" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 0.35, 0.065)
+mesh = SubResource("ClawMesh")

@@ -19,6 +19,15 @@ public partial class WaveSet : Resource
 	/// <summary>Hard cap on enemies alive at once, however far the endless waves go.</summary>
 	[Export] public int MaxAliveCap { get; set; } = 200;
 
+	[ExportGroup("Flankers")]
+	/// <summary>
+	/// From this wave on, some enemies path round to come at the player from behind, so no
+	/// spot (the end of a lane) is fed from only one direction.
+	/// </summary>
+	[Export] public int FlankFromWave { get; set; } = 2;
+	/// <summary>Share of each wave's enemies that flank (0.25 = one in four).</summary>
+	[Export(PropertyHint.Range, "0,1")] public float FlankerShare { get; set; } = 0.25f;
+
 	[ExportGroup("Late waves get chunkier")]
 	/// <summary>From this wave on, enemies get tougher and wider each wave.</summary>
 	[Export] public int ChunkyFromWave { get; set; } = 6;

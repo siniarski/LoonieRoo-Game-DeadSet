@@ -25,6 +25,8 @@ namespace Deadset.Debug;
 /// --spawn=ENEMY:N    N enemies in a ring around you (emu, wombat, dingo, ...); repeatable
 /// --at=SPOT          start at a named spot in the arena (alley, shed, tank, north, south)
 /// --god              can't die
+/// --flankers=X      share of each wave that flanks (0 to 1; the wave set default is 0.25)
+/// --noammo           every gun you carry starts empty (try the hero's melee)
 /// --nowaves          no wave director: an empty arena for --spawn tests
 /// --sim=LOADOUT      a simulated player plays the run and logs "SIM" lines (nail, rivet, cutter)
 /// --simspeed=N       game speed for --sim runs (default 1)
@@ -66,6 +68,7 @@ public partial class LaunchFlags : Node
 		string check = null;
 		bool simSmart = true;
 		bool openTrader = false;
+		bool noAmmo = false;
 
 		foreach (string raw in args)
 		{
@@ -118,6 +121,12 @@ public partial class LaunchFlags : Node
 				case "simwaves":
 					simWaves = Mathf.Max(1, value.ToInt());
 					break;
+				case "flankers":
+					WaveDirector.FlankerShareOverride = Mathf.Clamp(value.ToFloat(), 0f, 1f);
+					break;
+				case "noammo":
+					noAmmo = true;
+					break;
 				case "nowaves":
 					director?.Stop();
 					director?.QueueFree();
@@ -128,6 +137,10 @@ public partial class LaunchFlags : Node
 					break;
 			}
 		}
+
+		if (noAmmo && arsenal != null)
+			foreach (Weapon weapon in arsenal.Weapons)
+				weapon.DrainAmmo();
 
 		if (check != null)
 			AddChild(new SelfCheck { Name = "SelfCheck", Which = check });

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WeaponStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Weapons/WeaponStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+DisplayName = "Claw Hammer"
+Description = "The Tradie's hammer. Always on hand: V, or the trigger with an empty gun. Hammer kills pull nails back out."
+Automatic = true
+FireRate = 2.2
+Damage = 20.0
+SpreadDegrees = 0.0
+UsesAmmo = false
+MagazineSize = 0
+StartingReserve = 0
+MaxReserve = 0
+MaxRange = 2.2
+RecoilPitchDegrees = 2.5
+RecoilYawJitterDegrees = 2.0
+ModelKickDistance = 0.0
+ModelKickDegrees = 0.0

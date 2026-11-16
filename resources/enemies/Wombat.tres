@@ -8,6 +8,7 @@ DisplayName = "Wombat"
 Bounty = 35
 MaxHealth = 300
 MoveSpeed = 3.6
+CanFlank = false
 Acceleration = 18
 RepathInterval = 0.25
 SeparationRadius = 1.6

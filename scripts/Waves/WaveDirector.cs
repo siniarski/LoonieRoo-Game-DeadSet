@@ -17,6 +17,9 @@ public partial class WaveDirector : Node
 	public enum Phase { Countdown, Wave, Break, Stopped }
 
 	/// <summary>A vent started rattling; Count enemies come out after VentWarning seconds.</summary>
+	/// <summary>Debug (--flankers): overrides the wave set's flanker share when 0 or more.</summary>
+	public static float FlankerShareOverride { get; set; } = -1f;
+
 	[Signal] public delegate void VentOpenedEventHandler(Node3D vent, int count);
 
 	[Export] public WaveSet Waves { get; set; }
@@ -395,7 +398,11 @@ public partial class WaveDirector : Node
 			PendingSpawn spawn = _pending.Dequeue();
 			var enemy = spawn.Scene.Instantiate<Node3D>();
 			if (enemy is Enemy body)
+			{
 				body.MakeChunky(Waves.HealthMultiplierFor(WaveNumber), Waves.WidthFor(WaveNumber));
+				body.IsFlanker = WaveNumber >= Waves.FlankFromWave && body.Stats is { CanFlank: true }
+					&& GD.Randf() < (FlankerShareOverride >= 0f ? FlankerShareOverride : Waves.FlankerShare);
+			}
 			// Place it before it enters the tree, so it never spends a frame at the origin.
 			enemy.Position = spawn.Position;
 			parent.AddChild(enemy);

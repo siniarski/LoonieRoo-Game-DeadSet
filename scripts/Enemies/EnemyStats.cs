@@ -22,6 +22,8 @@ public partial class EnemyStats : Resource
 	[Export] public float SeparationRadius { get; set; } = 0.8f;
 	/// <summary>How hard enemies push apart (m/s at zero distance).</summary>
 	[Export] public float SeparationStrength { get; set; } = 4f;
+	/// <summary>Can be picked as a flanker (paths round behind the player). Off for chargers.</summary>
+	[Export] public bool CanFlank { get; set; } = true;
 
 	[ExportGroup("Attack")]
 	[Export] public float AttackDamage { get; set; } = 5f;

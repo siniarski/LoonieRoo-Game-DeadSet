@@ -23,16 +23,36 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 | `--at=SPOT` | Start at `alley`, `shed`, `tank`, `north`, `south` or `start` |
 | `--god` | Take no damage |
 | `--nowaves` | No waves: an empty arena for `--spawn` tests |
+| `--noammo` | Every gun you carry starts empty (try the hero's melee) |
+| `--flankers=X` | Share of each wave that flanks, 0 to 1 (default 0.25; `0` turns flanking off to compare) |
 | `--sim=nail\|rivet\|cutter` | A bot plays the run and prints `SIM` lines (tuning data); watch it or add `--simspeed=3` |
 | `--simwaves=N` | The bot quits after wave N (default 10) |
 
 ## Unplayed
 
+### Flankers (2026-11-16)
+- What changed: from wave 2, about one enemy in four goes the long way round and comes at you from behind (the side away from the rest of the pack), instead of queuing up in front.
+- Fun bet: standing at the end of a lane is no longer a free farm; you have to check your back, and a lane is somewhere to fight from for a bit, not forever.
+- Try it: `play.cmd --wave=4 --at=alley` (then compare `play.cmd --wave=4 --at=alley --flankers=0`)
+- Judge: when an emu reaches you from behind, does it feel like you got outplayed (fair), or like it came from nowhere (cheap)?
+
+### Claw hammer: the Tradie's melee (2026-11-16)
+- What changed: the Tradie always carries a claw hammer. Press V to whack, or just keep firing once your gun is completely empty. One head whack kills an emu, a body hit takes two, and each hammer kill pulls 3 nails back out for the nail gun. Each future hero gets their own melee.
+- Fun bet: running dry is a scramble, not a dead end. Whack, grab nails, keep shooting. Fixes a soft-lock where a nail-only player out of ammo couldn't finish the wave.
+- Try it: `play.cmd --wave=3 --noammo`
+- Judge: does the hammer feel punchy enough to rely on in a pinch, while still being something you'd rather not do?
+
+### Late headshots stay one-shot (2026-11-16)
+- What changed: late-wave toughness now only applies to body shots. A head is as easy to pop in wave 10 as in wave 1.
+- Fun bet: keeps the head-height rhythm all game; late waves reward aim more, not less.
+- Try it: `play.cmd --wave=10 --god`
+- Judge: one nail per emu head again in late waves. Do the bodies still feel chunky?
+
 ### Chunkier late waves (2026-11-16)
 - What changed: from wave 6, every enemy gets +10% health a wave (+50% by wave 10, max double) and up to 15% wider (not taller, heads stay at eye height).
 - Fun bet: late waves feel heavier and take longer to chew through, instead of the same emus in bigger numbers.
 - Try it: `play.cmd --wave=10 --god` (compare with `play.cmd --wave=1 --god`)
-- Judge: from wave 8 on, a headshot nail no longer one-shots an emu. Does that feel like a fair step up, or does it break the head-height rhythm?
+- Judge: do late waves feel heavier without feeling spongy? (Heads stay one-shot: see the card above.)
 
 ### Pricier final mod levels (2026-11-16)
 - What changed: the last level of every 3-level mod costs double (now $360-715).

@@ -108,6 +108,15 @@ public abstract partial class Weapon : Node3D
 
 	public void SetAimHeld(bool held) => _aimHeld = held;
 
+	/// <summary>
+	/// While true the weapon won't fire (the hand holding it is busy, e.g. swinging the melee).
+	/// Reloads carry on.
+	/// </summary>
+	public bool Blocked { get; set; }
+
+	/// <summary>True when there's nothing left to fire: magazine and reserve both empty.</summary>
+	public bool IsDry => Stats.UsesAmmo && AmmoInMagazine <= 0 && ReserveAmmo <= 0 && !IsReloading;
+
 	/// <summary>Put away: lets go of everything and cancels a reload in progress.</summary>
 	public virtual void Holster()
 	{
@@ -133,6 +142,15 @@ public abstract partial class Weapon : Node3D
 	public void AddReserveAmmo(int amount)
 	{
 		ReserveAmmo = Mathf.Clamp(ReserveAmmo + amount, 0, Stats.MaxReserve);
+		EmitSignal(SignalName.AmmoChanged, AmmoInMagazine, ReserveAmmo);
+	}
+
+	/// <summary>Empties magazine and reserve (debug: the --noammo flag).</summary>
+	public void DrainAmmo()
+	{
+		IsReloading = false;
+		AmmoInMagazine = 0;
+		ReserveAmmo = 0;
 		EmitSignal(SignalName.AmmoChanged, AmmoInMagazine, ReserveAmmo);
 	}
 
@@ -179,7 +197,7 @@ public abstract partial class Weapon : Node3D
 		_cooldown -= dt;
 		bool wantsToFire = Stats.Automatic ? _triggerHeld : _triggerJustPressed;
 
-		if (wantsToFire && _cooldown <= 0f && !IsReloading)
+		if (wantsToFire && _cooldown <= 0f && !IsReloading && !Blocked)
 		{
 			if (!Stats.UsesAmmo || AmmoInMagazine > 0)
 				Shoot(dt);

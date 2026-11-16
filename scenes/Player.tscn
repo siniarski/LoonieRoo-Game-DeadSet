@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/Player/PlayerController.cs" id="1_ctrl"]
 [ext_resource type="Script" path="res://scripts/Player/CameraRecoil.cs" id="2_recoil"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/Upgrades/PlayerUpgrades.cs" id="8_upgrades"]
 [ext_resource type="Resource" path="res://resources/upgrades/UpgradePool.tres" id="9_pool"]
 [ext_resource type="Script" path="res://scripts/Player/PlayerFootsteps.cs" id="10_steps"]
+[ext_resource type="Resource" path="res://resources/heroes/Tradie.tres" id="11_hero"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -36,6 +37,7 @@ script = ExtResource("2_recoil")
 
 [node name="WeaponInput" type="Node" parent="."]
 script = ExtResource("3_weaponinput")
+Hero = ExtResource("11_hero")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("5_health")

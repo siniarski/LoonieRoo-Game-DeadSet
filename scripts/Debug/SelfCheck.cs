@@ -6,6 +6,7 @@ using Deadset.Economy;
 using Deadset.Enemies;
 using Deadset.Player;
 using Deadset.Upgrades;
+using Deadset.Waves;
 using Deadset.Weapons;
 using Godot;
 
@@ -52,7 +53,7 @@ public partial class SelfCheck : Node
 			await Frames(1);
 		await Frames(5);
 
-		string which = string.IsNullOrEmpty(Which) ? "reach,weapons,trader,perf" : Which;
+		string which = string.IsNullOrEmpty(Which) ? "reach,flank,weapons,trader,perf" : Which;
 		foreach (string check in which.Split(','))
 		{
 			switch (check.Trim())
@@ -62,6 +63,7 @@ public partial class SelfCheck : Node
 				case "weapons": await CheckWeapons(); break;
 				case "trader": CheckTrader(); break;
 				case "perf": await CheckPerf(); break;
+				case "flank": await CheckFlank(); break;
 				default: Fail(check, "unknown check"); break;
 			}
 			ClearEnemies();
@@ -128,9 +130,11 @@ public partial class SelfCheck : Node
 		return null;
 	}
 
-	private Node3D Spawn(PackedScene scene, Vector3 at)
+	private Node3D Spawn(PackedScene scene, Vector3 at, float chunky = 1f)
 	{
 		var enemy = scene.Instantiate<Node3D>();
+		if (chunky > 1f && enemy is Enemy body)
+			body.MakeChunky(chunky, 1.15f);
 		enemy.Position = NavGrid.SnapToGround(at) + Vector3.Up * 0.1f;
 		GetTree().CurrentScene.AddChild(enemy);
 		return enemy;
@@ -217,6 +221,78 @@ public partial class SelfCheck : Node
 		Engine.TimeScale = 1f;
 	}
 
+	/// <summary>
+	/// The lane-funnel test. At each player spot, a pack of emus comes from the nearest gate
+	/// (the worst case: one obvious way in). Counts the directions they arrive from, in eighths
+	/// of a circle, and the share that reach the player from behind (the half facing away from
+	/// the gate's arrivals). Run once with no flankers and once with the wave set's share.
+	/// </summary>
+	private async Task CheckFlank()
+	{
+		PackedScene emu = EnemyScene("emu");
+		var gates = new List<Node3D>();
+		foreach (Node n in GetTree().GetNodesInGroup("enemy_spawn"))
+			gates.Add((Node3D)n);
+		var director = GetTree().GetFirstNodeInGroup("wave_director") as WaveDirector;
+		float share = director?.Waves?.FlankerShare ?? 0.25f;
+
+		Engine.TimeScale = 4f;
+		foreach (Node spotNode in GetTree().GetNodesInGroup("player_spot"))
+		{
+			var spot = (Node3D)spotNode;
+			Node3D gate = null;
+			foreach (Node3D g in gates)
+				if (gate == null || g.GlobalPosition.DistanceTo(spot.GlobalPosition) < gate.GlobalPosition.DistanceTo(spot.GlobalPosition))
+					gate = g;
+			string line = "";
+			float behindWith = 0f, behindWithout = 0f;
+			foreach (float s in new[] { 0f, share })
+			{
+				Place(spot.GlobalPosition);
+				await Frames(2);
+				for (int i = 0; i < 24; i++)
+				{
+					var body = Spawn(emu, gate.GlobalPosition + new Vector3(i % 4 - 1.5f, 0f, i / 4 - 2.5f) * 0.9f) as Enemy;
+					if (body != null)
+						body.IsFlanker = i < Mathf.RoundToInt(24 * s);
+				}
+				var arrived = new Dictionary<Node3D, Vector3>();
+				for (float t = 0f; t < 40f && arrived.Count < 24; t += 0.1f)
+				{
+					await Seconds(0.1f);
+					foreach (Node3D enemy in Enemies())
+					{
+						Vector3 offset = enemy.GlobalPosition - _player.GlobalPosition;
+						offset.Y = 0f;
+						if (offset.Length() < 3f && !arrived.ContainsKey(enemy))
+							arrived[enemy] = offset.Normalized();
+					}
+				}
+				Vector3 main = Vector3.Zero;
+				foreach (Vector3 d in arrived.Values)
+					main += d;
+				main = main.LengthSquared() > 0.0001f ? main.Normalized() : Vector3.Forward;
+				var sectors = new HashSet<int>();
+				int behind = 0;
+				foreach (Vector3 d in arrived.Values)
+				{
+					sectors.Add(Mathf.PosMod(Mathf.RoundToInt(Mathf.Atan2(d.X, d.Z) / (Mathf.Tau / 8f)), 8));
+					if (d.Dot(main) < 0f)
+						behind++;
+				}
+				float behindShare = arrived.Count > 0 ? (float)behind / arrived.Count : 0f;
+				if (s > 0f) behindWith = behindShare; else behindWithout = behindShare;
+				line += $" | flankers {s:P0}: {arrived.Count}/24 arrived, {sectors.Count}/8 directions, {behindShare:P0} from behind";
+				ClearEnemies();
+				await Frames(3);
+			}
+			// A gate right next to the spot spills the pack straight onto the player: nothing to flank.
+			bool tooClose = gate.GlobalPosition.DistanceTo(spot.GlobalPosition) < 10f;
+			Expect(behindWith >= 0.15f || tooClose, $"flank.{spot.Name}", $"from {gate.Name}{line}{(tooClose ? " (gate too close to flank)" : "")}");
+		}
+		Engine.TimeScale = 1f;
+	}
+
 	/// <summary>Every weapon on sale, plus the nail gun, kills an emu in front of it.</summary>
 	private async Task CheckWeapons()
 	{
@@ -254,6 +330,54 @@ public partial class SelfCheck : Node
 			await Frames(2);
 		}
 		_arsenal.EquipSlot(0);
+
+		// A late-wave (twice as tough) emu still dies to one nail in the head.
+		{
+			Place(origin);
+			Weapon nail = _arsenal.EquippedWeapon;
+			Node3D target = Freeze(Spawn(emu, origin + Vector3.Forward * 7f, 2f));
+			await Frames(3);
+			Aim(target.GetNode<Node3D>("HeadWeakSpot").GlobalPosition);
+			int before = nail.AmmoInMagazine;
+			nail.SetTriggerHeld(true);
+			await Frames(1);
+			nail.SetTriggerHeld(false);
+			await Seconds(0.5f);
+			bool dead = !IsInstanceValid(target) || target.IsQueuedForDeletion();
+			Expect(dead && before - nail.AmmoInMagazine == 1, "weapons.late-headshot", $"tough emu {(dead ? "killed" : "survived")} by {before - nail.AmmoInMagazine} nail(s)");
+			ClearEnemies();
+			await Frames(2);
+		}
+
+		// Every gun dry: the hero's melee still kills, and a hammer kill gives nails back.
+		if (_arsenal.QuickMelee is { } melee)
+		{
+			Place(origin);
+			foreach (Weapon weapon in _arsenal.Weapons)
+				weapon.DrainAmmo();
+			Node3D target = Freeze(Spawn(emu, origin + Vector3.Forward * 1.6f));
+			await Frames(3);
+			Aim(target.GetNode<Node3D>("HeadWeakSpot").GlobalPosition);
+			_arsenal.MeleeHeld = true;
+			await Seconds(0.3f);
+			_arsenal.MeleeHeld = false;
+			await Frames(2);
+			bool dead = !IsInstanceValid(target) || target.IsQueuedForDeletion();
+			int nails = _arsenal.Weapons[0].ReserveAmmo;
+			Expect(dead && nails == melee.RefundOnKill, $"weapons.{melee.Stats.DisplayName}", $"dry, one head whack: emu {(dead ? "killed" : "survived")}, nails back {nails}");
+			ClearEnemies();
+			foreach (Weapon weapon in _arsenal.Weapons)
+				weapon.AddReserveAmmo(weapon.Stats.StartingReserve);
+			await Frames(2);
+		}
+	}
+
+	private static Node3D Freeze(Node3D target)
+	{
+		if (target is CollisionObject3D body)
+			body.DisableMode = CollisionObject3D.DisableModeEnum.KeepActive;
+		target.ProcessMode = ProcessModeEnum.Disabled;
+		return target;
 	}
 
 	/// <summary>The trader opens on a break, sells ammo, a mod and armour, and closes on the wave.</summary>

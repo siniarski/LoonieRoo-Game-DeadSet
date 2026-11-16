@@ -23,6 +23,7 @@ The previous project failed because too many systems buried the fun. **Keep this
 
 1. **Arena:** one enclosed map with cover, lanes and spawn points around the edges, big enough that a horde has room to come at you.
 2. **Player (The Tradie):** first-person movement (walk, sprint, jump), mouse look, health, armour, footsteps.
+   - An always-on melee, unique to each hero (`HeroDefinition`). The Tradie's is a claw hammer: V, or the trigger once the gun is dry; hammer kills pull nails back out. Only the Tradie exists for now.
 3. **Weapons:** they must feel punchy: recoil, muzzle flash, hit feedback, sound.
    - Nail Gun (starting weapon): projectile, fire rate, magazine and reload.
    - Brushcutter and Rivet Gun, bought in the trader. Switch with 1/2/3 or the mouse wheel.
@@ -32,6 +33,7 @@ The previous project failed because too many systems buried the fun. **Keep this
    - **Wombats (charger):** tanky; wind up, then charge in a straight line that the player can sidestep.
    - A few roster specials mixed into later waves: dingoes, magpies, kangaroos, cassowaries. The other roster models exist for testing only (Ctrl + number keys).
    - At most 6 enemies attack at once; the rest wait at reach.
+   - About a quarter of each wave flank: they path round to come at the player from behind, so no spot is fed from only one side.
 5. **Waves:** a wave director spawns escalating waves (up to 200 alive), then a short break between them.
 6. **Trader break:** during the break, the player spends cash earned from kills on ammo, armour, weapons and weapon mods, then **picks 1 of 3 random upgrades**.
 7. **Upgrades (about 6):** player-level, apply to every weapon carried. Examples: Smoko Shield (damage resistance at low health), Hot Chips & Gravy (heal on wave end), Quick Loader (faster reload), Bouncing Shot (shots ricochet once), Oi! Watch It! (dash), Thongs Off (sprint boost).

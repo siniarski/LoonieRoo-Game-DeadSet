@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HeroDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/Player/HeroDefinition.cs" id="1_hero"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/ClawHammer.tscn" id="2_melee"]
+
+[resource]
+script = ExtResource("1_hero")
+DisplayName = "The Tradie"
+QuickMelee = ExtResource("2_melee")

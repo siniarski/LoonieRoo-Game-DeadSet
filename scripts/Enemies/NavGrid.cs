@@ -37,7 +37,11 @@ public static class NavGrid
 	/// <summary>Least physics frames between distance fills while the target keeps moving.</summary>
 	public static int RefillFrames { get; set; } = 6;
 
-	public static bool Ready => _walkable != null && _goal >= 0;
+	public static bool Ready => _walkable != null && Main.Goal >= 0;
+	/// <summary>The flank field points somewhere (see UpdateFlank).</summary>
+	public static bool FlankReady => _walkable != null && Flank.Goal >= 0;
+	/// <summary>Where the flank field leads, when FlankReady.</summary>
+	public static Vector3 FlankGoal => Flank.GoalPosition;
 	/// <summary>The walkable grid exists (the arena is baked), whether or not anything is chasing yet.</summary>
 	public static bool Built => _walkable != null;
 
@@ -45,20 +49,54 @@ public static class NavGrid
 	private const int StraightCost = 10;
 	private const int DiagonalCost = 14;
 
+	/// <summary>A distance field towards one goal.</summary>
+	private sealed class Field
+	{
+		public int[] Distance;
+		public int Goal = -1;
+		public bool GoalIsTargetCell;
+		public Vector3 GoalPosition;
+		public int TargetCell = -2;
+		public ulong LastFillFrame;
+		/// <summary>A disc the field routes round (the player, for the flank field). Radius 0 = none.</summary>
+		public float AvoidX, AvoidZ, AvoidRadius;
+
+		public bool InAvoid(float x, float z) =>
+			AvoidRadius > 0f && (x - AvoidX) * (x - AvoidX) + (z - AvoidZ) * (z - AvoidZ) < AvoidRadius * AvoidRadius;
+
+		/// <summary>True if the segment passes through the avoided disc.</summary>
+		public bool CrossesAvoid(float x0, float z0, float x1, float z1)
+		{
+			if (AvoidRadius <= 0f)
+				return false;
+			float dx = x1 - x0, dz = z1 - z0;
+			float length2 = dx * dx + dz * dz;
+			float t = length2 > 0.0001f ? Mathf.Clamp(((AvoidX - x0) * dx + (AvoidZ - z0) * dz) / length2, 0f, 1f) : 0f;
+			return InAvoid(x0 + dx * t, z0 + dz * t);
+		}
+
+		public void Reset()
+		{
+			Distance = null;
+			Goal = -1;
+			TargetCell = -2;
+			LastFillFrame = 0;
+		}
+	}
+
+	/// <summary>Leads to the target (the player).</summary>
+	private static readonly Field Main = new();
+	/// <summary>Leads to a point behind the player, for flankers.</summary>
+	private static readonly Field Flank = new();
+
 	private static bool[] _walkable;
 	private static bool[] _open;
-	private static int[] _distance;
 	private static int _width;
 	private static int _height;
 	private static float _originX;
 	private static float _originZ;
 	private static float _inverseCell;
 
-	private static int _goal = -1;
-	private static bool _goalIsTargetCell;
-	private static Vector3 _goalPosition;
-	private static int _targetCell = -2;
-	private static ulong _lastFillFrame;
 	private static readonly PriorityQueue<int, int> Open = new();
 
 	/// <summary>Rebuilds the grid from a baked navmesh. Call again whenever the navmesh changes.</summary>
@@ -147,8 +185,10 @@ public static class NavGrid
 			}
 		}
 
-		_distance = new int[walkable.Length];
-		Array.Fill(_distance, Unreachable);
+		Main.Distance = new int[walkable.Length];
+		Flank.Distance = new int[walkable.Length];
+		Array.Fill(Main.Distance, Unreachable);
+		Array.Fill(Flank.Distance, Unreachable);
 		_open = open;
 		_walkable = walkable;
 	}
@@ -189,70 +229,159 @@ public static class NavGrid
 	{
 		_walkable = null;
 		_open = null;
-		_distance = null;
-		_goal = -1;
-		_targetCell = -2;
-		_lastFillFrame = 0;
+		Main.Reset();
+		Flank.Reset();
 	}
 
 	/// <summary>Points the field at the target. Cheap unless the target has moved to another cell.</summary>
-	public static void UpdateTarget(Vector3 target, ulong physicsFrame)
+	public static void UpdateTarget(Vector3 target, ulong physicsFrame) => Point(Main, target, physicsFrame, RefillFrames, true);
+
+	/// <summary>
+	/// Points the flank field at a spot (behind the player). Refills at most every
+	/// minFrames physics frames; it only needs to be roughly right.
+	/// </summary>
+	public static void UpdateFlank(Vector3 point, Vector3 avoid, float avoidRadius, ulong physicsFrame, int minFrames = 20)
+	{
+		if (Flank.TargetCell != -2 && physicsFrame - Flank.LastFillFrame < (ulong)Mathf.Max(minFrames, 1))
+			return;
+		Flank.AvoidX = avoid.X;
+		Flank.AvoidZ = avoid.Z;
+		Flank.AvoidRadius = avoidRadius;
+		// The avoided disc moves with the player, so refill even if the goal cell is the same.
+		Flank.TargetCell = -3;
+		Flank.Goal = -1;
+		Point(Flank, point, physicsFrame, minFrames, false);
+	}
+
+	/// <summary>Stops the flank field leading anywhere (no flanking wanted right now).</summary>
+	public static void ClearFlank()
+	{
+		Flank.Goal = -1;
+		Flank.TargetCell = -2;
+	}
+
+	private static void Point(Field field, Vector3 target, ulong physicsFrame, int minFrames, bool exactTarget)
 	{
 		if (_walkable == null)
 			return;
 		int cell = CellAt(target.X, target.Z);
-		if (cell == _targetCell)
+		if (cell == field.TargetCell)
 		{
-			if (_goalIsTargetCell)
-				_goalPosition = target;
+			if (field.GoalIsTargetCell)
+				field.GoalPosition = target;
 			return;
 		}
-		if (_targetCell != -2 && physicsFrame - _lastFillFrame < (ulong)Mathf.Max(RefillFrames, 1))
+		if (field.TargetCell != -2 && physicsFrame - field.LastFillFrame < (ulong)Mathf.Max(minFrames, 1))
 			return;
 
-		_targetCell = cell;
-		_lastFillFrame = physicsFrame;
-		int goal = cell >= 0 && _walkable[cell] ? cell : NearestWalkable(target.X, target.Z, SnapCells, false);
-		_goalIsTargetCell = goal >= 0 && goal == cell;
-		if (goal != _goal)
+		field.TargetCell = cell;
+		field.LastFillFrame = physicsFrame;
+		int goal;
+		if (exactTarget)
+			goal = cell >= 0 && _walkable[cell] ? cell : NearestWalkable(target.X, target.Z, SnapCells, false);
+		else
+			// A spot the main field can reach (not a sealed pocket), outside the avoided disc.
+			goal = NearestWalkable(target.X, target.Z, SnapCells, true, Main.Distance, field);
+		field.GoalIsTargetCell = exactTarget && goal >= 0 && goal == cell;
+		if (goal != field.Goal)
 		{
-			_goal = goal;
-			Fill();
+			field.Goal = goal;
+			Fill(field);
 		}
-		if (_goal >= 0)
-			_goalPosition = _goalIsTargetCell ? target : CellCentre(_goal);
+		if (field.Goal >= 0)
+			field.GoalPosition = field.GoalIsTargetCell ? target : CellCentre(field.Goal);
 	}
 
 	/// <summary>
 	/// Where an enemy standing at <paramref name="from"/> should head. Direct means straight at
 	/// the target; otherwise <paramref name="waypoint"/> is a point on the way round the cover.
 	/// </summary>
-	public static Route FindRoute(Vector3 from, out Vector3 waypoint)
+	public static Route FindRoute(Vector3 from, out Vector3 waypoint) => FindRoute(Main, from, out waypoint);
+
+
+	/// <summary>
+	/// Like FindRoute, but towards the flank goal. Direct means it is in plain view of the goal
+	/// (or there is no flank field): the flanker can stop flanking.
+	/// </summary>
+	public static bool FindFlankRoute(Vector3 from, out Vector3 waypoint)
 	{
 		waypoint = default;
-		if (!Ready)
+		if (_walkable == null || Flank.Goal < 0)
+			return false;
+		int[] distance = Flank.Distance;
+		Vector3 goal = Flank.GoalPosition;
+		int cell = CellAt(from.X, from.Z);
+		if (cell < 0 || !_walkable[cell])
+		{
+			int near = NearestWalkable(from.X, from.Z, 3, true, distance);
+			if (near < 0)
+				return false;
+			waypoint = CellCentre(near);
+			return true;
+		}
+		if (distance[cell] == Unreachable)
+		{
+			// Brushing the edge of the disc while going round: step back out to the field.
+			// Deeper in, or the only way is through the player: no way round from here.
+			int near = NearestWalkable(from.X, from.Z, 3, true, distance);
+			if (near < 0)
+				return false;
+			waypoint = CellCentre(near);
+			return true;
+		}
+		if (ClearLine(from.X, from.Z, goal.X, goal.Z) && !Flank.CrossesAvoid(from.X, from.Z, goal.X, goal.Z))
+		{
+			waypoint = goal;
+			return true;
+		}
+		int current = cell;
+		int best = -1;
+		for (int step = 0; step < LookAheadCells; step++)
+		{
+			int next = Downhill(current, distance);
+			if (next < 0)
+				break;
+			current = next;
+			Vector3 centre = CellCentre(current);
+			if (best >= 0 && (!ClearLine(from.X, from.Z, centre.X, centre.Z) || Flank.CrossesAvoid(from.X, from.Z, centre.X, centre.Z)))
+				break;
+			best = current;
+		}
+		if (best < 0)
+			return false;
+		waypoint = CellCentre(best);
+		return true;
+	}
+
+	private static Route FindRoute(Field field, Vector3 from, out Vector3 waypoint)
+	{
+		waypoint = default;
+		if (_walkable == null || field.Goal < 0)
 			return Route.Direct;
+		int[] distance = field.Distance;
+		Vector3 goalPosition = field.GoalPosition;
+		bool goalIsTargetCell = field.GoalIsTargetCell;
 
 		int cell = CellAt(from.X, from.Z);
 		if (cell < 0 || !_walkable[cell])
 		{
 			// Off the navmesh (hugging cover or a wall): step back onto the nearest useful cell.
-			int near = NearestWalkable(from.X, from.Z, 3, true);
+			int near = NearestWalkable(from.X, from.Z, 3, true, distance);
 			if (near < 0)
 				return Route.Direct;
 			waypoint = CellCentre(near);
 			// Pressed up against cover with the target on the far side: get back on the navmesh first.
-			bool coverBetween = _goalIsTargetCell && !ClearLine(waypoint.X, waypoint.Z, _goalPosition.X, _goalPosition.Z);
+			bool coverBetween = goalIsTargetCell && !ClearLine(waypoint.X, waypoint.Z, goalPosition.X, goalPosition.Z);
 			return coverBetween ? Route.Blocked : Route.Waypoint;
 		}
-		if (_distance[cell] == Unreachable)
+		if (distance[cell] == Unreachable)
 			return Route.Direct;
 
-		if (ClearLine(from.X, from.Z, _goalPosition.X, _goalPosition.Z))
+		if (ClearLine(from.X, from.Z, goalPosition.X, goalPosition.Z))
 		{
-			if (_goalIsTargetCell)
+			if (goalIsTargetCell)
 				return Route.Direct;
-			waypoint = _goalPosition;
+			waypoint = goalPosition;
 			return Route.Waypoint;
 		}
 
@@ -262,7 +391,7 @@ public static class NavGrid
 		int best = -1;
 		for (int step = 0; step < LookAheadCells; step++)
 		{
-			int next = Downhill(current);
+			int next = Downhill(current, distance);
 			if (next < 0)
 				break;
 			current = next;
@@ -274,7 +403,7 @@ public static class NavGrid
 		if (best < 0)
 			return Route.Direct;
 		waypoint = CellCentre(best);
-		return _goalIsTargetCell ? Route.Blocked : Route.Waypoint;
+		return goalIsTargetCell ? Route.Blocked : Route.Waypoint;
 	}
 
 	private static int CellAt(float x, float z)
@@ -293,7 +422,7 @@ public static class NavGrid
 	}
 
 	/// <summary>Closest walkable cell to a point within a square of cells, or -1.</summary>
-	private static int NearestWalkable(float x, float z, int radius, bool needReachable)
+	private static int NearestWalkable(float x, float z, int radius, bool needReachable, int[] field = null, Field avoid = null)
 	{
 		int cx = Mathf.FloorToInt((x - _originX) * _inverseCell);
 		int cz = Mathf.FloorToInt((z - _originZ) * _inverseCell);
@@ -311,10 +440,12 @@ public static class NavGrid
 				if (px < 1 || px >= _width - 1)
 					continue;
 				int cell = pz * _width + px;
-				if (!_walkable[cell] || (needReachable && _distance[cell] == Unreachable))
+				if (!_walkable[cell] || (needReachable && (field ?? Main.Distance)[cell] == Unreachable))
 					continue;
 				float ox = _originX + (px + 0.5f) * size - x;
 				float oz = _originZ + (pz + 0.5f) * size - z;
+				if (avoid != null && avoid.InAvoid(ox + x, oz + z))
+					continue;
 				float distance = ox * ox + oz * oz;
 				if (distance < bestDistance)
 				{
@@ -327,10 +458,10 @@ public static class NavGrid
 	}
 
 	/// <summary>The neighbour one step closer to the goal, or -1 at the goal.</summary>
-	private static int Downhill(int cell)
+	private static int Downhill(int cell, int[] distance)
 	{
 		int best = -1;
-		int bestDistance = _distance[cell];
+		int bestDistance = distance[cell];
 		for (int dz = -1; dz <= 1; dz++)
 		{
 			for (int dx = -1; dx <= 1; dx++)
@@ -338,12 +469,12 @@ public static class NavGrid
 				if (dx == 0 && dz == 0)
 					continue;
 				int next = cell + dz * _width + dx;
-				if (!_walkable[next] || _distance[next] >= bestDistance)
+				if (!_walkable[next] || distance[next] >= bestDistance)
 					continue;
 				// No squeezing diagonally past the corner of cover.
 				if (dx != 0 && dz != 0 && (!_walkable[cell + dx] || !_walkable[cell + dz * _width]))
 					continue;
-				bestDistance = _distance[next];
+				bestDistance = distance[next];
 				best = next;
 			}
 		}
@@ -351,18 +482,20 @@ public static class NavGrid
 	}
 
 	/// <summary>Dijkstra outwards from the goal over walkable cells.</summary>
-	private static void Fill()
+	private static void Fill(Field field)
 	{
-		Array.Fill(_distance, Unreachable);
-		if (_goal < 0)
+		int[] dist = field.Distance;
+		Array.Fill(dist, Unreachable);
+		if (field.Goal < 0)
 			return;
 
+		float size = 1f / _inverseCell;
 		Open.Clear();
-		_distance[_goal] = 0;
-		Open.Enqueue(_goal, 0);
+		dist[field.Goal] = 0;
+		Open.Enqueue(field.Goal, 0);
 		while (Open.TryDequeue(out int cell, out int distance))
 		{
-			if (distance > _distance[cell])
+			if (distance > dist[cell])
 				continue;
 			for (int dz = -1; dz <= 1; dz++)
 			{
@@ -373,13 +506,15 @@ public static class NavGrid
 					int next = cell + dz * _width + dx;
 					if (!_walkable[next])
 						continue;
+					if (field.AvoidRadius > 0f && field.InAvoid(_originX + (next % _width + 0.5f) * size, _originZ + (next / _width + 0.5f) * size))
+						continue;
 					bool diagonal = dx != 0 && dz != 0;
 					if (diagonal && (!_walkable[cell + dx] || !_walkable[cell + dz * _width]))
 						continue;
 					int cost = distance + (diagonal ? DiagonalCost : StraightCost);
-					if (cost < _distance[next])
+					if (cost < dist[next])
 					{
-						_distance[next] = cost;
+						dist[next] = cost;
 						Open.Enqueue(next, cost);
 					}
 				}
