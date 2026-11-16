@@ -75,6 +75,12 @@ public partial class Wombat : Enemy
 	[Export] public float StunBounceSpeed { get; set; } = 3f;
 	[Export] public Color ImpactSparkColor { get; set; } = new(1f, 0.85f, 0.5f);
 	[Export] public int ImpactSparkAmount { get; set; } = 24;
+	/// <summary>Dust kicked up behind it while it charges.</summary>
+	[Export] public Color DustColor { get; set; } = new(0.9f, 0.78f, 0.6f);
+	/// <summary>A player within this many metres feels the ground shake when it rams cover.</summary>
+	[Export] public float SlamShakeRadius { get; set; } = 12f;
+	/// <summary>Camera jolt at point-blank range, in degrees. It fades out to the radius.</summary>
+	[Export] public float SlamShakeDegrees { get; set; } = 4f;
 
 	[ExportGroup("Headbutt")]
 	/// <summary>Seconds of wind-up before the close-range headbutt lands.</summary>
@@ -278,6 +284,7 @@ public partial class Wombat : Enemy
 
 	private void Enter(State state, float duration = 0f)
 	{
+		SetDust(state == State.Charge);
 		_state = state;
 		_stateTimer = duration;
 		_stateTime = 0f;
@@ -433,8 +440,71 @@ public partial class Wombat : Enemy
 		EndCharge(State.Skid, MissRecoverTime);
 	}
 
+	private CpuParticles3D _dust;
+
+	/// <summary>Starts or stops the charge's dust trail (built the first time it charges).</summary>
+	private void SetDust(bool on)
+	{
+		if (_dust == null)
+		{
+			if (!on)
+				return;
+			_dust = new CpuParticles3D
+			{
+				Name = "ChargeDust",
+				Emitting = false,
+				Amount = 36,
+				Lifetime = 0.7f,
+				// World-space particles, so the cloud hangs behind it as it runs on.
+				LocalCoords = false,
+				Position = new Vector3(0f, 0.15f, 0f),
+				EmissionShape = CpuParticles3D.EmissionShapeEnum.Box,
+				EmissionBoxExtents = new Vector3(0.35f, 0.05f, 0.35f),
+				Direction = Vector3.Up,
+				Spread = 70f,
+				Gravity = new Vector3(0f, 1.2f, 0f),
+				InitialVelocityMin = 0.4f,
+				InitialVelocityMax = 1.4f,
+				ScaleAmountMin = 1.8f,
+				ScaleAmountMax = 3.4f,
+				Mesh = new BoxMesh
+				{
+					Size = Vector3.One * 0.16f,
+					Material = new StandardMaterial3D
+					{
+						ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+						AlbedoColor = new Color(DustColor, 0.7f),
+						Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+					},
+				},
+			};
+			AddChild(_dust);
+		}
+		_dust.Emitting = on;
+	}
+
+	/// <summary>Shakes the player's view when it rams something near them.</summary>
+	private void SlamShake(Vector3 point)
+	{
+		if (!IsInstanceValid(Target))
+			return;
+		float distance = point.DistanceTo(Target.GlobalPosition);
+		if (distance >= SlamShakeRadius)
+			return;
+		var camera = Target.GetNodeOrNull<Player.CameraRecoil>("Head/Camera3D");
+		if (camera == null)
+			return;
+		float strength = SlamShakeDegrees * (1f - distance / SlamShakeRadius);
+		camera.AddKick((float)GD.RandRange(-strength, strength), (float)GD.RandRange(-strength, strength));
+		SlamShakes++;
+	}
+
+	/// <summary>Cover slams that shook the player's view this session (for the self-check).</summary>
+	public static int SlamShakes { get; set; }
+
 	private void HitWall(Vector3 point, Vector3 normal)
 	{
+		SlamShake(point);
 		ImpactEffects.SpawnSparks(GetParent(), point, normal, ImpactSparkColor, ImpactSparkAmount);
 		PlaceholderSfx.PlayAt(GetParent(), PlaceholderSfx.Thump, point, 4f, 0.05f);
 		Velocity = -_chargeDirection * StunBounceSpeed;

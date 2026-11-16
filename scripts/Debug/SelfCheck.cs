@@ -341,12 +341,14 @@ public partial class SelfCheck : Node
 			await Frames(3);
 			Aim(target.GetNode<Node3D>("HeadWeakSpot").GlobalPosition);
 			int before = nail.AmmoInMagazine;
+			int pops = Deadset.Enemies.Enemy.HeadPops;
 			nail.SetTriggerHeld(true);
 			await Frames(1);
 			nail.SetTriggerHeld(false);
 			await Seconds(0.5f);
 			bool dead = !IsInstanceValid(target) || target.IsQueuedForDeletion();
 			Expect(dead && before - nail.AmmoInMagazine == 1, "weapons.late-headshot", $"tough emu {(dead ? "killed" : "survived")} by {before - nail.AmmoInMagazine} nail(s)");
+			Expect(Deadset.Enemies.Enemy.HeadPops > pops, "weapons.head-pop", $"head pops {pops} -> {Deadset.Enemies.Enemy.HeadPops}");
 			ClearEnemies();
 			await Frames(2);
 		}

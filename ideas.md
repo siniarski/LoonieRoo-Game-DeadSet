@@ -24,6 +24,7 @@ The wombat (charger) stays in the scope as Milestone 5 and isn't in this roster.
 
 ## Polish ideas from the long build session (not built)
 
+- BUILT: dash bar, armour flash, wave summary (c8903ec); head pop and wombat dust/shake (2026-11-16).
 - **Dash cooldown indicator** on the HUD (the dash itself is in, on Q, once you own Oi! Watch It!).
 - **Armour-only hits** could flash blue instead of red, so you can tell armour soaked it.
 - **Wombat:** a dust trail during the charge; screen shake when it slams into cover nearby.
@@ -66,6 +67,6 @@ Ideas to explore:
   them (a goanna or possum special), so cover isn't a wall at your back.
 - **Flankers:** BUILT 2026-11-16 (play card "Flankers"). A quarter of each wave paths round to a spot
   behind the player, away from the rest of the pack.
-- **Spawn awareness:** when the player has been holding one spot for a while, favour spawns and
+- **Spawn awareness:** BUILT 2026-11-16 (play card "Spawns come round behind a camper"). When the player has been holding one spot for a while, favour spawns and
   entry points that come at it from behind.
 - **Breakable cover:** enemies (wombats) knock down besser walls or barricades you're hiding behind.

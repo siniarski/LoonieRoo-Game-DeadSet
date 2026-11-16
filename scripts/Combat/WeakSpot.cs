@@ -25,6 +25,8 @@ public partial class WeakSpot : CollisionShape3D
 	[Export] public float FollowTolerance { get; set; } = 0.03f;
 
 	private Node3D _follow;
+	/// <summary>The visual node this spot follows (the head), if any.</summary>
+	public Node3D FollowTarget => _follow;
 	private Node3D _body;
 	private Vector3 _applied;
 

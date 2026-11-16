@@ -24,11 +24,30 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 | `--god` | Take no damage |
 | `--nowaves` | No waves: an empty arena for `--spawn` tests |
 | `--noammo` | Every gun you carry starts empty (try the hero's melee) |
+| `--camptime=S` | Seconds holding one spot before vents and spawns start coming at your back (default 6) |
 | `--flankers=X` | Share of every wave that flanks, 0 to 1 (default ramps 0.1 to 0.25 by wave 6; `0` turns flanking off to compare) |
 | `--sim=nail\|rivet\|cutter` | A bot plays the run and prints `SIM` lines (tuning data); watch it or add `--simspeed=3` |
 | `--simwaves=N` | The bot quits after wave N (default 10) |
 
 ## Unplayed
+
+### Spawns come round behind a camper (2026-11-16)
+- What changed: once you've held one spot for about 6 s, new packs mostly come in from the spawn gates behind you (where you're not looking), not the one you're facing.
+- Fun bet: a lane end stops being a safe farm; holding a spot is a choice with a cost, and moving resets it.
+- Try it: `play.cmd --wave=4 --at=alley` (compare `--camptime=999` to turn it off)
+- Judge: does it push you to move and turn around, or does it just feel like the game cheats?
+
+### Wombat dust and slam shake (2026-11-16)
+- What changed: a charging wombat kicks up a trail of pale dust, and when it rams cover near you (within 12 m) your view shakes.
+- Fun bet: charges read from further away and feel heavy; a near miss into a wall feels like a near miss.
+- Try it: `play.cmd --nowaves --spawn=wombat:2 --god` (stand by a wall and sidestep)
+- Judge: can you spot a charge coming by the dust alone? Is the shake satisfying or annoying?
+
+### Headshot kill pops the head (2026-11-16)
+- What changed: killing with a head hit (nail, rivet or hammer) bursts the glowing head in a shower of chunks with a wet pop, and the body falls headless.
+- Fun bet: headshots feel like a payoff, so you aim for heads because it's satisfying, not only for the damage.
+- Try it: `play.cmd --nowaves --spawn=emu:12`
+- Judge: does popping heads make you want to aim higher? Is the pop sound right?
 
 ### Flankers (2026-11-16)
 - What changed: from wave 2 (one in ten, rising to one in four by wave 6), some enemies go the long way round and comes at you from behind (the side away from the rest of the pack), instead of queuing up in front.

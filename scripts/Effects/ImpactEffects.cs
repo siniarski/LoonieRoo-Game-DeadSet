@@ -8,7 +8,8 @@ public static class ImpactEffects
 {
 	private static readonly Dictionary<Color, BoxMesh> SparkMeshes = new();
 
-	public static void SpawnSparks(Node parent, Vector3 position, Vector3 normal, Color color, int amount = 10)
+	public static void SpawnSparks(Node parent, Vector3 position, Vector3 normal, Color color, int amount = 10,
+		float size = 1f, float lifetime = 0.3f, float speed = 1f)
 	{
 		var particles = new CpuParticles3D
 		{
@@ -21,15 +22,15 @@ public static class ImpactEffects
 			OneShot = true,
 			Explosiveness = 1f,
 			Amount = amount,
-			Lifetime = 0.3f,
+			Lifetime = lifetime,
 			Mesh = GetSparkMesh(color),
 			Direction = Vector3.Up,
 			Spread = 55f,
-			InitialVelocityMin = 2.5f,
-			InitialVelocityMax = 6.5f,
+			InitialVelocityMin = 2.5f * speed,
+			InitialVelocityMax = 6.5f * speed,
 			Gravity = new Vector3(0f, -14f, 0f),
-			ScaleAmountMin = 0.6f,
-			ScaleAmountMax = 1.2f,
+			ScaleAmountMin = 0.6f * size,
+			ScaleAmountMax = 1.2f * size,
 		};
 
 		parent.AddChild(particles);

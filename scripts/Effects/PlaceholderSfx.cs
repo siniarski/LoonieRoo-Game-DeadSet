@@ -79,6 +79,13 @@ public static class PlaceholderSfx
 	/// <summary>Bright metallic tink layered on a weak-spot (head) hit.</summary>
 	public static AudioStreamWav HeadshotTink => _headshotTink ??= Build(0.2f, t => (Sine(3100f, t) * 0.5f + Sine(4650f, t) * 0.3f) * MathF.Exp(-t * 18f));
 	/// <summary>Hard woody knock of a beak.</summary>
+	/// <summary>A head bursting: a wet low pop with a crack on top.</summary>
+	public static AudioStreamWav HeadPop => _headPop ??= Build(0.3f, t =>
+		Sweep(t, 420f, 70f, 18f) * MathF.Exp(-t * 12f) * 0.9f
+		+ Noise() * MathF.Exp(-t * 35f) * 0.6f
+		+ Sine(2600f, t) * MathF.Exp(-t * 45f) * 0.25f);
+	private static AudioStreamWav _headPop;
+
 	public static AudioStreamWav Peck => _peck ??= Build(0.07f, t => (Sine(900f, t) * 0.6f + Noise() * 0.4f) * MathF.Exp(-t * 70f));
 	/// <summary>Heavy kick or slam.</summary>
 	public static AudioStreamWav Thump => _thump ??= Build(0.16f, t => Sweep(t, 180f, 60f, 25f) * MathF.Exp(-t * 20f) + Noise() * MathF.Exp(-t * 60f) * 0.4f);

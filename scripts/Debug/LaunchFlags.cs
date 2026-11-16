@@ -26,6 +26,7 @@ namespace Deadset.Debug;
 /// --at=SPOT          start at a named spot in the arena (alley, shed, tank, north, south)
 /// --god              can't die
 /// --flankers=X      share of each wave that flanks (0 to 1; the wave set default is 0.25)
+/// --camptime=S      seconds holding one spot before vents and spawns favour you (default 6)
 /// --noammo           every gun you carry starts empty (try the hero's melee)
 /// --nowaves          no wave director: an empty arena for --spawn tests
 /// --sim=LOADOUT      a simulated player plays the run and logs "SIM" lines (nail, rivet, cutter)
@@ -123,6 +124,9 @@ public partial class LaunchFlags : Node
 					break;
 				case "flankers":
 					WaveDirector.FlankerShareOverride = Mathf.Clamp(value.ToFloat(), 0f, 1f);
+					break;
+				case "camptime":
+					WaveDirector.CampSecondsOverride = Mathf.Max(0f, value.ToFloat());
 					break;
 				case "noammo":
 					noAmmo = true;

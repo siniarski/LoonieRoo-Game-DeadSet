@@ -107,6 +107,7 @@ public partial class QuickMeleeWeapon : Weapon
 		if (headHit)
 			damage *= head.EffectiveMultiplier;
 		Vector3 at = headHit ? head.GlobalPosition : best.GlobalPosition + Vector3.Up * 0.8f;
+		bestHealth.LastHitWeakSpot = headHit;
 		bool killed = bestHealth.ApplyDamage(damage);
 		ReportHit(killed, headHit);
 		Vector3 away = new Vector3(best.GlobalPosition.X - origin.X, 0f, best.GlobalPosition.Z - origin.Z);

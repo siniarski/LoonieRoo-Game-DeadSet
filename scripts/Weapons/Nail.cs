@@ -149,6 +149,7 @@ public partial class Nail : Node3D
 			if (!health.IsDead && _alreadyHit.Add(health))
 			{
 				float damage = _damage * (weakSpot?.EffectiveMultiplier ?? 1f);
+				health.LastHitWeakSpot = weakSpot != null;
 				bool killed = health.ApplyDamage(damage);
 				if (IsInstanceValid(_source))
 					_source.ReportHit(killed, weakSpot != null);

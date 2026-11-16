@@ -36,6 +36,11 @@ public partial class HealthComponent : Node
 	[Export(PropertyHint.Range, "0,1")] public float ArmourAbsorption { get; set; } = 1f;
 
 	public float Current { get; private set; }
+	/// <summary>
+	/// True when the latest hit landed on a weak spot (set by the weapon just before it applies
+	/// damage). Enemies read it on death, so a head-shot kill can pop the head off.
+	/// </summary>
+	public bool LastHitWeakSpot { get; set; }
 	public float Armour { get; private set; }
 	public bool IsDead => Current <= 0f;
 

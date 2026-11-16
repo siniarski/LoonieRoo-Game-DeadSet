@@ -37,6 +37,18 @@ public partial class WaveDirector : Node
 	/// <summary>How many enemies may be mid-attack at once, however many surround the player.</summary>
 	[Export] public int MaxSimultaneousAttackers { get; set; } = 6;
 
+	[ExportGroup("Camping")]
+	/// <summary>
+	/// Once the player is camping (see CampSeconds), how strongly new packs lean behind them.
+	/// A spawn point straight behind the player's facing is this many times likelier than one dead ahead.
+	/// </summary>
+	[Export] public float CampBehindBias { get; set; } = 5f;
+	/// <summary>Debug (--camptime): overrides CampSeconds when 0 or more.</summary>
+	public static float CampSecondsOverride { get; set; } = -1f;
+	/// <summary>Packs sent while the player was camping, and how many of them came from behind (for checks).</summary>
+	public int CampPacks { get; private set; }
+	public int CampBehindPacks { get; private set; }
+
 	[ExportGroup("Vents")]
 	/// <summary>
 	/// Packs can climb out of floor vents near the player instead of arriving at a gate, so no spot
@@ -61,7 +73,7 @@ public partial class WaveDirector : Node
 
 	public Phase CurrentPhase { get; private set; } = Phase.Stopped;
 	/// <summary>True while the player counts as camping (vents are more likely).</summary>
-	public bool PlayerCamping => _campTimer >= CampSeconds;
+	public bool PlayerCamping => _campTimer >= (CampSecondsOverride >= 0f ? CampSecondsOverride : CampSeconds);
 	/// <summary>The wave in progress, or the next one during a countdown or break. Starts at 1.</summary>
 	public int WaveNumber { get; private set; }
 	/// <summary>Seconds left in the current countdown or break.</summary>
@@ -437,8 +449,43 @@ public partial class WaveDirector : Node
 			}
 		}
 
-		return far.Count > 0 ? far[GD.RandRange(0, far.Count - 1)] : farthest;
+		if (far.Count == 0)
+			return farthest;
+		if (!PlayerCamping || !IsInstanceValid(_player))
+			return far[GD.RandRange(0, far.Count - 1)];
+
+		// Holding one spot: weight each point by how far behind the player's facing it is,
+		// so a funnel stops being fed only from the front.
+		Vector3 look = -_player.GetNodeOrNull<Node3D>("Head")?.GlobalBasis.Z ?? -_player.GlobalBasis.Z;
+		Vector3 facing = new Vector3(look.X, 0f, look.Z).Normalized();
+		float total = 0f;
+		_weights.Clear();
+		foreach (Node3D point in far)
+		{
+			Vector3 to = point.GlobalPosition - _player.GlobalPosition;
+			to.Y = 0f;
+			float behind = Mathf.Clamp(-facing.Dot(to.Normalized()), -1f, 1f) * 0.5f + 0.5f;   // 0 ahead .. 1 behind
+			float weight = 1f + (CampBehindBias - 1f) * behind * behind;
+			_weights.Add(weight);
+			total += weight;
+		}
+		float pick = GD.Randf() * total;
+		for (int i = 0; i < far.Count; i++)
+		{
+			pick -= _weights[i];
+			if (pick <= 0f)
+			{
+				Vector3 to = far[i].GlobalPosition - _player.GlobalPosition;
+				CampPacks++;
+				if (facing.Dot(to) < 0f)
+					CampBehindPacks++;
+				return far[i];
+			}
+		}
+		return far[^1];
 	}
+
+	private readonly List<float> _weights = new();
 
 	private void OnEnemyKilled(Node3D enemy) => _alive.Remove(enemy);
 

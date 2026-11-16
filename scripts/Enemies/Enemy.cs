@@ -63,6 +63,10 @@ public abstract partial class Enemy : CharacterBody3D
 	[Export] public Color DeathSparkColor { get; set; } = new(0.45f, 1f, 0.4f);
 	[Export] public int DeathSparkAmount { get; set; } = 18;
 	[Export] public EnemyCue DeathCue { get; set; } = EnemyCue.None;
+	/// <summary>Sparks thrown when a head-shot kill pops the head off.</summary>
+	[Export] public int HeadPopSparkAmount { get; set; } = 40;
+	[Export] public Color HeadPopSparkColor { get; set; } = new(1f, 0.95f, 0.55f);
+	[Export] public float HeadPopVolumeDb { get; set; } = -2f;
 	/// <summary>Height of the body centre, where death effects play.</summary>
 	[Export] public float EffectHeight { get; set; } = 0.3f;
 	/// <summary>Speed the body is knocked away from the player on death (0 = it just topples).</summary>
@@ -586,6 +590,32 @@ public abstract partial class Enemy : CharacterBody3D
 
 	protected virtual AudioStream DeathSound => PlaceholderSfx.ForCue(DeathCue);
 
+	/// <summary>
+	/// A head-shot kill: the head bursts off in a shower of its own glow and a wet pop, and the
+	/// corpse tumbles away without it.
+	/// </summary>
+	private void PopHead(Node parent)
+	{
+		if (_weakSpots == null)
+			return;
+		foreach (WeakSpot spot in _weakSpots)
+		{
+			Node3D head = spot.FollowTarget;
+			Vector3 at = head?.GlobalPosition ?? spot.GlobalPosition;
+			// Chunky glowing bits that hang a moment, plus a fast bright spray on top.
+			ImpactEffects.SpawnSparks(parent, at, Vector3.Up, DeathSparkColor, HeadPopSparkAmount, 3.5f, 0.6f, 0.8f);
+			ImpactEffects.SpawnSparks(parent, at, Vector3.Up, HeadPopSparkColor, HeadPopSparkAmount / 2, 1.5f, 0.35f, 1.4f);
+			PlaceholderSfx.PlayAt(parent, PlaceholderSfx.HeadPop, at, HeadPopVolumeDb, 0.12f);
+			if (head != null)
+				head.Visible = false;
+			HeadPops++;
+			return;
+		}
+	}
+
+	/// <summary>Head-shot kills that popped a head this session (for the self-check).</summary>
+	public static int HeadPops { get; set; }
+
 	protected virtual void OnDied()
 	{
 		GameEvents.Instance?.EmitSignal(GameEvents.SignalName.EnemyKilled, this);
@@ -593,6 +623,8 @@ public abstract partial class Enemy : CharacterBody3D
 		Node parent = GetParent();
 		Vector3 center = GlobalPosition + Vector3.Up * EffectHeight;
 		ImpactEffects.SpawnSparks(parent, center, Vector3.Up, DeathSparkColor, DeathSparkAmount);
+		if (Health.LastHitWeakSpot)
+			PopHead(parent);
 		if (DeathSound != null)
 			PlaceholderSfx.PlayAt(parent, DeathSound, center, -6f, 0.15f);
 

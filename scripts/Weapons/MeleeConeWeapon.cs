@@ -119,6 +119,7 @@ public partial class MeleeConeWeapon : Weapon
 		{
 			(_, Node3D enemy, HealthComponent health) = _targets[i];
 			Vector3 at = enemy.GlobalPosition + Vector3.Up * 0.9f;
+			health.LastHitWeakSpot = false;
 			bool killed = health.ApplyDamage(damage);
 			ReportHit(killed);
 			ImpactEffects.SpawnSparks(effects, at, (origin - at).Normalized(), CutSparkColor, 9);
