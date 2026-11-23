@@ -122,7 +122,7 @@ play.cmd --wave=5 --weapon=rivet --cash=800
 - Judge: one nail per emu head again in late waves. Do the bodies still feel chunky?
 
 ### Chunkier late waves (2026-11-16)
-- What changed: from wave 6, every enemy gets +10% health a wave (+50% by wave 10, max double) and up to 15% wider (not taller, heads stay at eye height).
+- What changed: from wave 6, every enemy gets more health a wave and up to 15% wider (not taller, heads stay at eye height). **Updated 2026-11-16:** the ramp is now +4% a wave, max +40% (was +10%, max double); variants carry the late game instead (see "Variants replace most of the health ramp").
 - Fun bet: late waves feel heavier and take longer to chew through, instead of the same emus in bigger numbers.
 - Try it: `play.cmd --wave=10 --god` (compare with `play.cmd --wave=1 --god`)
 - Judge: do late waves feel heavier without feeling spongy? (Heads stay one-shot: see the card above.)
