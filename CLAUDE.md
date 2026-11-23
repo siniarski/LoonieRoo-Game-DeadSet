@@ -84,7 +84,7 @@ Done: 1. setup, arena and movement; 2. nail gun; 3. emus and health; 4. wave dir
 
 Next:
 
-- **Priority, not done yet:** the repo has no remote. Create a private GitHub repo, add it as `origin` and push `main` and `prototype-loop`. Until then nothing is backed up off this machine.
+- ~~Back up off this machine~~ (done 2026-11-24: private repo `siniarski/LoonieRoo-Game-DeadSet`, `origin`, branch `main`; `prototype-loop` merged and deleted).
 8. ~~A bigger, more interesting arena~~ (done: the Bore Yard). Follow-up: lanes are easy to funnel; see "playtest 3" in `ideas.md`.
 9. A tuning pass on waves, cash and prices with all three weapons.
 
